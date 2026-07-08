@@ -644,6 +644,23 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
 
+/* ===== FEED DELETE BUTTON ===== */
+.feed-delete-btn {
+  width: 20px; height: 20px;
+  border: none; background: transparent;
+  color: var(--text-tertiary);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  margin-left: auto;
+}
+.sidebar-item:hover .feed-delete-btn { opacity: 1; }
+.feed-delete-btn:hover { background: rgba(255,59,48,0.12); color: #ff3b30; }
+
 /* ===== SELECTION ===== */
 ::selection { background: var(--accent-light); color: var(--accent); }
 </style>
@@ -706,7 +723,7 @@ body {
         <div class="sidebar-section">
           <div class="sidebar-section-title">订阅源</div>
           <div id="feeds-list">
-            <div class="sidebar-item" id="feeds-empty" style="display:none">
+            <div class="sidebar-item" id="feeds-empty">
               <span class="item-icon">📭</span>
               <span class="item-label" style="color:var(--text-tertiary);font-size:13px">暂无订阅</span>
             </div>
@@ -985,11 +1002,7 @@ function loadState () {
     state.settings = JSON.parse(localStorage.getItem(LS_KEYS.settings) || '{}');
   } catch (e) { console.error(e); }
 
-  // Ensure defaults
-  if (Object.keys(state.feeds).length === 0) {
-    DEFAULT_FEEDS.forEach(f => { state.feeds[f.url] = { ...f, items: [] }; });
-    saveFeeds();
-  }
+  // Start clean — no forced default feeds
   state.settings = { ...{ theme: 'light', fontSize: 'medium', readingWidth: 'medium', autoRead: true }, ...state.settings };
 }
 
@@ -1115,6 +1128,7 @@ function renderSidebar () {
 
   if (urls.length === 0) {
     emptyEl.style.display = '';
+    container.innerHTML = emptyEl.outerHTML + document.getElementById('add-feed-btn').outerHTML;
     return;
   }
   emptyEl.style.display = 'none';
@@ -1123,7 +1137,7 @@ function renderSidebar () {
   const byCategory = {};
   urls.forEach(url => {
     const feed = state.feeds[url];
-    const cat = feed.category || 'Other';
+    const cat = feed.category || 'Default';
     if (!byCategory[cat]) byCategory[cat] = [];
     byCategory[cat].push({ url, ...feed });
   });
@@ -1138,14 +1152,12 @@ function renderSidebar () {
         <span class="item-icon">📡</span>
         <span class="item-label">${escapeHtml(feed.title || truncate(feed.url, 20))}</span>
         <span class="item-badge">${unreadCount}</span>
+        <button class="feed-delete-btn" data-delete-url="${escapeHtml(feed.url)}" title="取消订阅">✕</button>
       </div>`;
     });
   });
 
-  // Replace only the feed items section (keep add button)
-  const existingContent = container.innerHTML;
-  const addBtn = existingContent.match(/<div class="sidebar-item" id="add-feed-btn"[\s\S]*/)?.[0] || '';
-  container.innerHTML = html + addBtn;
+  container.innerHTML = html + document.getElementById('add-feed-btn').outerHTML;
 }
 
 function itemKey (item) { return item._key || (item._key = btoa(unescape(encodeURIComponent(item.link || item.title)))); }
@@ -1566,8 +1578,26 @@ function initEvents () {
     });
   });
 
-  // Feed items
+  // Feed items (click to select, X button to delete)
   $('feeds-list').addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.feed-delete-btn');
+    if (deleteBtn) {
+      e.stopPropagation();
+      const url = deleteBtn.dataset.deleteUrl;
+      const feed = state.feeds[url];
+      if (!feed) return;
+      const name = feed.title || url;
+      if (!confirm('确定取消订阅「' + name + '」？')) return;
+      delete state.feeds[url];
+      const favIdx = state.favorites.indexOf(url);
+      if (favIdx >= 0) state.favorites.splice(favIdx, 1);
+      if (state.selectedFeedUrl === url) state.selectedFeedUrl = null;
+      saveFeeds();
+      saveFavorites();
+      toast('已取消订阅「' + name + '」');
+      renderAll();
+      return;
+    }
     const feedItem = e.target.closest('.feed-item');
     if (!feedItem) return;
     const url = feedItem.dataset.feedUrl;
