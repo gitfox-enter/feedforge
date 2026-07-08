@@ -1448,24 +1448,33 @@ function importOPML (file) {
     try {
       const parser = new DOMParser();
       const doc = parser.parseFromString(e.target.result, 'text/xml');
-      const outlines = doc.querySelectorAll('outline[xmlUrl]');
+      const parseError = doc.querySelector('parsererror');
+      if (parseError) { toast('文件格式错误，不是有效的 OPML'); return; }
+      const allOutlines = doc.querySelectorAll('outline');
       let added = 0;
-      for (const ol of outlines) {
-        const url = ol.getAttribute('xmlUrl');
-        if (url && !state.feeds[url]) {
+      allOutlines.forEach(ol => {
+        // Try all common attribute spellings
+        const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
+        if (url && url.startsWith('http') && !state.feeds[url]) {
           const title = ol.getAttribute('title') || ol.getAttribute('text') || truncate(url, 30);
-          state.feeds[url] = { url, title, site: ol.getAttribute('htmlUrl') || url, category: 'Imported', items: [] };
+          const siteUrl = ol.getAttribute('htmlUrl') || ol.getAttribute('htmlurl') || ol.getAttribute('HTMLURL') || url;
+          state.feeds[url] = { url, title, site: siteUrl, category: 'Imported', items: [] };
           added++;
         }
-      }
+      });
       if (added > 0) {
         saveFeeds();
-        toast(`导入了 ${added} 个订阅源，正在刷新...`);
+        toast('导入了 ' + added + ' 个订阅源，正在刷新…');
         renderAll();
         refreshAllFeeds(false);
-      } else { toast('没有找到新的订阅源'); }
-    } catch (err) { toast('OPML 解析失败'); }
+      } else if (allOutlines.length === 0) {
+        toast('OPML 中没有找到订阅源');
+      } else {
+        toast('没有找到新的订阅源');
+      }
+    } catch (err) { toast('解析失败：' + err.message); }
   };
+  reader.onerror = () => toast('文件读取失败');
   reader.readAsText(file);
 }
 
