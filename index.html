@@ -1160,10 +1160,24 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Responsive */
+/* Desktop: hide the hamburger (sidebar is always visible) */
+@media (min-width: 641px) {
+  .toolbar-menu { display: none; }
+}
+
+/* Mobile: sidebar becomes a slide-in drawer, main content is the default view */
 @media (max-width: 640px) {
-  .sidebar { width: 100%; }
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 84%;
+    max-width: 300px;
+    height: 100%;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 14px rgba(0,0,0,0.18);
+  }
   .rec-feeds-grid { grid-template-columns: 1fr; }
-  /* FAB needs to sit above the full-width sidebar on mobile */
+  /* FAB needs to sit above the drawer + overlay on mobile */
   #add-feed-fab { z-index: 150 !important; }
 }
 </style>
@@ -1597,6 +1611,7 @@ let state = {
   lastUpdated: null,
   currentView: 'news',
   currentCategory: null,
+  currentFeedUrl: null,  // when set, the category view shows only this feed
   refreshing: false,
 };
 
@@ -2224,10 +2239,11 @@ function renderBookmarks (filterText) {
 }
 
 // ===== RENDER: CATEGORY VIEW =====
-function renderCategoryView (catName, filterText) {
+function renderCategoryView (catName, filterText, onlyFeedUrl) {
   const articles = [];
   Object.entries(state.feeds).forEach(([feedUrl, feed]) => {
     if (catName && feed.category !== catName) return;
+    if (onlyFeedUrl && feedUrl !== onlyFeedUrl) return;
     (feed.items || []).forEach(article => {
       articles.push({ ...article, feedUrl, feed });
     });
@@ -2536,7 +2552,7 @@ function showView (viewName, extra) {
   if (viewName === 'category') {
     state.currentCategory = extra || null;
     $('cat-toolbar-title').textContent = state.currentCategory || '分类';
-    renderCategoryView(state.currentCategory, '');
+    renderCategoryView(state.currentCategory, '', state.currentFeedUrl);
   }
 
   closeSidebar();
@@ -2686,6 +2702,7 @@ document.addEventListener('click', async (e) => {
     if (view) {
       if (view === 'category') {
         state.currentCategory = navItem.dataset.category || null;
+        state.currentFeedUrl = null;
         $('cat-toolbar-title').textContent = state.currentCategory || '分类';
         showView('category', state.currentCategory);
       } else {
@@ -2847,10 +2864,11 @@ document.addEventListener('click', async (e) => {
     if (action === 'delete-feed') {
       deleteFeed(url);
     } else if (action === 'open-feed') {
-      // Open feed category view
+      // Open THIS feed's articles only
       const feed = state.feeds[url];
       if (feed) {
         state.currentCategory = feed.category || 'Default';
+        state.currentFeedUrl = url;
         $('cat-toolbar-title').textContent = feed.title || '订阅';
         showView('category', state.currentCategory);
       }
@@ -3099,7 +3117,7 @@ function setupSearch (inputId, contentId, renderFn) {
       if (contentId === 'news-articles') renderNews(input.value);
       else if (contentId === 'fav-articles') renderFavorites(input.value);
       else if (contentId === 'bm-articles') renderBookmarks(input.value);
-      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, input.value);
+      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, input.value, state.currentFeedUrl);
     }, 200);
   });
   if (clearBtn) {
@@ -3109,7 +3127,7 @@ function setupSearch (inputId, contentId, renderFn) {
       if (contentId === 'news-articles') renderNews('');
       else if (contentId === 'fav-articles') renderFavorites('');
       else if (contentId === 'bm-articles') renderBookmarks('');
-      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, '');
+      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, '', state.currentFeedUrl);
     });
   }
 }
