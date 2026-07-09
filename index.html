@@ -882,7 +882,16 @@ body {
     <div class="add-feed-modal-body">
       <input type="text" class="add-feed-input" id="feed-url-input" placeholder="输入 RSS 或 Atom 地址，例如：https://example.com/feed" autocomplete="off">
       <button class="btn-primary" id="feed-add-btn">添加订阅源</button>
-      <div class="add-feed-divider">—— 或选择推荐源 ——</div>
+
+      <div class="add-feed-divider">—— 导入 OPML ——</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="text" class="add-feed-input" id="opml-url-input" placeholder="输入 OPML 链接地址" style="flex:1;margin-bottom:0" autocomplete="off">
+        <button class="btn-secondary" id="opml-url-btn" style="width:80px;flex-shrink:0;height:44px">导入</button>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text-tertiary);margin-bottom:12px">或</div>
+      <button class="btn-secondary" id="opml-file-btn" style="margin-bottom:16px">📂 从文件导入 OPML</button>
+
+      <div class="add-feed-divider">—— 选择推荐源 ——</div>
       <div class="recommended-feeds" id="recommended-feeds"></div>
     </div>
   </div>
@@ -1039,14 +1048,23 @@ async function fetchFeed (feedUrl, silent) {
 }
 
 function parseFeed (xmlText, feedUrl) {
+  // Strip BOM (UTF-8 Byte Order Mark) which can break XML parsing
+  if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlText, 'text/xml');
   const parseError = doc.querySelector('parsererror');
-  if (parseError) throw new Error('XML parse error');
+  if (parseError) {
+    const errText = parseError.textContent || '';
+    throw new Error('XML 解析失败：' + (errText.slice(0, 80) || '格式不正确'));
+  }
 
   const channel = doc.querySelector('channel') || doc.documentElement;
-  const feedTitle = doc.querySelector('channel > title')?.textContent?.trim() || 'Unknown Feed';
-  const feedSite = doc.querySelector('channel > link')?.textContent?.trim() || feedUrl;
+  const feedTitle = doc.querySelector('channel > title')?.textContent?.trim()
+    || doc.querySelector('feed > title')?.textContent?.trim()
+    || 'Unknown Feed';
+  const feedSite = doc.querySelector('channel > link')?.textContent?.trim()
+    || doc.querySelector('feed > link[rel="alternate"]')?.textContent?.trim()
+    || feedUrl;
 
   let items = [];
   const entries = doc.querySelectorAll('item, entry');
@@ -1407,6 +1425,9 @@ function applyReadingWidth (width) {
 
 // ===== ADD FEED =====
 async function addFeedByUrl (feedUrl) {
+  const btn = $('feed-add-btn');
+  btn.disabled = true;
+  btn.textContent = '添加中…';
   try {
     const parsed = await fetchFeed(feedUrl, false);
     if (state.feeds[feedUrl]) {
@@ -1422,10 +1443,10 @@ async function addFeedByUrl (feedUrl) {
       lastFetch: Date.now(),
     };
     saveFeeds();
-    toast('订阅成功！');
+    toast('订阅成功！已获取 ' + (parsed.items?.length || 0) + ' 篇文章');
     closeAddFeedPanel();
     renderAll();
-    // Refresh this feed
+    // Refresh this feed for full article list
     try {
       const refreshed = await fetchFeed(feedUrl, false);
       if (state.feeds[feedUrl]) {
@@ -1433,9 +1454,17 @@ async function addFeedByUrl (feedUrl) {
         saveFeeds();
         renderAll();
       }
-    } catch (e) {}
+    } catch (e) { /* silent refresh, first batch already saved */ }
   } catch (e) {
-    toast('添加失败：' + e.message);
+    const msg = e.message;
+    let hint = msg;
+    if (!msg) hint = '网络错误，请检查链接是否可访问';
+    else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) hint = '网络错误，链接无法访问或被拦截';
+    else if (msg.includes('XML') || msg.includes('parse')) hint = '这不是有效的 RSS/Atom 订阅源';
+    toast('添加失败：' + hint);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '添加订阅源';
   }
 }
 
@@ -1458,14 +1487,16 @@ function importOPML (file) {
   const reader = new FileReader();
   reader.onload = async (e) => {
     try {
+      let xmlText = e.target.result;
+      // Strip BOM
+      if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
       const parser = new DOMParser();
-      const doc = parser.parseFromString(e.target.result, 'text/xml');
+      const doc = parser.parseFromString(xmlText, 'text/xml');
       const parseError = doc.querySelector('parsererror');
       if (parseError) { toast('文件格式错误，不是有效的 OPML'); return; }
       const allOutlines = doc.querySelectorAll('outline');
       let added = 0;
       allOutlines.forEach(ol => {
-        // Try all common attribute spellings
         const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
         if (url && url.startsWith('http') && !state.feeds[url]) {
           const title = ol.getAttribute('title') || ol.getAttribute('text') || truncate(url, 30);
@@ -1477,6 +1508,7 @@ function importOPML (file) {
       if (added > 0) {
         saveFeeds();
         toast('导入了 ' + added + ' 个订阅源，正在刷新…');
+        closeAddFeedPanel();
         renderAll();
         refreshAllFeeds(false);
       } else if (allOutlines.length === 0) {
@@ -1488,6 +1520,51 @@ function importOPML (file) {
   };
   reader.onerror = () => toast('文件读取失败');
   reader.readAsText(file);
+}
+
+async function importOPMLFromURL (opmlUrl) {
+  const btn = $('opml-url-btn');
+  btn.disabled = true; btn.textContent = '导入中…';
+  try {
+    const proxyUrl = getProxyUrl(opmlUrl);
+    const r = await fetch(proxyUrl, {
+      headers: { 'Accept': 'application/xml, text/xml, */*' },
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    let xmlText = await r.text();
+    // Strip BOM
+    if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const parseError = doc.querySelector('parsererror');
+    if (parseError) { toast('链接内容不是有效的 OPML 文件'); return; }
+    const allOutlines = doc.querySelectorAll('outline');
+    let added = 0;
+    allOutlines.forEach(ol => {
+      const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
+      if (url && url.startsWith('http') && !state.feeds[url]) {
+        const title = ol.getAttribute('title') || ol.getAttribute('text') || truncate(url, 30);
+        const siteUrl = ol.getAttribute('htmlUrl') || ol.getAttribute('htmlurl') || ol.getAttribute('HTMLURL') || url;
+        state.feeds[url] = { url, title, site: siteUrl, category: 'Imported', items: [] };
+        added++;
+      }
+    });
+    if (added > 0) {
+      saveFeeds();
+      toast('导入了 ' + added + ' 个订阅源，正在刷新…');
+      closeAddFeedPanel();
+      renderAll();
+      refreshAllFeeds(false);
+    } else if (allOutlines.length === 0) {
+      toast('OPML 中没有找到订阅源');
+    } else {
+      toast('没有找到新的订阅源');
+    }
+  } catch (e) {
+    toast('导入失败：' + (e.message || '网络错误'));
+  } finally {
+    btn.disabled = false; btn.textContent = '导入';
+  }
 }
 
 // ===== PANELS =====
@@ -1553,7 +1630,6 @@ function initEvents () {
 
   // OPML
   $('setting-import').addEventListener('click', () => $('opml-file-input').click());
-  $('opml-file-input').addEventListener('change', (e) => { if (e.target.files[0]) importOPML(e.target.files[0]); });
   $('setting-export').addEventListener('click', exportOPML);
 
   // Clear data
@@ -1623,6 +1699,18 @@ function initEvents () {
     addFeedByUrl(finalUrl);
   });
   $('feed-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('feed-add-btn').click(); });
+
+  // OPML URL import
+  $('opml-url-btn').addEventListener('click', () => {
+    const url = $('opml-url-input').value.trim();
+    if (!url) { toast('请输入 OPML 链接地址'); return; }
+    let finalUrl = url;
+    if (!url.startsWith('http')) finalUrl = 'https://' + url;
+    importOPMLFromURL(finalUrl);
+  });
+  $('opml-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('opml-url-btn').click(); });
+  $('opml-file-btn').addEventListener('click', () => $('opml-file-input').click());
+  $('opml-file-input').addEventListener('change', (e) => { if (e.target.files[0]) { importOPML(e.target.files[0]); $('opml-file-input').value = ''; } });
 
   // Recommended feeds
   $('recommended-feeds').addEventListener('click', (e) => {
