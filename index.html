@@ -514,6 +514,33 @@ body {
   margin-top: 4px;
 }
 
+/* ===== ARTICLE LIST STYLES ===== */
+.article-item-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.article-thumb { width: 100%; height: 160px; object-fit: cover; border-radius: var(--md-sys-shape-corner-medium); margin-bottom: 8px; }
+.article-thumb-sm { width: 56px; height: 56px; object-fit: cover; border-radius: var(--md-sys-shape-corner-small); flex-shrink: 0; }
+.article-thumb-lg { width: 100%; height: 200px; object-fit: cover; border-radius: var(--md-sys-shape-corner-medium); margin-bottom: 8px; }
+.article-read-time { font: var(--md-sys-typescale-body-small); color: var(--md-sys-color-on-surface-variant); }
+.article-title-sm { font-size: 14px !important; -webkit-line-clamp: 2 !important; }
+.article-title-lg { font-size: 18px !important; font-weight: 600 !important; -webkit-line-clamp: 3 !important; }
+
+/* Compact article style */
+.article-item-compact { flex-direction: row !important; align-items: center; gap: 12px; padding: 8px 16px; }
+
+/* Title-only style */
+.article-item-compact .article-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.article-item-compact .article-item-dot.unread-dot { background: var(--md-sys-color-primary); }
+.article-item-compact .article-item-dot.read-dot { background: var(--md-sys-color-outline); }
+
+/* Magazine style */
+.article-item-magazine { padding: 0 0 12px 0 !important; margin-bottom: 8px; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+.article-item-magazine.no-thumb .article-thumb-lg { display: none; }
+
+/* Swipe-to-mark-read */
+.article-item { transition: transform 0.2s, background 0.15s; }
+.article-item.swiping { transition: none; z-index: 1; }
+.article-item.swipe-right { transform: translateX(100%); opacity: 0.5; }
+.article-item.swipe-left { transform: translateX(-100%); opacity: 0.5; }
+
 /* ===== FEED CARD ===== */
 .feed-card {
   display: flex;
@@ -1790,6 +1817,191 @@ body {
       <div class="settings-row-value">›</div>
     </div>
 
+    <div class="settings-section-header">文章列表</div>
+    <div class="settings-row" id="setting-max-lines-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">最大行数</div>
+        <div class="settings-row-subtitle" id="setting-max-lines-subtitle">2</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-title-only-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">只显示标题</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-title-only">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-swipe-mark-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">滑动标记为已读</div>
+        <div class="settings-row-subtitle" id="setting-swipe-mark-subtitle">仅从右侧</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-swipe-mark" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-scroll-mark-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">滚动时自动标记为已读</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-scroll-mark">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-show-thumbnails-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">显示缩略图</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-show-thumbnails" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-reading-time-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">显示预估的阅读时间</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-reading-time">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-unread-count-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">在标题中显示未读数</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-unread-count" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-article-style-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">文章样式</div>
+        <div class="settings-row-subtitle" id="setting-article-style-subtitle">卡片</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-show-fab-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">显示悬浮操作按钮</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-show-fab" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-show-feed-after-read-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">标记所有为已读后显示订阅源</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-show-feed-after-read">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-sort-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">排序</div>
+        <div class="settings-row-subtitle" id="setting-sort-subtitle">时间降序</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="settings-section-header">阅读器</div>
+    <div class="settings-row" id="setting-open-mode-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">内容默认打开方式</div>
+        <div class="settings-row-subtitle" id="setting-open-mode-subtitle">阅读器</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-link-mode-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">链接打开方式</div>
+        <div class="settings-row-subtitle" id="setting-link-mode-subtitle">自定义标签页</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-paging-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">分页模式</div>
+        <div class="settings-row-subtitle">通过"翻页"而非持续滚动来浏览文章。为 e-ink 设备优化。</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-paging">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+
+    <div class="divider"></div>
+    <div class="settings-section-header">图片加载</div>
+    <div class="settings-row" id="setting-wifi-images-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">仅在连接 Wi-Fi 时</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-wifi-images" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-charging-images-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">仅在充电时</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-charging-images">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+
+    <div class="divider"></div>
+    <div class="settings-section-header">管理</div>
+    <div class="settings-row" id="setting-max-items-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">每个订阅的最大内容数</div>
+        <div class="settings-row-subtitle" id="setting-max-items-subtitle">100</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-battery-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">电池优化</div>
+        <div class="settings-row-subtitle" id="setting-battery-subtitle">已启用</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-battery" checked>
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-device-sync-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">设备同步</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="setting-device-sync">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+    <div class="settings-row" id="setting-blocklist-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">拦截列表</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+    <div class="settings-row" id="setting-notify-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">新内容通知</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+
     <div class="divider"></div>
     <div class="settings-section-header">同步</div>
     <div class="settings-row" id="setting-autorefresh-row">
@@ -1956,6 +2168,20 @@ let state = {
   currentView:'news', currentCategory:null, currentFeedUrl:null,
   currentFilter:'all', refreshing:false, autoRefresh:0,
   readIds:new Set(), dynamicColor:true, launchSync:false, wifiOnly:false,
+  // article list style
+  showTitleOnly:false, maxLines:2, showThumbnails:true, showReadingTime:false, showUnreadCount:true,
+  swipeMarkRead:true, swipeMarkReadDir:'right',
+  scrollMarkRead:false,
+  // reading behavior
+  openMode:'reader', linkOpenMode:'tab', pagingMode:false,
+  // image loading
+  loadImagesWifi:true, loadImagesCharging:false,
+  // per-feed limit
+  maxItemsPerFeed:100,
+  // battery optimization
+  batteryOptimization:true,
+  // device sync (placeholder)
+  deviceSync:false,
 };
 let proxyIndex = 0, discoverAbort = null;
 const $ = id => document.getElementById(id);
@@ -1965,6 +2191,21 @@ const $$$ = sel => document.querySelectorAll(sel);
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+function applyDynamicColor() {
+  // Dynamic color: adjust CSS variables based on theme
+  const root = document.documentElement;
+  if (state.dynamicColor) {
+    root.style.setProperty('--md-sys-color-primary', '#f5593d');
+    root.style.setProperty('--md-sys-color-on-primary', '#ffffff');
+    root.style.setProperty('--md-sys-color-primary-container', '#ffdad6');
+    root.style.setProperty('--md-sys-color-on-primary-container', '#3b0901');
+  } else {
+    root.style.setProperty('--md-sys-color-primary', '#5f6368');
+    root.style.setProperty('--md-sys-color-on-primary', '#ffffff');
+    root.style.setProperty('--md-sys-color-primary-container', '#e0e0e0');
+    root.style.setProperty('--md-sys-color-on-primary-container', '#3c4043');
+  }
 }
 function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
 function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -2144,7 +2385,37 @@ async function importOPMLFromURL(opmlUrl) {
 // PANELS
 function openAddFeed() { $('add-feed-overlay').classList.add('open'); $('feed-url-input').value = ''; $('feed-url-input').focus(); $('feed-preview-area').innerHTML = ''; populateCategorySelect(); renderRecommendedFeeds(); }
 function closeAddFeed() { $('add-feed-overlay').classList.remove('open'); if (discoverAbort) { discoverAbort = false; } }
-function openSettings() { $('settings-page').classList.add('open'); $('setting-dynamic-color').checked = state.dynamicColor; $('setting-launch-sync').checked = state.launchSync; $('setting-wifi-only').checked = state.wifiOnly; }
+function openSettings() {
+  $('settings-page').classList.add('open');
+  $('setting-dynamic-color').checked = state.dynamicColor;
+  $('setting-launch-sync').checked = state.launchSync;
+  $('setting-wifi-only').checked = state.wifiOnly;
+  // article list
+  $('setting-title-only').checked = state.showTitleOnly;
+  $('setting-swipe-mark').checked = state.swipeMarkRead;
+  $('setting-scroll-mark').checked = state.scrollMarkRead;
+  $('setting-show-thumbnails').checked = state.showThumbnails;
+  $('setting-reading-time').checked = state.showReadingTime;
+  $('setting-unread-count').checked = state.showUnreadCount;
+  $('setting-show-fab').checked = true; // FAB is always shown for now
+  $('setting-show-feed-after-read').checked = false; // placeholder
+  // reading
+  $('setting-paging').checked = state.pagingMode;
+  // image loading
+  $('setting-wifi-images').checked = state.loadImagesWifi;
+  $('setting-charging-images').checked = state.loadImagesCharging;
+  // management
+  $('setting-battery').checked = state.batteryOptimization;
+  $('setting-device-sync').checked = state.deviceSync;
+  // update subtitles
+  $('setting-max-lines-subtitle').textContent = state.maxLines;
+  $('setting-max-items-subtitle').textContent = state.maxItemsPerFeed;
+  const openModes = { reader: '阅读器', original: '原文' };
+  $('setting-open-mode-subtitle').textContent = openModes[state.openMode] || state.openMode;
+  const linkModes = { tab: '自定义标签页', self: '当前页' };
+  $('setting-link-mode-subtitle').textContent = linkModes[state.linkOpenMode] || state.linkOpenMode;
+  $('setting-battery-subtitle').textContent = state.batteryOptimization ? '已启用' : '已禁用';
+}
 function closeSettings() { $('settings-page').classList.remove('open'); }
 function openAbout() { $('about-page').classList.add('open'); }
 function closeAbout() { $('about-page').classList.remove('open'); }
@@ -2164,12 +2435,82 @@ function renderArticleItem(article, feed, showFeed) {
   const isRead = state.readIds.has(article.id);
   const feedName = showFeed && feed ? feed.title : '';
   const timeStr = timeAgo(article.date);
-  return `<div class="article-item ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
-    <div class="article-title">${escapeHtml(article.title)}</div>
-    ${article.description ? `<div class="article-summary">${escapeHtml(truncate(article.description, 120))}</div>` : ''}
-    <div class="article-meta-row">
-      ${feedName ? `<span class="article-feed-name">${escapeHtml(feedName)}</span>` : ''}
+  const styleIdx = parseInt(localStorage.getItem('ff_article_style') || '0');
+  const articleStyle = ['card', 'compact', 'magazine'][styleIdx] || 'card';
+
+  // Thumbnail extraction
+  let thumb = '';
+  if (state.showThumbnails && !state.showTitleOnly) {
+    if (article.thumbnail) thumb = article.thumbnail;
+    else if (article.description) {
+      const m = article.description.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m) thumb = m[1];
+    }
+    if (article.image) thumb = article.image;
+  }
+
+  // Reading time estimation (avg 300 wpm)
+  let readTime = '';
+  if (state.showReadingTime && !state.showTitleOnly) {
+    const wordCount = (article.description || article.title || '').replace(/<[^>]+>/g, '').split(/\s+/).length;
+    const mins = Math.max(1, Math.ceil(wordCount / 300));
+    readTime = `${mins} 分钟`;
+  }
+
+  // Title-only mode
+  if (state.showTitleOnly) {
+    return `<div class="article-item article-item-compact ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
+      <div class="article-item-dot ${isRead ? 'read-dot' : 'unread-dot'}"></div>
+      <div class="article-title article-title-sm">${escapeHtml(article.title)}</div>
       <span class="article-time">${timeStr}</span>
+    </div>`;
+  }
+
+  // Summary based on maxLines
+  const summaryText = article.description ? article.description.replace(/<[^>]+>/g, '') : '';
+  const maxLen = state.maxLines * 60;
+  const summary = summaryText ? truncate(summaryText, maxLen) : '';
+
+  if (articleStyle === 'compact') {
+    return `<div class="article-item article-item-compact ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
+      ${thumb ? `<img class="article-thumb-sm" src="${escapeHtml(thumb)}" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <div class="article-item-body">
+        <div class="article-title article-title-sm">${escapeHtml(article.title)}</div>
+        <div class="article-meta-row">
+          ${feedName ? `<span class="article-feed-name">${escapeHtml(feedName)}</span>` : ''}
+          ${readTime ? `<span class="article-read-time">${readTime}</span>` : ''}
+          <span class="article-time">${timeStr}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (articleStyle === 'magazine' && thumb) {
+    return `<div class="article-item article-item-magazine ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
+      <img class="article-thumb-lg" src="${escapeHtml(thumb)}" loading="lazy" onerror="this.parentElement.classList.add('no-thumb')">
+      <div class="article-item-body">
+        <div class="article-title article-title-lg">${escapeHtml(article.title)}</div>
+        ${summary ? `<div class="article-summary" style="-webkit-line-clamp:${state.maxLines}">${escapeHtml(summary)}</div>` : ''}
+        <div class="article-meta-row">
+          ${feedName ? `<span class="article-feed-name">${escapeHtml(feedName)}</span>` : ''}
+          ${readTime ? `<span class="article-read-time">${readTime}</span>` : ''}
+          <span class="article-time">${timeStr}</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Default card style
+  return `<div class="article-item ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
+    ${thumb ? `<img class="article-thumb" src="${escapeHtml(thumb)}" loading="lazy" onerror="this.style.display='none'">` : ''}
+    <div class="article-item-body">
+      <div class="article-title">${escapeHtml(article.title)}</div>
+      ${summary ? `<div class="article-summary" style="-webkit-line-clamp:${state.maxLines}">${escapeHtml(summary)}</div>` : ''}
+      <div class="article-meta-row">
+        ${feedName ? `<span class="article-feed-name">${escapeHtml(feedName)}</span>` : ''}
+        ${readTime ? `<span class="article-read-time">${readTime}</span>` : ''}
+        <span class="article-time">${timeStr}</span>
+      </div>
     </div>
   </div>`;
 }
@@ -2233,7 +2574,15 @@ function filterArticles(articles) {
 function renderNews(filterText) {
   let articles = [];
   Object.entries(state.feeds).forEach(([feedUrl, feed]) => { (feed.items || []).forEach(article => { articles.push({ ...article, feedUrl, feed }); }); });
-  articles.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+  // Sort based on user preference
+  const sortIdx = parseInt(localStorage.getItem('ff_sort') || '0');
+  if (sortIdx === 1) articles.sort((a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime());
+  else if (sortIdx === 2) articles.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  else articles.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
+  // Apply max items per feed
+  if (state.maxItemsPerFeed > 0) {
+    const perFeed = {}; articles = articles.filter(a => { const fu = a.feedUrl; perFeed[fu] = (perFeed[fu] || 0) + 1; return perFeed[fu] <= state.maxItemsPerFeed; });
+  }
   articles = filterArticles(articles);
   const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase()) || (a.description || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
   const el = $('news-articles'); const loading = $('news-loading');
@@ -2321,6 +2670,13 @@ function updateAppBarTitle() {
 // ARTICLE DETAIL
 let currentArticle = null, currentFeed = null;
 function openArticleDetail(article, feed) {
+  // If openMode is 'original', open the article URL directly
+  if (state.openMode === 'original' && article.link) {
+    if (state.linkOpenMode === 'self') window.location.href = article.link;
+    else window.open(article.link, '_blank');
+    state.readIds.add(article.id); saveState(); renderAll();
+    return;
+  }
   currentArticle = article; currentFeed = feed;
   const isFav = !!state.favorites[article.id];
   $('detail-feed-name').textContent = feed ? feed.title : '';
@@ -2406,9 +2762,79 @@ function markAllRead() {
 
 function init() {
   loadState(); if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES]; applyTheme();
+  applyDynamicColor();
   renderAll(); startAutoRefresh();
-  if (Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
+  if (state.launchSync && Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
+  else if (Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
   window.addEventListener('hashchange', handleRoute); handleRoute();
+  setupSwipeMarkRead();
+  setupScrollMarkRead();
+}
+
+// Swipe-to-mark-read on article items
+function setupSwipeMarkRead() {
+  if (!state.swipeMarkRead) return;
+  let startX = 0, startY = 0, currentEl = null, dragging = false;
+  const lists = ['news-list', 'fav-list', 'bm-list', 'cat-list'];
+  lists.forEach(listId => {
+    const list = $(listId);
+    if (!list) return;
+    list.addEventListener('touchstart', (e) => {
+      const item = e.target.closest('.article-item');
+      if (!item) return;
+      currentEl = item; startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragging = false;
+    }, { passive: true });
+    list.addEventListener('touchmove', (e) => {
+      if (!currentEl) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) { dragging = true; currentEl.classList.add('swiping');
+        const dir = state.swipeMarkReadDir;
+        if (dir === 'right' && dx > 0) currentEl.style.transform = `translateX(${Math.min(dx, 120)}px)`;
+        else if (dir === 'left' && dx < 0) currentEl.style.transform = `translateX(${Math.max(dx, -120)}px)`;
+        else if (dir === 'right') currentEl.style.transform = `translateX(${Math.min(dx, 120)}px)`;
+        else currentEl.style.transform = `translateX(${Math.max(dx, -120)}px)`;
+      }
+    }, { passive: true });
+    list.addEventListener('touchend', (e) => {
+      if (!currentEl) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      currentEl.classList.remove('swiping'); currentEl.style.transform = '';
+      if (dragging && Math.abs(dx) > 80) {
+        const id = currentEl.dataset.id;
+        if (id && !state.readIds.has(id)) { state.readIds.add(id); saveState(); currentEl.classList.add('read'); currentEl.classList.remove('unread'); toast('已标记为已读'); }
+        else if (id && state.readIds.has(id)) { state.readIds.delete(id); saveState(); currentEl.classList.remove('read'); currentEl.classList.add('unread'); toast('已标记为未读'); }
+      }
+      currentEl = null; dragging = false;
+    });
+  });
+}
+
+// Scroll-to-mark-read
+function setupScrollMarkRead() {
+  if (!state.scrollMarkRead) return;
+  const lists = ['news-list', 'fav-list', 'bm-list', 'cat-list'];
+  lists.forEach(listId => {
+    const list = $(listId);
+    if (!list) return;
+    let scrollTimer = null;
+    list.addEventListener('scroll', () => {
+      if (!state.scrollMarkRead) return;
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        const items = list.querySelectorAll('.article-item.unread');
+        const listRect = list.getBoundingClientRect();
+        items.forEach(item => {
+          const rect = item.getBoundingClientRect();
+          if (rect.top < listRect.top + 50 && rect.bottom < listRect.bottom) {
+            const id = item.dataset.id;
+            if (id) { state.readIds.add(id); item.classList.add('read'); item.classList.remove('unread'); }
+          }
+        });
+        saveState();
+      }, 500);
+    });
+  });
 }
 
 // EVENT DELEGATION
@@ -2628,737 +3054,73 @@ setupSearch('cat-search', 'cat-articles');
 });
 
 // Settings
-$('setting-dynamic-color').addEventListener('change', (e) => { state.dynamicColor = e.target.checked; saveState(); });
+$('setting-dynamic-color').addEventListener('change', (e) => { state.dynamicColor = e.target.checked; saveState(); applyDynamicColor(); });
 $('setting-launch-sync').addEventListener('change', (e) => { state.launchSync = e.target.checked; saveState(); });
 $('setting-wifi-only').addEventListener('change', (e) => { state.wifiOnly = e.target.checked; saveState(); });
 
-// Category select
-$('feed-category-select').addEventListener('change', (e) => {
-  const sel = e.target; if (sel.value === '__new__') {
-    const name = prompt('输入新分类名称：');
-    if (name && name.trim()) { const cat = name.trim(); if (!state.categories.includes(cat)) { state.categories.push(cat); saveState(); renderCategoriesNav(); } populateCategorySelect(); sel.value = cat; toast('已创建分类：' + cat); }
-    else sel.value = 'Default';
-  }
+// Article list settings
+$('setting-title-only')?.addEventListener('change', e => { state.showTitleOnly = e.target.checked; saveState(); renderAll(); });
+$('setting-swipe-mark')?.addEventListener('change', e => { state.swipeMarkRead = e.target.checked; saveState(); });
+$('setting-scroll-mark')?.addEventListener('change', e => { state.scrollMarkRead = e.target.checked; saveState(); });
+$('setting-show-thumbnails')?.addEventListener('change', e => { state.showThumbnails = e.target.checked; saveState(); renderAll(); });
+$('setting-reading-time')?.addEventListener('change', e => { state.showReadingTime = e.target.checked; saveState(); renderAll(); });
+$('setting-unread-count')?.addEventListener('change', e => { state.showUnreadCount = e.target.checked; saveState(); renderAll(); });
+$('setting-show-fab')?.addEventListener('change', e => { saveState(); });
+$('setting-show-feed-after-read')?.addEventListener('change', e => { saveState(); });
+
+// Reader settings
+$('setting-paging')?.addEventListener('change', e => { state.pagingMode = e.target.checked; saveState(); });
+$('setting-open-mode-row')?.addEventListener('click', () => {
+  state.openMode = state.openMode === 'reader' ? 'original' : 'reader';
+  const m = { reader: '阅读器', original: '原文' };
+  $('setting-open-mode-subtitle').textContent = m[state.openMode] || state.openMode;
+  saveState();
 });
-
-// Auto refresh
-let autoRefreshTimer = null;
-function startAutoRefresh() { if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; } const mins = Number(state.autoRefresh) || 0; if (mins <= 0) return; autoRefreshTimer = setInterval(() => { if (document.hidden) return; refreshAllFeeds(true).then(() => renderAll()); }, mins * 60000); }
-
-// Keyboard
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    if ($('article-detail').classList.contains('open')) closeArticleDetail();
-    else if ($('settings-page').classList.contains('open')) closeSettings();
-    else if ($('storage-page').classList.contains('open')) closeStorage();
-    else if ($('about-page').classList.contains('open')) closeAbout();
-    else if ($('cat-mgr-page').classList.contains('open')) closeCategoryManager();
-    else if ($('add-feed-overlay').classList.contains('open')) closeAddFeed();
-    else if ($('nav-drawer').classList.contains('open')) closeNavDrawer();
-  }
+$('setting-link-mode-row')?.addEventListener('click', () => {
+  state.linkOpenMode = state.linkOpenMode === 'tab' ? 'self' : 'tab';
+  const m = { tab: '自定义标签页', self: '当前页' };
+  $('setting-link-mode-subtitle').textContent = m[state.linkOpenMode] || state.linkOpenMode;
+  saveState();
 });
-
-// Start
-init();
-</script>
-</body>
-</html>
-<script>
-'use strict';
-
-const CORS_PROXIES = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
-const AUTO_DISCOVER_PATHS = ['/feed','/feed/','/rss','/rss.xml','/feed.xml','/atom.xml','/rss/feed.xml','/index.xml','/blog/feed','/posts/feed','/feed/atom'];
-const RECOMMENDED_FEEDS = [
-  { url:'https://feeds.bbci.co.uk/news/rss.xml', title:'BBC News', site:'https://bbc.co.uk/news', category:'News' },
-  { url:'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', title:'NY Times', site:'https://nytimes.com', category:'News' },
-  { url:'https://techcrunch.com/feed/', title:'TechCrunch', site:'https://techcrunch.com', category:'Tech' },
-  { url:'https://feeds.feedburner.com/SixColors', title:'Six Colors', site:'https://sixcolors.com', category:'Tech' },
-  { url:'https://hnrss.org/frontpage', title:'Hacker News', site:'https://news.ycombinator.com', category:'Tech' },
-  { url:'https://www.theverge.com/rss/index.xml', title:'The Verge', site:'https://theverge.com', category:'Tech' },
-];
-const DEFAULT_CATEGORIES = ['科技','新闻','设计','开发'];
-
-let state = {
-  feeds:{}, favorites:{}, bookmarks:{}, categories:[],
-  theme:'light', fontSize:'medium', lastUpdated:null,
-  currentView:'news', currentCategory:null, currentFeedUrl:null,
-  currentFilter:'all', refreshing:false, autoRefresh:0,
-  readIds:new Set(), dynamicColor:true, launchSync:false, wifiOnly:false,
-};
-let proxyIndex = 0, discoverAbort = null;
-const $ = id => document.getElementById(id);
-const $$ = sel => document.querySelector(sel);
-const $$$ = sel => document.querySelectorAll(sel);
-
-function toast(msg) {
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2500);
-}
-function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
-function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function getProxyUrl(url) { return CORS_PROXIES[proxyIndex % CORS_PROXIES.length] + encodeURIComponent(url); }
-function timeAgo(dateStr) {
-  if (!dateStr) return ''; const d = new Date(dateStr); if (isNaN(d)) return dateStr;
-  const diff = Date.now() - d.getTime(), mins = Math.floor(diff / 60000);
-  if (mins < 1) return '刚刚'; if (mins < 60) return mins + ' 分钟前';
-  const hrs = Math.floor(mins / 60); if (hrs < 24) return hrs + ' 小时前';
-  const days = Math.floor(hrs / 24); if (days < 7) return days + ' 天前';
-  return d.toLocaleDateString('zh-CN');
-}
-function articleId(feedUrl, link) { return btoa(unescape(encodeURIComponent(feedUrl + '|' + link))).slice(0, 40); }
-function getFontSize() { const sizes = { small:'14px', medium:'16px', large:'19px' }; return sizes[state.fontSize] || '16px'; }
-function saveState() {
-  try { const toSave = { ...state, readIds: Array.from(state.readIds) }; localStorage.setItem('feedforge_v3', JSON.stringify(toSave)); }
-  catch (e) { console.warn('localStorage write failed:', e); }
-}
-function loadState() {
-  try {
-    const saved = localStorage.getItem('feedforge_v3');
-    if (saved) { const parsed = JSON.parse(saved); state = { ...state, ...parsed }; if (Array.isArray(parsed.readIds)) state.readIds = new Set(parsed.readIds); }
-  } catch (e) {}
-}
-
-// THEME
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', state.theme);
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) { const colors = { light:'#f5593d', dark:'#ffb4a9', sepia:'#c17a3a' }; meta.content = colors[state.theme] || '#f5593d'; }
-  const subtitle = $('setting-theme-subtitle');
-  if (subtitle) { const names = { light:'浅色', dark:'深色', sepia:'护色' }; subtitle.textContent = names[state.theme] || state.theme; }
-}
-function openThemeDialog() {
-  $('theme-dialog').classList.add('open');
-  $$$('.theme-option').forEach(btn => {
-    const isCurrent = btn.dataset.theme === state.theme;
-    btn.querySelector('svg use').setAttribute('href', isCurrent ? '#icon-check-box' : '#icon-check-box-outline');
-  });
-}
-function closeThemeDialog() { $('theme-dialog').classList.remove('open'); }
-function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); closeThemeDialog(); toast('主题已切换'); }
-
-// FEED FETCHING
-async function fetchFeed(feedUrl, silent) {
-  for (let attempt = 0; attempt < CORS_PROXIES.length; attempt++) {
-    try {
-      const proxyUrl = getProxyUrl(feedUrl);
-      const r = await fetch(proxyUrl, { headers: { 'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*' }, signal: AbortSignal.timeout(15000) });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return parseFeed(await r.text(), feedUrl);
-    } catch (e) { proxyIndex++; }
-  }
-  throw new Error('网络错误，请稍后重试');
-}
-function parseFeed(xmlText, feedUrl) {
-  if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
-  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-  const parseError = doc.querySelector('parsererror');
-  if (parseError) throw new Error('XML 解析失败：' + ((parseError.textContent || '').slice(0, 80) || '格式不正确'));
-  const feedTitle = doc.querySelector('channel > title, feed > title')?.textContent?.trim() || 'Unknown Feed';
-  const feedSite = doc.querySelector('channel > link, feed > link[rel="alternate"]')?.textContent?.trim() || feedUrl;
-  let items = [];
-  doc.querySelectorAll('item, entry').forEach(item => {
-    const title = item.querySelector('title')?.textContent?.trim() || '无标题';
-    const link = item.querySelector('link')?.textContent?.trim() || item.querySelector('link[type="text/html"]')?.getAttribute('href') || '';
-    const description = item.querySelector('description, summary, content')?.textContent?.trim() || '';
-    const content = item.querySelector('content\\:encoded, content')?.textContent?.trim() || description;
-    const pubDate = item.querySelector('pubDate, published, updated, date')?.textContent?.trim() || '';
-    const author = item.querySelector('author, dc\\:creator')?.textContent?.trim() || '';
-    if (link) { const id = articleId(feedUrl, link); items.push({ id, title, link, description, content, date: pubDate, author }); }
-  });
-  return { title: feedTitle, site: feedSite, items, _url: feedUrl };
-}
-
-async function discoverFeedOnPage(websiteUrl) {
-  for (const path of AUTO_DISCOVER_PATHS) {
-    try {
-      const testUrl = websiteUrl.replace(/\/$/, '') + path;
-      const r = await fetch(getProxyUrl(testUrl), { headers: { 'Accept': 'application/rss+xml, application/atom+xml, */*' }, signal: AbortSignal.timeout(8000) });
-      if (r.ok) { const text = await r.text(); if (text.includes('<rss') || text.includes('<feed') || text.includes('<atom')) return parseFeed(text, testUrl); }
-    } catch (e) {}
-  }
-  try {
-    const r = await fetch(getProxyUrl(websiteUrl), { headers: { 'Accept': 'text/html, */*' }, signal: AbortSignal.timeout(10000) });
-    if (r.ok) {
-      const html = await r.text();
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      for (const l of doc.querySelectorAll('link[rel="alternate"]')) {
-        const type = l.getAttribute('type') || '';
-        if (type.includes('rss') || type.includes('atom') || type.includes('xml')) {
-          let href = l.getAttribute('href') || '';
-          if (href && !href.startsWith('http')) { try { href = new URL(href, new URL(websiteUrl)).href; } catch (e) {} }
-          if (href.startsWith('http')) { try { const parsed = await fetchFeed(href, true); parsed._url = href; return parsed; } catch (e) {} }
-        }
-      }
-    }
-  } catch (e) {}
-  return null;
-}
-
-async function addFeedByUrl(feedUrl, silent, category) {
-  if (state.feeds[feedUrl]) { if (!silent) toast('该订阅源已存在'); return true; }
-  const parsed = await fetchFeed(feedUrl, silent);
-  state.feeds[feedUrl] = { url: feedUrl, title: parsed.title || truncate(feedUrl, 30), site: parsed.site || feedUrl, category: category || 'Default', items: (parsed.items || []).slice(0, 200), lastFetch: Date.now() };
-  saveState(); if (!silent) toast('订阅成功！已获取 ' + (parsed.items?.length || 0) + ' 篇文章'); return true;
-}
-
-async function refreshAllFeeds(silent) {
-  const urls = Object.keys(state.feeds); if (urls.length === 0) return { completed: 0, total: 0 };
-  if (!silent) { $('news-progress-fill').classList.add('indeterminate'); $('news-progress-fill').style.width = '100%'; $('news-progress').style.display = ''; }
-  let completed = 0; const total = urls.length;
-  for (const url of urls) {
-    try { const refreshed = await fetchFeed(url, true); if (state.feeds[url]) { state.feeds[url].items = (refreshed.items || []).slice(0, 200); state.feeds[url].lastFetch = Date.now(); } }
-    catch (e) {}
-    completed++; if (!silent) { $('news-progress-fill').classList.remove('indeterminate'); $('news-progress-fill').style.width = Math.round((completed / total) * 100) + '%'; }
-    saveState();
-  }
-  state.lastUpdated = Date.now(); saveState();
-  if (!silent) { setTimeout(() => { $('news-progress').style.display = 'none'; updateLastUpdated(); }, 600); }
-  return { completed, total };
-}
-
-// OPML
-function exportOPML() {
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n<head><title>FeedForge Subscriptions</title></head>\n<body>\n';
-  Object.values(state.feeds).forEach(feed => { xml += `  <outline type="rss" text="${escapeHtml(feed.title)}" title="${escapeHtml(feed.title)}" xmlUrl="${escapeHtml(feed.url)}" htmlUrl="${escapeHtml(feed.site || '')}"/>\n`; });
-  xml += '</body>\n</opml>';
-  const blob = new Blob([xml], { type: 'text/xml' }); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'feedforge-opml.xml'; a.click(); URL.revokeObjectURL(url); toast('OPML 已导出');
-}
-function importOPML(file) {
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      let xmlText = e.target.result; if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
-      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      if (doc.querySelector('parsererror')) { toast('文件格式错误'); return; }
-      let added = 0;
-      doc.querySelectorAll('outline').forEach(ol => {
-        const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
-        if (url && url.startsWith('http') && !state.feeds[url]) {
-          state.feeds[url] = { url, title: ol.getAttribute('title') || ol.getAttribute('text') || truncate(url, 30), site: ol.getAttribute('htmlUrl') || ol.getAttribute('htmlurl') || url, category: 'Default', items: [] };
-          added++;
-        }
-      });
-      if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源，正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
-      else if (doc.querySelectorAll('outline').length === 0) toast('OPML 中没有找到订阅源');
-      else toast('没有找到新的订阅源');
-    } catch (err) { toast('解析失败：' + err.message); }
-  };
-  reader.onerror = () => toast('文件读取失败'); reader.readAsText(file);
-}
-async function importOPMLFromURL(opmlUrl) {
-  const btn = $('opml-url-btn'); btn.disabled = true; btn.textContent = '...';
-  try {
-    const r = await fetch(getProxyUrl(opmlUrl), { headers: { 'Accept': 'application/xml, text/xml, */*' } });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    let xmlText = await r.text(); if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
-    const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-    if (doc.querySelector('parsererror')) { toast('链接内容不是有效的 OPML 文件'); return; }
-    let added = 0;
-    doc.querySelectorAll('outline').forEach(ol => {
-      const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
-      if (url && url.startsWith('http') && !state.feeds[url]) {
-        state.feeds[url] = { url, title: ol.getAttribute('title') || ol.getAttribute('text') || truncate(url, 30), site: ol.getAttribute('htmlUrl') || ol.getAttribute('htmlurl') || url, category: 'Imported', items: [] };
-        added++;
-      }
-    });
-    if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源，正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
-    else if (doc.querySelectorAll('outline').length === 0) toast('OPML 中没有找到订阅源');
-    else toast('没有找到新的订阅源');
-  } catch (e) { toast('导入失败：' + (e.message || '网络错误')); }
-  finally { btn.disabled = false; btn.textContent = '导入'; }
-}
-
-// PANELS
-function openAddFeed() { $('add-feed-overlay').classList.add('open'); $('feed-url-input').value = ''; $('feed-url-input').focus(); $('feed-preview-area').innerHTML = ''; populateCategorySelect(); renderRecommendedFeeds(); }
-function closeAddFeed() { $('add-feed-overlay').classList.remove('open'); if (discoverAbort) { discoverAbort = false; } }
-function openSettings() { $('settings-page').classList.add('open'); $('setting-dynamic-color').checked = state.dynamicColor; $('setting-launch-sync').checked = state.launchSync; $('setting-wifi-only').checked = state.wifiOnly; }
-function closeSettings() { $('settings-page').classList.remove('open'); }
-function openAbout() { $('about-page').classList.add('open'); }
-function closeAbout() { $('about-page').classList.remove('open'); }
-function openStorage() { renderStorage(); $('storage-page').classList.add('open'); }
-function closeStorage() { $('storage-page').classList.remove('open'); }
-function openCategoryManager() { renderCategoryManager(); $('cat-mgr-page').classList.add('open'); }
-function closeCategoryManager() { $('cat-mgr-page').classList.remove('open'); }
-function populateCategorySelect() {
-  const sel = $('feed-category-select'); if (!sel) return;
-  const cats = [...new Set(['Default', ...state.categories])];
-  sel.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">${c === 'Default' ? '默认' : escapeHtml(c)}</option>`).join('') + `<option value="__new__">+ 新建分类...</option>`;
-}
-function currentAddCategory() { const sel = $('feed-category-select'); if (!sel) return 'Default'; return (sel.value && sel.value !== '__new__') ? sel.value : 'Default'; }
-
-// RENDER FUNCTIONS
-function renderArticleItem(article, feed, showFeed) {
-  const isRead = state.readIds.has(article.id);
-  const feedName = showFeed && feed ? feed.title : '';
-  const timeStr = timeAgo(article.date);
-  return `<div class="article-item ${isRead ? 'read' : 'unread'}" data-id="${article.id}" data-feed="${escapeHtml(feed?.url || '')}">
-    <div class="article-title">${escapeHtml(article.title)}</div>
-    ${article.description ? `<div class="article-summary">${escapeHtml(truncate(article.description, 120))}</div>` : ''}
-    <div class="article-meta-row">
-      ${feedName ? `<span class="article-feed-name">${escapeHtml(feedName)}</span>` : ''}
-      <span class="article-time">${timeStr}</span>
-    </div>
-  </div>`;
-}
-function renderFeedCard(feed) {
-  const count = feed.items ? feed.items.length : 0;
-  const initials = feed.title ? feed.title.charAt(0).toUpperCase() : '?';
-  return `<div class="feed-card" data-url="${escapeHtml(feed.url)}">
-    <div class="feed-card-icon">${escapeHtml(initials)}</div>
-    <div class="feed-card-content">
-      <div class="feed-card-title">${escapeHtml(feed.title)}</div>
-      <div class="feed-card-site">${escapeHtml(feed.site || feed.url)}${feed.category && feed.category !== 'Default' ? ' · ' + escapeHtml(feed.category) : ''}</div>
-    </div>
-    <div class="feed-card-count">${count}</div>
-    <div class="feed-card-actions">
-      <button class="feed-card-action" data-url="${escapeHtml(feed.url)}" data-action="edit-feed" title="编辑"><svg style="width:20px;height:20px"><use href="#icon-edit"/></svg></button>
-      <button class="feed-card-action" data-url="${escapeHtml(feed.url)}" data-action="delete-feed" title="删除"><svg style="width:20px;height:20px"><use href="#icon-delete"/></svg></button>
-    </div>
-  </div>`;
-}
-function renderCategoryCard(cat, count) {
-  return `<div class="feed-card" data-category="${escapeHtml(cat)}" data-action="open-category">
-    <div class="feed-card-icon"><svg style="width:20px;height:20px"><use href="#icon-folder"/></svg></div>
-    <div class="feed-card-content">
-      <div class="feed-card-title">${escapeHtml(cat)}</div>
-      <div class="feed-card-site">${count} 篇文章</div>
-    </div>
-    <div class="feed-card-count">${count}</div>
-  </div>`;
-}
-function renderRecFeed(feed) {
-  const exists = !!state.feeds[feed.url];
-  return `<button class="rec-card ${exists ? 'added' : ''}" data-url="${escapeHtml(feed.url)}" ${exists ? 'disabled' : ''}>
-    <div class="rec-card-cat">${escapeHtml(feed.category)}</div>
-    <div class="rec-card-title">${escapeHtml(feed.title)}</div>
-    <div class="rec-card-site">${escapeHtml(feed.site)}</div>
-  </button>`;
-}
-function renderFeedPreview(parsed, feedUrl) {
-  const exists = !!state.feeds[feedUrl];
-  const initials = parsed.title ? parsed.title.charAt(0).toUpperCase() : '?';
-  return `<div class="feed-preview-card">
-    <div class="feed-preview-icon">${escapeHtml(initials)}</div>
-    <div class="feed-preview-info">
-      <div class="feed-preview-title">${escapeHtml(parsed.title)}</div>
-      <div class="feed-preview-site">${escapeHtml(parsed.site || feedUrl)}</div>
-    </div>
-    <button class="btn-filled ${exists ? 'added' : ''}" data-url="${escapeHtml(feedUrl)}" style="flex-shrink:0" ${exists ? 'disabled' : ''}>${exists ? '已订阅' : '添加'}</button>
-  </div>`;
-}
-function renderRecommendedFeeds() { $('recommended-feeds').innerHTML = RECOMMENDED_FEEDS.map(f => renderRecFeed(f)).join(''); }
-
-function filterArticles(articles) {
-  const filter = state.currentFilter;
-  if (filter === 'all') return articles;
-  if (filter === 'unread') return articles.filter(a => !state.readIds.has(a.id));
-  if (filter === 'saved') return articles.filter(a => !!state.favorites[a.id] || !!state.bookmarks[a.id]);
-  if (filter === 'read') return articles.filter(a => state.readIds.has(a.id));
-  return articles;
-}
-
-function renderNews(filterText) {
-  let articles = [];
-  Object.entries(state.feeds).forEach(([feedUrl, feed]) => { (feed.items || []).forEach(article => { articles.push({ ...article, feedUrl, feed }); }); });
-  articles.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  articles = filterArticles(articles);
-  const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase()) || (a.description || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
-  const el = $('news-articles'); const loading = $('news-loading');
-  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">还没有订阅</div><div class="empty-state-desc">点击右下角添加按钮添加 RSS 订阅源</div></div>`; return; }
-  loading.style.display = 'none';
-  if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
-  el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
-}
-function renderFavorites(filterText) {
-  const all = Object.values(state.favorites);
-  const filtered = filterText ? all.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase())) : all;
-  const el = $('fav-articles');
-  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star-outline"/></svg></div><div class="empty-state-title">已保存为空</div><div class="empty-state-desc">点击文章右上角的收藏按钮保存文章</div></div>`; return; }
-  if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
-  el.innerHTML = filtered.map(a => { const feed = state.feeds[a.feedUrl]; return renderArticleItem(a, feed, true); }).join('');
-}
-function renderBookmarks(filterText) {
-  const all = Object.values(state.bookmarks);
-  const filtered = filterText ? all.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase())) : all;
-  const el = $('bm-articles');
-  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-bookmark-outline"/></svg></div><div class="empty-state-title">书签为空</div><div class="empty-state-desc">点击文章右上角的书签按钮添加书签</div></div>`; return; }
-  if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
-  el.innerHTML = filtered.map(a => { const feed = state.feeds[a.feedUrl]; return renderArticleItem(a, feed, true); }).join('');
-}
-function renderCategoryView(catName, filterText, onlyFeedUrl) {
-  let articles = [];
-  Object.entries(state.feeds).forEach(([feedUrl, feed]) => { if (catName && feed.category !== catName) return; if (onlyFeedUrl && feedUrl !== onlyFeedUrl) return; (feed.items || []).forEach(article => { articles.push({ ...article, feedUrl, feed }); }); });
-  articles.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-  const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
-  const el = $('cat-articles');
-  if (articles.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-folder"/></svg></div><div class="empty-state-title">分类为空</div><div class="empty-state-desc">在「订阅管理」中将订阅分配到此分类</div></div>`; return; }
-  if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
-  el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
-}
-function renderFeedsList() {
-  const feeds = Object.values(state.feeds);
-  if (feeds.length === 0) { $('feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">没有订阅</div><div class="empty-state-desc">点击右下角添加按钮添加订阅</div></div>`; return; }
-  $('feeds-list').innerHTML = feeds.map(f => renderFeedCard(f)).join('');
-}
-function renderRecommended() {
-  const existingUrls = Object.keys(state.feeds);
-  const unadded = RECOMMENDED_FEEDS.filter(f => !existingUrls.includes(f.url));
-  if (unadded.length === 0) { $('rec-feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star"/></svg></div><div class="empty-state-title">已添加全部推荐源</div></div>`; return; }
-  $('rec-feeds-list').innerHTML = unadded.map(f => renderRecFeed(f)).join('');
-}
-function renderCategoriesNav() {
-  const usedCats = new Set(); Object.values(state.feeds).forEach(f => { if (f.category && f.category !== 'Default') usedCats.add(f.category); });
-  const cats = state.categories.filter(c => usedCats.has(c));
-  const catItems = cats.map(c => {
-    const count = Object.values(state.feeds).filter(f => f.category === c).reduce((sum, f) => sum + (f.items || []).length, 0);
-    return `<button class="nav-dest" data-view="category" data-category="${escapeHtml(c)}"><span class="nav-dest-icon"><svg style="width:20px;height:20px"><use href="#icon-folder"/></svg></span><span class="nav-dest-label">${escapeHtml(c)}</span><span class="nav-dest-badge">${count > 0 ? count : ''}</span></button>`;
-  }).join('');
-  $('drawer-category-items').innerHTML = catItems;
-  $('drawer-categories-section').style.display = cats.length === 0 ? 'none' : '';
-}
-function renderCategoryManager() {
-  $('cat-mgr-list').innerHTML = state.categories.length === 0 ? '<div style="text-align:center;color:var(--md-sys-color-on-surface-variant);padding:24px;font-size:14px">还没有分类</div>' : state.categories.map(c => `<div class="cat-mgr-row"><span class="cat-mgr-name">${escapeHtml(c)}</span><button class="cat-mgr-delete" data-cat="${escapeHtml(c)}"><svg style="width:20px;height:20px"><use href="#icon-delete"/></svg></button></div>`).join('');
-}
-function renderStorage() {
-  const feedCount = Object.keys(state.feeds).length; let articleCount = 0; Object.values(state.feeds).forEach(f => { articleCount += (f.items || []).length; });
-  $('storage-feed-count').textContent = feedCount; $('storage-article-count').textContent = articleCount;
-  $('storage-fav-count').textContent = Object.keys(state.favorites).length; $('storage-bm-count').textContent = Object.keys(state.bookmarks).length;
-  const data = JSON.stringify(state); const bytes = new Blob([data]).size;
-  $('storage-size').textContent = bytes < 1024 ? bytes + ' B' : bytes < 1024 * 1024 ? (bytes / 1024).toFixed(1) + ' KB' : (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  $('storage-bar').style.width = Math.min(100, (bytes / (5 * 1024 * 1024)) * 100) + '%';
-}
-
-function renderAll() {
-  renderNews($('news-search').value); renderFavorites($('fav-search').value); renderBookmarks($('bm-search').value);
-  renderFeedsList(); renderRecommended(); renderCategoriesNav(); updateNavBadges(); updateLastUpdated(); updateAppBarTitle();
-}
-function updateNavBadges() {
-  let total = 0; Object.values(state.feeds).forEach(f => { total += (f.items || []).length; });
-  $('drawer-badge-news').textContent = total > 0 ? (total > 99 ? '99+' : total) : ''; $('drawer-badge-news').style.display = total > 0 ? '' : 'none';
-  $('drawer-badge-fav').textContent = Object.keys(state.favorites).length > 0 ? Object.keys(state.favorites).length : ''; $('drawer-badge-fav').style.display = Object.keys(state.favorites).length > 0 ? '' : 'none';
-}
-function updateLastUpdated() { $('drawer-last-updated').textContent = state.lastUpdated ? '更新于 ' + timeAgo(state.lastUpdated) : '未更新'; }
-function updateAppBarTitle() {
-  const titles = { news: '全部订阅', favorites: '已保存文章', bookmarks: '书签', feeds: '订阅管理', recommended: '推荐订阅', category: state.currentCategory || '分类' };
-  $('app-bar-title').textContent = titles[state.currentView] || 'FeedForge';
-  const filterBtn = $('app-bar-filter-btn');
-  if (state.currentView === 'news') filterBtn.classList.remove('hidden'); else filterBtn.classList.add('hidden');
-}
-
-// ARTICLE DETAIL
-let currentArticle = null, currentFeed = null;
-function openArticleDetail(article, feed) {
-  currentArticle = article; currentFeed = feed;
-  const isFav = !!state.favorites[article.id];
-  $('detail-feed-name').textContent = feed ? feed.title : '';
-  $('detail-title').textContent = article.title;
-  $('detail-author').textContent = article.author || '';
-  $('detail-date').textContent = timeAgo(article.date);
-  let body = article.content || article.description || '';
-  $('detail-body').innerHTML = /<[a-z]/i.test(body) ? body : `<p>${escapeHtml(body).replace(/\n\n/g, '</p><p>')}</p>`;
-  $('detail-body').style.fontSize = getFontSize();
-  $('article-detail').classList.add('open'); $('article-detail-content').scrollTop = 0;
-  state.readIds.add(article.id); saveState(); renderAll();
-  updateDetailBookmarkIcons(isFav, !!state.bookmarks[article.id]);
-}
-function closeArticleDetail() { $('article-detail').classList.remove('open'); currentArticle = null; currentFeed = null; }
-function updateDetailBookmarkIcons(isFav, isBm) {
-  const starUse = $('article-detail-bookmark').querySelector('use');
-  if (starUse) starUse.setAttribute('href', isFav ? '#icon-star' : '#icon-star-outline');
-}
-
-// ROUTER
-const ROUTES = [
-  { pattern: /^#\/$|^#?$/, handler: () => { showView('news'); } },
-  { pattern: /^#\/feeds$/, handler: () => { showView('feeds'); } },
-  { pattern: /^#\/recommended$/, handler: () => { showView('recommended'); } },
-  { pattern: /^#\/favorites$/, handler: () => { showView('favorites'); } },
-  { pattern: /^#\/bookmarks$/, handler: () => { showView('bookmarks'); } },
-  { pattern: /^#\/settings$/, handler: () => { openSettings(); } },
-  { pattern: /^#\/about$/, handler: () => { openAbout(); } },
-  { pattern: /^#\/category\/(.+)$/, handler: (m) => { const cat = decodeURIComponent(m[1]); state.currentCategory = cat; state.currentFeedUrl = null; showView('category', cat); } },
-  { pattern: /^#\/article\/(.+)$/, handler: (m) => { const id = decodeURIComponent(m[1]); const article = findArticleById(id); if (!article) { navigate('/'); return; } const feed = article._feedUrl ? state.feeds[article._feedUrl] : null; openArticleDetail(article, feed); } },
-  { pattern: /^#\/feed\/(.+)$/, handler: (m) => { const url = decodeURIComponent(m[1]); if (!state.feeds[url]) { navigate('/'); return; } state.currentFeedUrl = url; state.currentCategory = null; showView('category', null); renderCategoryView(null, '', url); } }
-];
-let _updatingHash = false;
-function handleRoute() { if (_updatingHash) return; const hash = location.hash || ''; for (const route of ROUTES) { const m = hash.match(route.pattern); if (m) { route.handler(m); return; } } navigate('/'); }
-function navigate(path, replace) { _updatingHash = true; const newHash = path ? '#/' + path : '#/'; if (replace) location.replace(newHash); else location.hash = newHash; handleRoute(); _updatingHash = false; }
-
-function toggleFav(articleId) {
-  const article = findArticleById(articleId); if (!article) return;
-  if (state.favorites[articleId]) { delete state.favorites[articleId]; toast('已取消保存'); }
-  else { state.favorites[articleId] = { ...article, feedUrl: article._feedUrl }; toast('已保存'); }
+$('setting-max-lines-row')?.addEventListener('click', () => {
+  state.maxLines = state.maxLines >= 5 ? 1 : state.maxLines + 1;
+  $('setting-max-lines-subtitle').textContent = state.maxLines;
   saveState(); renderAll();
-  if (currentArticle && currentArticle.id === articleId) updateDetailBookmarkIcons(!!state.favorites[articleId], !!state.bookmarks[articleId]);
-}
-function toggleBm(articleId) {
-  const article = findArticleById(articleId); if (!article) return;
-  if (state.bookmarks[articleId]) { delete state.bookmarks[articleId]; toast('已移除书签'); }
-  else { state.bookmarks[articleId] = { ...article, feedUrl: article._feedUrl }; toast('已添加书签'); }
-  saveState(); renderAll();
-}
-function findArticleById(id) {
-  for (const [feedUrl, feed] of Object.entries(state.feeds)) { for (const item of (feed.items || [])) { if (item.id === id) return { ...item, _feedUrl: feedUrl }; } }
-  if (state.favorites[id]) return state.favorites[id]; if (state.bookmarks[id]) return state.bookmarks[id]; return null;
-}
-function shareArticle(article) {
-  if (navigator.share) navigator.share({ title: article.title, url: article.link || '' });
-  else navigator.clipboard.writeText(article.link || '').then(() => toast('链接已复制'));
-}
-
-// NAVIGATION
-function showView(viewName, extra) {
-  $$$('.view').forEach(v => v.classList.remove('active')); $$$('.nav-dest').forEach(n => n.classList.remove('active'));
-  const view = $('view-' + viewName); if (view) view.classList.add('active');
-  const navItem = $$(`.nav-dest[data-view="${viewName}"]${extra ? `[data-category="${escapeHtml(extra)}"]` : ''}`); if (navItem) navItem.classList.add('active');
-  state.currentView = viewName;
-  if (viewName === 'feeds') renderFeedsList(); if (viewName === 'recommended') renderRecommended();
-  if (viewName === 'favorites') renderFavorites(''); if (viewName === 'bookmarks') renderBookmarks('');
-  if (viewName === 'category') { const cat = extra || state.currentCategory; state.currentCategory = cat; renderCategoryView(cat, '', state.currentFeedUrl); if (cat) navigate('/category/' + encodeURIComponent(cat), true); }
-  updateAppBarTitle(); closeNavDrawer(); closeMoreMenu(); closeFilterMenu();
-}
-function openNavDrawer() { $('nav-drawer').classList.add('open'); $('nav-scrim').classList.add('open'); }
-function closeNavDrawer() { $('nav-drawer').classList.remove('open'); $('nav-scrim').classList.remove('open'); }
-function openMoreMenu() { $('more-menu').classList.add('open'); }
-function closeMoreMenu() { $('more-menu').classList.remove('open'); }
-function openFilterMenu() { $('filter-menu').classList.add('open'); }
-function closeFilterMenu() { $('filter-menu').classList.remove('open'); }
-
-function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"？')) return; delete state.feeds[feedUrl]; saveState(); toast('已取消订阅'); renderAll(); }
-function markAllRead() {
-  let count = 0;
-  Object.values(state.feeds).forEach(feed => { (feed.items || []).forEach(article => { if (!state.readIds.has(article.id)) { state.readIds.add(article.id); count++; } }); });
-  saveState(); renderNews($('news-search').value); toast(count > 0 ? '已将 ' + count + ' 篇文章标记为已读' : '没有未读文章');
-}
-
-function init() {
-  loadState(); if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES]; applyTheme();
-  renderAll(); startAutoRefresh();
-  if (Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
-  window.addEventListener('hashchange', handleRoute); handleRoute();
-}
-
-// EVENT DELEGATION
-document.addEventListener('click', async (e) => {
-  const target = e.target;
-  // Close menus
-  if (!target.closest('#more-menu') && !target.closest('#app-bar-more-btn')) closeMoreMenu();
-  if (!target.closest('#filter-menu') && !target.closest('#app-bar-filter-btn')) closeFilterMenu();
-
-  // App bar
-  if (target.id === 'app-bar-menu-btn' || target.closest('#app-bar-menu-btn')) { openNavDrawer(); return; }
-  if (target.id === 'app-bar-search-btn' || target.closest('#app-bar-search-btn')) {
-    const containers = { news: 'news-search-container', favorites: 'fav-search-container', bookmarks: 'bm-search-container', category: 'cat-search-container' };
-    const cid = containers[state.currentView]; if (cid) { const c = $(cid); c.classList.toggle('hidden'); if (!c.classList.contains('hidden')) c.querySelector('input')?.focus(); }
-    return;
-  }
-  if (target.id === 'app-bar-filter-btn' || target.closest('#app-bar-filter-btn')) { openFilterMenu(); return; }
-  if (target.id === 'app-bar-more-btn' || target.closest('#app-bar-more-btn')) { openMoreMenu(); return; }
-
-  // Nav drawer
-  const navDest = target.closest('.nav-dest');
-  if (navDest) {
-    const view = navDest.dataset.view; const action = navDest.dataset.action;
-    if (view) { if (view === 'category') { state.currentCategory = navDest.dataset.category || null; state.currentFeedUrl = null; showView('category', state.currentCategory); } else showView(view); }
-    else if (action === 'settings') { openSettings(); closeNavDrawer(); }
-    return;
-  }
-  if (target.id === 'nav-scrim') { closeNavDrawer(); return; }
-
-  // More menu
-  const menuItem = target.closest('.menu-item');
-  if (menuItem) {
-    const action = menuItem.dataset.action; closeMoreMenu();
-    if (action === 'mark-all-read') markAllRead();
-    else if (action === 'refresh-feeds') { state.refreshing = true; $('news-loading').style.display = 'flex'; $('news-articles').innerHTML = ''; refreshAllFeeds(false).then(() => { state.refreshing = false; renderAll(); }); }
-    else if (action === 'add-feed') openAddFeed();
-    else if (action === 'import-opml') $('opml-file-input').click();
-    else if (action === 'export-opml') exportOPML();
-    else if (action === 'import-saved') toast('功能开发中');
-    else if (action === 'export-saved') toast('功能开发中');
-    else if (action === 'settings') openSettings();
-    return;
-  }
-
-  // Filter menu
-  const filterItem = target.closest('.filter-item');
-  if (filterItem) { state.currentFilter = filterItem.dataset.filter; $$$('.filter-item').forEach(f => f.classList.remove('active')); filterItem.classList.add('active'); closeFilterMenu(); renderNews($('news-search').value); return; }
-
-  // Add feed overlay
-  if (target.id === 'add-feed-overlay' && !target.closest('.bottom-sheet')) { closeAddFeed(); return; }
-
-  // Add feed button
-  if (target.id === 'feed-add-btn' || target.closest('#feed-add-btn')) {
-    const btn = $('feed-add-btn'); const inputVal = $('feed-url-input').value.trim();
-    if (!inputVal) { toast('请输入 RSS 地址或网站地址'); return; }
-    let targetUrl = inputVal; if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
-    btn.disabled = true; btn.textContent = '添加中...';
-    try {
-      let discovered = false;
-      try { await addFeedByUrl(targetUrl, false, currentAddCategory()); discovered = true; }
-      catch (e) { const parsed = await discoverFeedOnPage(targetUrl); if (parsed && parsed._url) { await addFeedByUrl(parsed._url, false, currentAddCategory()); discovered = true; } }
-      if (discovered) { closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-      else toast('添加失败：无法获取订阅源');
-    } catch (err) { toast('添加失败：' + (err.message || '无法获取订阅源')); }
-    finally { btn.disabled = false; btn.textContent = '查找订阅源'; }
-    return;
-  }
-
-  // Feed preview add
-  const previewAdd = target.closest('.btn-filled');
-  if (previewAdd && previewAdd.dataset.url) {
-    const url = previewAdd.dataset.url;
-    if (state.feeds[url]) { toast('已订阅'); return; }
-    try { await addFeedByUrl(url, false, currentAddCategory()); previewAdd.textContent = '已订阅'; previewAdd.disabled = true; closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-    catch (e) { toast('添加失败：' + (e.message || '网络错误')); }
-    return;
-  }
-
-  // Recommended card
-  const recCard = target.closest('.rec-card');
-  if (recCard && !recCard.disabled) {
-    const url = recCard.dataset.url;
-    if (state.feeds[url]) { toast('已订阅'); return; }
-    try { await addFeedByUrl(url, false); recCard.disabled = true; recCard.classList.add('added'); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-    catch (e) { toast('添加失败：' + (e.message || '网络错误')); }
-    return;
-  }
-
-  // Article item
-  const articleItem = target.closest('.article-item');
-  if (articleItem) {
-    const id = articleItem.dataset.id; const feedUrl = articleItem.dataset.feed;
-    const article = findArticleById(id); const feed = feedUrl ? state.feeds[feedUrl] : null;
-    if (article) openArticleDetail(article, feed); return;
-  }
-
-  // Feed card
-  const feedCard = target.closest('.feed-card');
-  if (feedCard) {
-    const action = target.dataset.action || feedCard.dataset.action;
-    const url = target.dataset.url || feedCard.dataset.url;
-    const cat = target.dataset.category || feedCard.dataset.category;
-    if (action === 'delete-feed') deleteFeed(url);
-    else if (action === 'edit-feed') {
-      const feed = state.feeds[url]; if (!feed) return;
-      const current = feed.category || 'Default';
-      const sel = prompt(`修改「${feed.title}」的分类：\n\n当前分类：${current}\n\n输入新的分类名称（留空则设为「默认」）：`);
-      if (sel !== null) { const newCat = sel.trim() || 'Default'; if (newCat !== current) { feed.category = newCat; saveState(); renderAll(); toast(`已移至「${newCat}」`); } }
-    } else if (action === 'open-category') { state.currentCategory = cat; state.currentFeedUrl = null; showView('category', cat); }
-    else if (url && state.feeds[url]) { state.currentCategory = state.feeds[url].category || 'Default'; state.currentFeedUrl = url; showView('category', state.currentCategory); }
-    return;
-  }
-
-  // Article detail
-  if (target.id === 'article-detail-back' || target.closest('#article-detail-back')) { closeArticleDetail(); return; }
-  if (target.id === 'article-detail-bookmark' || target.closest('#article-detail-bookmark')) { if (currentArticle) toggleFav(currentArticle.id); return; }
-  if (target.id === 'article-detail-share' || target.closest('#article-detail-share')) { if (currentArticle) shareArticle(currentArticle); return; }
-  if (target.id === 'article-detail-open' || target.closest('#article-detail-open')) { if (currentArticle?.link) window.open(currentArticle.link, '_blank'); return; }
-
-  // Settings
-  if (target.id === 'settings-back' || target.closest('#settings-back')) { closeSettings(); return; }
-  if (target.id === 'setting-theme-row' || target.closest('#setting-theme-row')) { openThemeDialog(); return; }
-  if (target.id === 'theme-dialog-cancel' || target.closest('#theme-dialog-cancel')) { closeThemeDialog(); return; }
-  if (target.closest('.theme-option')) { setTheme(target.closest('.theme-option').dataset.theme); return; }
-  if (target.id === 'theme-dialog') { closeThemeDialog(); return; }
-
-  // Storage
-  if (target.id === 'storage-back' || target.closest('#storage-back')) { closeStorage(); return; }
-  if (target.id === 'storage-clear-btn') { if (confirm('确定清除所有数据？此操作不可恢复！')) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
-
-  // About
-  if (target.id === 'about-back' || target.closest('#about-back')) { closeAbout(); return; }
-
-  // Category manager
-  if (target.id === 'cat-mgr-back' || target.closest('#cat-mgr-back')) { closeCategoryManager(); return; }
-  if (target.id === 'add-cat-btn' || target.closest('#add-cat-btn')) {
-    const name = $('new-cat-input').value.trim();
-    if (name) { if (!state.categories.includes(name)) { state.categories.push(name); saveState(); renderCategoryManager(); $('new-cat-input').value = ''; toast('已创建分类：' + name); renderCategoriesNav(); } else toast('分类已存在'); }
-    return;
-  }
-  const deleteCatBtn = target.closest('.cat-mgr-delete');
-  if (deleteCatBtn) {
-    const cat = deleteCatBtn.dataset.cat;
-    if (confirm('删除分类 "' + cat + '"？订阅不会被删除。')) { state.categories = state.categories.filter(c => c !== cat); Object.values(state.feeds).forEach(f => { if (f.category === cat) f.category = 'Default'; }); saveState(); renderCategoryManager(); renderCategoriesNav(); toast('已删除分类'); }
-    return;
-  }
-
-  // Scroll to top
-  const scrollTopBtn = target.closest('.scroll-top-btn');
-  if (scrollTopBtn) { const content = scrollTopBtn.closest('.view')?.querySelector('.content-scroll'); if (content) content.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-
-  // FAB
-  if (target.id === 'main-fab' || target.closest('#main-fab')) { openAddFeed(); return; }
+});
+$('setting-article-style-row')?.addEventListener('click', () => {
+  const styles = ['卡片', '紧凑', '杂志'];
+  const cur = parseInt(localStorage.getItem('ff_article_style') || '0');
+  const next = (cur + 1) % styles.length;
+  localStorage.setItem('ff_article_style', next.toString());
+  $('setting-article-style-subtitle').textContent = styles[next];
+  renderAll();
+});
+$('setting-sort-row')?.addEventListener('click', () => {
+  const opts = ['时间降序', '时间升序', '按标题'];
+  const cur = parseInt(localStorage.getItem('ff_sort') || '0');
+  const next = (cur + 1) % opts.length;
+  localStorage.setItem('ff_sort', next.toString());
+  $('setting-sort-subtitle').textContent = opts[next];
+  renderAll();
 });
 
-// Input handlers
-$('feed-url-input').addEventListener('input', () => {
-  const url = $('feed-url-input').value.trim(); if (!url) { $('feed-preview-area').innerHTML = ''; return; }
-  clearTimeout(discoverAbort);
-  discoverAbort = setTimeout(async () => {
-    const btn = $('feed-add-btn'); btn.textContent = '检测中...'; btn.disabled = true;
-    try {
-      let targetUrl = url; if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
-      const parsed = await fetchFeed(targetUrl, true);
-      $('feed-preview-area').innerHTML = renderFeedPreview(parsed, targetUrl);
-      btn.textContent = state.feeds[targetUrl] ? '已订阅' : '添加此订阅源';
-    } catch (e) {
-      try {
-        const parsed = await discoverFeedOnPage(targetUrl || ('https://' + url));
-        if (parsed && parsed._url) { $('feed-preview-area').innerHTML = renderFeedPreview(parsed, parsed._url); btn.textContent = state.feeds[parsed._url] ? '已订阅' : '添加此订阅源'; }
-        else { $('feed-preview-area').innerHTML = `<div style="color:var(--md-sys-color-error);font-size:13px;padding:8px 0">无法访问此地址</div>`; btn.textContent = '查找订阅源'; }
-      } catch (e2) { $('feed-preview-area').innerHTML = `<div style="color:var(--md-sys-color-error);font-size:13px;padding:8px 0">无法访问此地址</div>`; btn.textContent = '查找订阅源'; }
-    }
-    btn.disabled = false;
-  }, 500);
+// Image loading settings
+$('setting-wifi-images')?.addEventListener('change', e => { state.loadImagesWifi = e.target.checked; saveState(); renderAll(); });
+$('setting-charging-images')?.addEventListener('change', e => { state.loadImagesCharging = e.target.checked; saveState(); renderAll(); });
+
+// Management settings
+$('setting-battery')?.addEventListener('change', e => { state.batteryOptimization = e.target.checked; saveState(); $('setting-battery-subtitle').textContent = e.target.checked ? '已启用' : '已禁用'; });
+$('setting-device-sync')?.addEventListener('change', e => { state.deviceSync = e.target.checked; saveState(); });
+$('setting-max-items-row')?.addEventListener('click', () => {
+  const opts = [50, 100, 200, 500];
+  const cur = opts.indexOf(state.maxItemsPerFeed);
+  const next = cur < 0 ? 1 : (cur + 1) % opts.length;
+  state.maxItemsPerFeed = opts[next];
+  $('setting-max-items-subtitle').textContent = state.maxItemsPerFeed;
+  saveState();
 });
-$('feed-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('feed-add-btn').click(); });
-
-// OPML
-$('opml-url-btn').addEventListener('click', () => { const url = $('opml-url-input').value.trim(); if (!url) { toast('请输入 OPML 链接'); return; } let finalUrl = url; if (!url.startsWith('http')) finalUrl = 'https://' + url; importOPMLFromURL(finalUrl); });
-$('opml-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('opml-url-btn').click(); });
-$('opml-file-btn').addEventListener('click', () => $('opml-file-input').click());
-$('opml-file-input').addEventListener('change', (e) => { if (e.target.files[0]) { importOPML(e.target.files[0]); e.target.value = ''; } });
-
-// Search
-let searchTimer = null;
-function setupSearch(inputId, contentId) {
-  const input = $(inputId); const clearBtn = $(inputId.replace('search', 'search-clear')); if (!input) return;
-  input.addEventListener('input', () => {
-    clearTimeout(searchTimer); if (clearBtn) clearBtn.classList.toggle('hidden', !input.value);
-    searchTimer = setTimeout(() => {
-      if (contentId === 'news-articles') renderNews(input.value);
-      else if (contentId === 'fav-articles') renderFavorites(input.value);
-      else if (contentId === 'bm-articles') renderBookmarks(input.value);
-      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, input.value, state.currentFeedUrl);
-    }, 200);
-  });
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      input.value = ''; clearBtn.classList.add('hidden');
-      if (contentId === 'news-articles') renderNews('');
-      else if (contentId === 'fav-articles') renderFavorites('');
-      else if (contentId === 'bm-articles') renderBookmarks('');
-      else if (contentId === 'cat-articles') renderCategoryView(state.currentCategory, '', state.currentFeedUrl);
-    });
-  }
-}
-setupSearch('news-search', 'news-articles');
-setupSearch('fav-search', 'fav-articles');
-setupSearch('bm-search', 'bm-articles');
-setupSearch('cat-search', 'cat-articles');
-
-// Scroll to top
-['news-content', 'fav-content', 'bm-content', 'cat-content', 'feeds-content', 'rec-content'].forEach(id => {
-  const el = $(id); if (!el) return;
-  el.addEventListener('scroll', () => { const btn = $(id.replace('-content', '') + '-scroll-top'); if (btn) btn.classList.toggle('visible', el.scrollTop > 300); });
-});
-
-// Settings
-$('setting-dynamic-color').addEventListener('change', (e) => { state.dynamicColor = e.target.checked; saveState(); });
-$('setting-launch-sync').addEventListener('change', (e) => { state.launchSync = e.target.checked; saveState(); });
-$('setting-wifi-only').addEventListener('change', (e) => { state.wifiOnly = e.target.checked; saveState(); });
+$('setting-blocklist-row')?.addEventListener('click', () => toast('拦截列表功能即将推出'));
+$('setting-notify-row')?.addEventListener('click', () => toast('通知功能即将推出'));
 
 // Category select
 $('feed-category-select').addEventListener('change', (e) => {
