@@ -2576,8 +2576,8 @@ const ROUTES = [
   { pattern: /^#\/recommended$/,    handler: () => { showView('recommended'); } },
   { pattern: /^#\/favorites$/,      handler: () => { showView('favorites'); } },
   { pattern: /^#\/bookmarks$/,      handler: () => { showView('bookmarks'); } },
-  { pattern: /^#\/settings$/,       handler: () => { showSettings(); } },
-  { pattern: /^#\/about$/,          handler: () => { showAbout(); } },
+  { pattern: /^#\/settings$/,       handler: () => { openSettings(); } },
+  { pattern: /^#\/about$/,          handler: () => { openAbout(); } },
   {
     pattern: /^#\/category\/(.+)$/,
     handler: (m) => {
@@ -2594,9 +2594,7 @@ const ROUTES = [
       const id = decodeURIComponent(m[1]);
       const article = findArticleById(id);
       if (!article) { navigate('/'); return; }
-      const feed = state.feeds[article._feedUrl] || null;
-      if (currentArticle && currentArticle.id === id) return;
-      openArticleDetail(article, feed);
+      showView('article', id);
     }
   },
   {
@@ -2733,6 +2731,30 @@ function showView (viewName, extra) {
   if (viewName === 'recommended') renderRecommended();
   if (viewName === 'favorites') renderFavorites('');
   if (viewName === 'bookmarks') renderBookmarks('');
+  if (viewName === 'settings') { openSettings(); return; }
+  if (viewName === 'article') {
+    const id = extra;
+    const article = findArticleById(id);
+    if (!article) { navigate('/'); return; }
+    const feed = article._feedUrl ? state.feeds[article._feedUrl] : null;
+    // Only re-open if showing a different article
+    if (!(currentArticle && currentArticle.id === id)) {
+      currentArticle = article;
+      currentFeed = feed;
+      $('article-detail').classList.add('open');
+      $('article-detail-content').scrollTop = 0;
+      $('detail-feed-name').textContent = feed ? feed.title : '';
+      $('detail-title').textContent = article.title;
+      $('detail-author').textContent = article.author || '';
+      $('detail-date').textContent = timeAgo(article.date);
+      $('detail-original-link').href = article.link || '#';
+      let body = article.content || article.description || '';
+      $('detail-body').innerHTML = /<[a-z]/i.test(body) ? body : `<p>${escapeHtml(body).replace(/\n\n/g, '</p><p>')}</p>`;
+      $('detail-body').style.fontSize = getFontSize();
+      updateBookmarkIcons(!!state.favorites[article.id], !!state.bookmarks[article.id]);
+    }
+    return;
+  }
   if (viewName === 'category') {
     const cat = extra || state.currentCategory;
     state.currentCategory = cat;
