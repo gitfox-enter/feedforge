@@ -2685,7 +2685,7 @@ document.addEventListener('click', async (e) => {
   const target = e.target;
 
   // === SIDEBAR ===
-  if (target.id === 'menu-btn' || target.closest('#menu-btn') || target.id === 'sidebar-overlay') {
+  if (target.classList.contains('toolbar-menu') || target.closest('.toolbar-menu') || target.id === 'sidebar-overlay') {
     if ($('sidebar-overlay').classList.contains('open')) {
       closeSidebar();
     } else {
