@@ -2856,11 +2856,11 @@ document.addEventListener('click', async (e) => {
     return;
   }
 
-  // === FEED CARD ===
+  // === FEED CARD (buttons inside take priority over card-level action) ===
   const feedCard = target.closest('.feed-card');
   if (feedCard) {
-    const action = feedCard.dataset.action;
-    const url = feedCard.dataset.url;
+    const action = target.dataset.action || feedCard.dataset.action;
+    const url = target.dataset.url || feedCard.dataset.url;
     if (action === 'delete-feed') {
       deleteFeed(url);
     } else if (action === 'open-feed') {
