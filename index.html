@@ -721,6 +721,32 @@ body {
   padding: 0 8px;
   flex-shrink: 0;
 }
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 2px;
+}
+.font-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+  min-width: 28px;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.font-btn:hover { background: var(--bg-active); color: var(--text); }
+.font-btn:active { background: var(--border); }
+.font-btn#font-reset { font-size: 12px; }
 .article-detail-content {
   flex: 1;
   overflow-y: auto;
@@ -1443,6 +1469,11 @@ body {
     <div class="toolbar-title" id="article-detail-toolbar-title">文章</div>
     <button class="toolbar-action" id="article-detail-bookmark" title="收藏">☆</button>
     <button class="toolbar-action" id="article-detail-share" title="分享">↗</button>
+    <div class="font-size-controls">
+      <button class="font-btn" id="font-decrease" title="字号减小">A−</button>
+      <button class="font-btn" id="font-reset" title="字号默认">A</button>
+      <button class="font-btn" id="font-increase" title="字号增大">A+</button>
+    </div>
   </div>
   <div class="article-detail-content" id="article-detail-content">
     <div class="article-detail-header">
@@ -1477,41 +1508,18 @@ body {
       <button class="icon-btn" id="settings-close">✕</button>
     </div>
     <div class="settings-body">
-      <div class="settings-section-title">外观</div>
+      <div class="settings-section-title">刷新策略</div>
       <div class="settings-row">
         <div class="settings-row-label">
-          <div class="settings-row-title">主题</div>
-          <div class="settings-row-desc">阅读界面配色方案</div>
-        </div>
-        <div class="seg-control" id="setting-theme-control">
-          <button class="seg-btn active" data-val="light">浅色</button>
-          <button class="seg-btn" data-val="dark">深色</button>
-          <button class="seg-btn" data-val="sepia">护眼</button>
-        </div>
-      </div>
-      <div class="settings-row">
-        <div class="settings-row-label">
-          <div class="settings-row-title">正文字号</div>
-          <div class="settings-row-desc">文章阅读时的文字大小</div>
-        </div>
-        <div class="seg-control" id="setting-font-control">
-          <button class="seg-btn" data-val="small">小</button>
-          <button class="seg-btn active" data-val="medium">中</button>
-          <button class="seg-btn" data-val="large">大</button>
-        </div>
-      </div>
-
-      <div class="settings-row">
-        <div class="settings-row-label">
-          <div class="settings-row-title">自动刷新</div>
-          <div class="settings-row-desc">后台定时拉取新文章</div>
+          <div class="settings-row-title">网络节省模式</div>
+          <div class="settings-row-desc">控制刷新频率，节省流量</div>
         </div>
         <select class="settings-select" id="setting-autorefresh">
+          <option value="5">正常（5 分钟）</option>
+          <option value="15">轻量（15 分钟）</option>
+          <option value="60">省流量（1 小时）</option>
+          <option value="240">极限（4 小时）</option>
           <option value="0">关闭</option>
-          <option value="15">15 分钟</option>
-          <option value="30">30 分钟</option>
-          <option value="60">1 小时</option>
-          <option value="120">2 小时</option>
         </select>
       </div>
 
@@ -2098,10 +2106,6 @@ function closeCategoryManager () {
 // ===== THEME =====
 function applyTheme () {
   document.documentElement.setAttribute('data-theme', state.theme);
-  $$('.seg-btn[data-val="' + state.theme + '"]')?.classList.add('active');
-  $$$('#setting-theme-control .seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.val === state.theme);
-  });
 }
 
 // ===== RENDER: ARTICLE CARD =====
@@ -2378,9 +2382,11 @@ function renderFeedsList () {
         <div class="feed-title">${escapeHtml(f.title)}</div>
         <div class="feed-site">
           ${escapeHtml(f.site || f.url)}
-          ${f.category && f.category !== 'Default' ? ` · ${escapeHtml(f.category)}` : ''}
+          ${f.category && f.category !== 'Default' ? ` · <span style="color:var(--primary);font-weight:600">${escapeHtml(f.category)}</span>` : ''}
         </div>
       </div>
+      <button class="article-action-btn" data-url="${escapeHtml(f.url)}" data-action="change-cat"
+        style="color:var(--primary);font-size:14px" title="修改分类">📁</button>
       <button class="article-action-btn" data-url="${escapeHtml(f.url)}" data-action="delete-feed"
         style="color:#e04040;font-size:18px" title="取消订阅">✕</button>
     </div>
@@ -2743,11 +2749,6 @@ function init () {
   if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES];
   applyTheme();
 
-  // Set font size seg control
-  $$$('#setting-font-control .seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.val === state.fontSize);
-  });
-
   renderAll();
   const arSel = $('setting-autorefresh');
   if (arSel) arSel.value = String(state.autoRefresh || 0);
@@ -2942,6 +2943,24 @@ document.addEventListener('click', async (e) => {
     const url = target.dataset.url || feedCard.dataset.url;
     if (action === 'delete-feed') {
       deleteFeed(url);
+    } else if (action === 'change-cat') {
+      const feed = state.feeds[url];
+      if (!feed) return;
+      const cats = state.categories.slice();
+      const current = feed.category || 'Default';
+      const options = cats.map(c => `<option value="${escapeHtml(c)}" ${c === current ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+      const allCats = current !== 'Default' && !cats.includes(current)
+        ? `<option value="${escapeHtml(current)}" selected>${escapeHtml(current)}</option>${options}`
+        : options;
+      const sel = prompt(`修改「${feed.title}」的分类：\n\n当前分类：${current}\n\n输入新的分类名称（留空则设为「默认」）：`);
+      if (sel === null) return;
+      const newCat = sel.trim() || 'Default';
+      if (newCat !== current) {
+        feed.category = newCat;
+        saveState();
+        renderAll();
+        toast(`已移至「${newCat}」`);
+      }
     } else if (action === 'open-feed') {
       // Open THIS feed's articles only
       const feed = state.feeds[url];
@@ -3014,6 +3033,25 @@ document.addEventListener('click', async (e) => {
     if (currentArticle) shareArticle(currentArticle);
     return;
   }
+  // Font size toolbar buttons
+  const FONT_LEVELS = ['small', 'medium', 'large'];
+  if (target.id === 'font-decrease') {
+    const idx = FONT_LEVELS.indexOf(state.fontSize);
+    if (idx > 0) { state.fontSize = FONT_LEVELS[idx - 1]; saveState(); }
+    $('detail-body').style.fontSize = getFontSize();
+    return;
+  }
+  if (target.id === 'font-increase') {
+    const idx = FONT_LEVELS.indexOf(state.fontSize);
+    if (idx < FONT_LEVELS.length - 1) { state.fontSize = FONT_LEVELS[idx + 1]; saveState(); }
+    $('detail-body').style.fontSize = getFontSize();
+    return;
+  }
+  if (target.id === 'font-reset') {
+    state.fontSize = 'medium'; saveState();
+    $('detail-body').style.fontSize = getFontSize();
+    return;
+  }
   if (target.id === 'fab-open') {
     if (currentArticle?.link) window.open(currentArticle.link, '_blank');
     return;
@@ -3040,27 +3078,6 @@ document.addEventListener('click', async (e) => {
   }
 
   // === SETTINGS ACTIONS ===
-  if (target.closest('#setting-theme-control')) {
-    const btn = target.closest('.seg-btn');
-    if (btn) {
-      state.theme = btn.dataset.val;
-      applyTheme();
-      saveState();
-    }
-    return;
-  }
-  if (target.closest('#setting-font-control')) {
-    const btn = target.closest('.seg-btn');
-    if (btn) {
-      state.fontSize = btn.dataset.val;
-      $$$('#setting-font-control .seg-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.val === state.fontSize);
-      });
-      $('detail-body').style.fontSize = getFontSize();
-      saveState();
-    }
-    return;
-  }
   if (target.id === 'setting-import') {
     $('opml-file-input').click();
     closeSettings();
