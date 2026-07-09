@@ -1163,6 +1163,8 @@ body {
 @media (max-width: 640px) {
   .sidebar { width: 100%; }
   .rec-feeds-grid { grid-template-columns: 1fr; }
+  /* FAB needs to sit above the full-width sidebar on mobile */
+  #add-feed-fab { z-index: 150 !important; }
 }
 </style>
 </head>
