@@ -2070,18 +2070,22 @@ function closeAddFeedPanel () {
 
 function openSettings () {
   $('settings-panel').classList.add('open');
+  navigate('/settings');
 }
 
 function closeSettings () {
   $('settings-panel').classList.remove('open');
+  navigate('/');
 }
 
 function openAbout () {
   $('about-view').classList.add('open');
+  navigate('/about');
 }
 
 function closeAbout () {
   $('about-view').classList.remove('open');
+  navigate('/');
 }
 
 function openStorage () {
@@ -2542,12 +2546,94 @@ function openArticleDetail (article, feed) {
 
   // Apply font size
   $('detail-body').style.fontSize = getFontSize();
+
+  // Update URL hash
+  navigate('/article/' + encodeURIComponent(article.id));
 }
 
 function closeArticleDetail () {
   $('article-detail').classList.remove('open');
   currentArticle = null;
   currentFeed = null;
+  // Navigate back to previous view
+  if (state.currentCategory) {
+    navigate('/category/' + encodeURIComponent(state.currentCategory));
+  } else if (state.currentFeedUrl) {
+    navigate('/feed/' + encodeURIComponent(state.currentFeedUrl));
+  } else {
+    navigate('/');
+  }
+}
+
+// ===== ROUTER =====
+// Routes: /, /feeds, /recommended, /favorites, /bookmarks,
+//         /category/{catName}, /article/{id}, /settings, /about
+
+const ROUTES = [
+  { pattern: /^#\/$|^#?$/,           handler: () => { showView('news'); } },
+  { pattern: /^#\/feeds$/,          handler: () => { showView('feeds'); } },
+  { pattern: /^#\/recommended$/,    handler: () => { showView('recommended'); } },
+  { pattern: /^#\/favorites$/,      handler: () => { showView('favorites'); } },
+  { pattern: /^#\/bookmarks$/,      handler: () => { showView('bookmarks'); } },
+  { pattern: /^#\/settings$/,       handler: () => { showSettings(); } },
+  { pattern: /^#\/about$/,          handler: () => { showAbout(); } },
+  {
+    pattern: /^#\/category\/(.+)$/,
+    handler: (m) => {
+      const cat = decodeURIComponent(m[1]);
+      state.currentCategory = cat;
+      state.currentFeedUrl = null;
+      $('cat-toolbar-title').textContent = cat || '分类';
+      showView('category', cat);
+    }
+  },
+  {
+    pattern: /^#\/article\/(.+)$/,
+    handler: (m) => {
+      const id = decodeURIComponent(m[1]);
+      const article = findArticleById(id);
+      if (!article) { navigate('/'); return; }
+      const feed = state.feeds[article._feedUrl] || null;
+      if (currentArticle && currentArticle.id === id) return;
+      openArticleDetail(article, feed);
+    }
+  },
+  {
+    pattern: /^#\/feed\/(.+)$/,
+    handler: (m) => {
+      const url = decodeURIComponent(m[1]);
+      if (!state.feeds[url]) { navigate('/'); return; }
+      state.currentFeedUrl = url;
+      state.currentCategory = null;
+      $('cat-toolbar-title').textContent = state.feeds[url].title || '订阅';
+      showView('category', null);
+      renderCategoryView(null, '', url);
+    }
+  }
+];
+
+let _updatingHash = false;
+
+function handleRoute () {
+  if (_updatingHash) return;
+  const hash = location.hash || '';
+  for (const route of ROUTES) {
+    const m = hash.match(route.pattern);
+    if (m) { route.handler(m); return; }
+  }
+  navigate('/');
+}
+
+function navigate (path, replace) {
+  _updatingHash = true;
+  const newHash = path ? '#/' + path : '#/';
+  if (replace) {
+    location.replace(newHash);
+  } else {
+    location.hash = newHash;
+  }
+  handleRoute();
+  _updatingHash = false;
 }
 
 function updateBookmarkIcons (isFav, isBm) {
@@ -2627,14 +2713,35 @@ function showView (viewName, extra) {
 
   state.currentView = viewName;
 
+  // Sync URL hash for main views (category handled separately below)
+  const VIEW_ROUTES = {
+    news: '/',
+    favorites: '/favorites',
+    bookmarks: '/bookmarks',
+    feeds: '/feeds',
+    recommended: '/recommended'
+  };
+  const routePath = VIEW_ROUTES[viewName];
+  if (routePath !== undefined) {
+    _updatingHash = true;
+    location.hash = routePath;
+    _updatingHash = false;
+  }
+
   if (viewName === 'feeds') renderFeedsList();
   if (viewName === 'recommended') renderRecommended();
   if (viewName === 'favorites') renderFavorites('');
   if (viewName === 'bookmarks') renderBookmarks('');
   if (viewName === 'category') {
-    state.currentCategory = extra || null;
-    $('cat-toolbar-title').textContent = state.currentCategory || '分类';
-    renderCategoryView(state.currentCategory, '', state.currentFeedUrl);
+    const cat = extra || state.currentCategory;
+    state.currentCategory = cat;
+    $('cat-toolbar-title').textContent = cat || '分类';
+    renderCategoryView(cat, '', state.currentFeedUrl);
+    if (cat) {
+      _updatingHash = true;
+      location.hash = '/category/' + encodeURIComponent(cat);
+      _updatingHash = false;
+    }
   }
 
   closeSidebar();
@@ -2758,6 +2865,10 @@ function init () {
   if (Object.keys(state.feeds).length > 0) {
     refreshAllFeeds(true).then(() => renderAll());
   }
+
+  // Routing: handle initial hash + browser back/forward
+  window.addEventListener('hashchange', handleRoute);
+  handleRoute();
 }
 
 // ===== EVENT DELEGATION =====
