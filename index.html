@@ -1727,8 +1727,9 @@ function timeAgo (dateStr) {
   return d.toLocaleDateString('zh-CN');
 }
 
-function articleId (feedUrl, title) {
-  return btoa(unescape(encodeURIComponent(feedUrl + '|' + title))).slice(0, 40);
+function articleId (feedUrl, link) {
+  // Use link (unique) instead of title (can be duplicate)
+  return btoa(unescape(encodeURIComponent(feedUrl + '|' + link))).slice(0, 40);
 }
 
 function getFontSize () {
@@ -1812,7 +1813,7 @@ function parseFeed (xmlText, feedUrl) {
     const link2 = link;
 
     if (link2) {
-      const id = articleId(feedUrl, title);
+      const id = articleId(feedUrl, link2);
       items.push({ id, title, link: link2, description, content, date: pubDate, author });
     }
   });
