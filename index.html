@@ -564,6 +564,29 @@ body {
 .add-feed-input:focus { border-color: var(--primary); }
 .add-feed-input::placeholder { color: var(--text-tertiary); }
 
+.add-feed-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+}
+.add-feed-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.add-feed-select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+.add-feed-select:focus { border-color: var(--primary); }
+
 .btn-primary {
   width: 100%;
   padding: 12px;
@@ -898,6 +921,17 @@ body {
 .settings-row-label { flex: 1; }
 .settings-row-title { font-size: 15px; font-weight: 500; color: var(--text); }
 .settings-row-desc { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+.settings-select {
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  flex-shrink: 0;
+}
+.settings-select:focus { border-color: var(--primary); }
 
 /* Toggle switch */
 .toggle {
@@ -1377,6 +1411,14 @@ body {
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       <button class="btn-primary" id="feed-add-btn">查找订阅源</button>
 
+      <div class="add-feed-row">
+        <label class="add-feed-label">分类</label>
+        <select class="add-feed-select" id="feed-category-select">
+          <option value="Default">默认</option>
+          <option value="__new__">+ 新建分类…</option>
+        </select>
+      </div>
+
       <!-- Auto-discovered feed preview -->
       <div id="feed-preview-area"></div>
 
@@ -1459,6 +1501,20 @@ body {
         </div>
       </div>
 
+      <div class="settings-row">
+        <div class="settings-row-label">
+          <div class="settings-row-title">自动刷新</div>
+          <div class="settings-row-desc">后台定时拉取新文章</div>
+        </div>
+        <select class="settings-select" id="setting-autorefresh">
+          <option value="0">关闭</option>
+          <option value="15">15 分钟</option>
+          <option value="30">30 分钟</option>
+          <option value="60">1 小时</option>
+          <option value="120">2 小时</option>
+        </select>
+      </div>
+
       <div class="settings-section-title" style="margin-top:20px">数据</div>
       <button class="settings-link-btn" id="setting-import">
         <span class="settings-link-icon">📂</span>
@@ -1505,7 +1561,8 @@ body {
     </div>
     <div class="about-card">
       <h3>分类管理</h3>
-      <p>点击侧边栏的「➕ 新建分类」创建自己的分类。在订阅管理页面（侧边栏「📡 全部订阅源」），可以将订阅分配到不同分类。</p>
+      <p>添加订阅时，弹窗里会出现「分类」下拉框，可直接选已有分类，或选「+ 新建分类…」即时创建并归入。</p>
+      <p>侧边栏的「➕ 新建分类」也可预先创建分类，之后在添加订阅时就能看到并选用。</p>
     </div>
     <div class="about-card">
       <h3>数据安全</h3>
@@ -1613,6 +1670,7 @@ let state = {
   currentCategory: null,
   currentFeedUrl: null,  // when set, the category view shows only this feed
   refreshing: false,
+  autoRefresh: 0,       // minutes; 0 = off
 };
 
 let proxyIndex = 0;
@@ -1806,7 +1864,7 @@ async function discoverFeedOnPage (websiteUrl) {
 }
 
 // ===== ADD FEED =====
-async function addFeedByUrl (feedUrl, silent) {
+async function addFeedByUrl (feedUrl, silent, category) {
   if (state.feeds[feedUrl]) {
     if (!silent) toast('该订阅源已存在');
     return true;
@@ -1816,7 +1874,7 @@ async function addFeedByUrl (feedUrl, silent) {
     url: feedUrl,
     title: parsed.title || truncate(feedUrl, 30),
     site: parsed.site || feedUrl,
-    category: 'Default',
+    category: category || 'Default',
     items: (parsed.items || []).slice(0, 200),
     lastFetch: Date.now(),
   };
@@ -1976,7 +2034,25 @@ function openAddFeedPanel () {
   $('feed-url-input').value = '';
   $('feed-url-input').focus();
   $('feed-preview-area').innerHTML = '';
+  populateCategorySelect();
   renderRecommendedFeeds();
+}
+
+// Fill the category dropdown in the add-feed panel with current categories
+function populateCategorySelect () {
+  const sel = $('feed-category-select');
+  if (!sel) return;
+  const cats = [...new Set(['Default', ...state.categories])];
+  sel.innerHTML = cats.map(c =>
+    `<option value="${escapeHtml(c)}">${c === 'Default' ? '默认' : escapeHtml(c)}</option>`
+  ).join('') + `<option value="__new__">+ 新建分类…</option>`;
+}
+
+// Read the currently-selected category from the add-feed panel
+function currentAddCategory () {
+  const sel = $('feed-category-select');
+  if (!sel) return 'Default';
+  return (sel.value && sel.value !== '__new__') ? sel.value : 'Default';
 }
 
 function closeAddFeedPanel () {
@@ -2673,6 +2749,9 @@ function init () {
   });
 
   renderAll();
+  const arSel = $('setting-autorefresh');
+  if (arSel) arSel.value = String(state.autoRefresh || 0);
+  startAutoRefresh();
 
   // If no feeds, do nothing; otherwise refresh
   if (Object.keys(state.feeds).length > 0) {
@@ -2742,16 +2821,16 @@ document.addEventListener('click', async (e) => {
     try {
       // If we have a discovered feed, use it
       if (discoveredFeed && discoveredFeed.url === targetUrl) {
-        await addFeedByUrl(discoveredFeed.url, false);
+        await addFeedByUrl(discoveredFeed.url, false, currentAddCategory());
       } else {
         // Try to add directly first
         try {
-          await addFeedByUrl(targetUrl, false);
+          await addFeedByUrl(targetUrl, false, currentAddCategory());
         } catch (e) {
           // Try auto-discovery
           const parsed = await discoverFeedOnPage(targetUrl);
           if (parsed) {
-            await addFeedByUrl(parsed._url || targetUrl, false);
+            await addFeedByUrl(parsed._url || targetUrl, false, currentAddCategory());
           } else {
             throw e;
           }
@@ -2780,7 +2859,7 @@ document.addEventListener('click', async (e) => {
       return;
     }
     try {
-      await addFeedByUrl(url, false);
+      await addFeedByUrl(url, false, currentAddCategory());
       previewAdd.textContent = '✓';
       previewAdd.classList.add('added');
       closeAddFeedPanel();
@@ -2815,7 +2894,7 @@ document.addEventListener('click', async (e) => {
     const url = recFeedInPanel.dataset.url;
     if (state.feeds[url]) { toast('已订阅'); return; }
     try {
-      await addFeedByUrl(url, false);
+      await addFeedByUrl(url, false, currentAddCategory());
       recFeedInPanel.disabled = true;
       recFeedInPanel.classList.add('added');
       closeAddFeedPanel();
@@ -3173,6 +3252,49 @@ function injectFAB () {
   document.body.appendChild(fab);
 }
 injectFAB();
+
+// === AUTO-REFRESH SETTING ===
+document.getElementById('setting-autorefresh')?.addEventListener('change', (e) => {
+  state.autoRefresh = Number(e.target.value) || 0;
+  saveState();
+  startAutoRefresh();
+  toast(state.autoRefresh > 0 ? `已开启自动刷新（每 ${state.autoRefresh} 分钟）` : '已关闭自动刷新');
+});
+
+// === CATEGORY SELECT (add-feed panel) ===
+document.getElementById('feed-category-select')?.addEventListener('change', (e) => {
+  const sel = e.target;
+  if (sel.value === '__new__') {
+    const name = prompt('输入新分类名称：');
+    if (name && name.trim()) {
+      const cat = name.trim();
+      if (!state.categories.includes(cat)) {
+        state.categories.push(cat);
+        saveFeeds();
+        renderCategoriesNav();
+      }
+      populateCategorySelect();
+      sel.value = cat;
+      toast('已创建分类：' + cat);
+    } else {
+      sel.value = 'Default';
+    }
+  }
+});
+
+// === AUTO-REFRESH TIMER ===
+let autoRefreshTimer = null;
+function startAutoRefresh () {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+  const mins = Number(state.autoRefresh) || 0;
+  if (mins <= 0) return;
+  autoRefreshTimer = setInterval(() => {
+    if (state.refreshing) return;
+    const urls = Object.keys(state.feeds);
+    if (!urls.length) return;
+    refreshAllFeeds(true).then(() => renderAll());
+  }, mins * 60 * 1000);
+}
 
 // === INIT ===
 init();
