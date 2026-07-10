@@ -2198,32 +2198,32 @@ body {
       <div class="storage-card-value" id="storage-size">-</div>
     </div>
 
-    <div class="settings-section-header">数据明细</div>
-    <div class="storage-row"><span class="storage-row-label">订阅源</span><span class="storage-row-val" id="storage-feed-count">0</span></div>
-    <div class="storage-row"><span class="storage-row-label">文章缓存</span><span class="storage-row-val" id="storage-article-count">0</span></div>
-    <div class="storage-row"><span class="storage-row-label">收藏文章</span><span class="storage-row-val" id="storage-fav-count">0</span></div>
-    <div class="storage-row"><span class="storage-row-label">已读标记</span><span class="storage-row-val" id="storage-read-count">0</span></div>
+    <div class="settings-section-header" data-i18n="数据明细">数据明细</div>
+    <div class="storage-row"><span class="storage-row-label" data-i18n="订阅源">订阅源</span><span class="storage-row-val" id="storage-feed-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label" data-i18n="文章缓存">文章缓存</span><span class="storage-row-val" id="storage-article-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label" data-i18n="收藏文章">收藏文章</span><span class="storage-row-val" id="storage-fav-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label" data-i18n="已读标记">已读标记</span><span class="storage-row-val" id="storage-read-count">0</span></div>
 
-    <div class="settings-section-header">清除缓存</div>
+    <div class="settings-section-header" data-i18n="清除缓存">清除缓存</div>
     <div class="storage-row storage-clickable" id="storage-clear-articles">
-      <span class="storage-row-main"><span class="storage-row-label">清除文章缓存</span><small class="storage-row-hint">保留订阅源,仅清空已缓存文章</small></span>
-      <span class="storage-row-action">清除</span>
+      <span class="storage-row-main"><span class="storage-row-label" data-i18n="清除文章缓存">清除文章缓存</span><small class="storage-row-hint" data-i18n="保留订阅源,仅清空已缓存文章">保留订阅源,仅清空已缓存文章</small></span>
+      <span class="storage-row-action" data-i18n="清除">清除</span>
     </div>
     <div class="storage-row storage-clickable" id="storage-clear-fav">
-      <span class="storage-row-main"><span class="storage-row-label">清除收藏</span><small class="storage-row-hint">移除所有已收藏文章</small></span>
-      <span class="storage-row-action">清除</span>
+      <span class="storage-row-main"><span class="storage-row-label" data-i18n="清除收藏">清除收藏</span><small class="storage-row-hint" data-i18n="移除所有已收藏文章">移除所有已收藏文章</small></span>
+      <span class="storage-row-action" data-i18n="清除">清除</span>
     </div>
     <div class="storage-row storage-clickable" id="storage-clear-read">
-      <span class="storage-row-main"><span class="storage-row-label">清除已读标记</span><small class="storage-row-hint">把所有文章标记为未读</small></span>
-      <span class="storage-row-action">清除</span>
+      <span class="storage-row-main"><span class="storage-row-label" data-i18n="清除已读标记">清除已读标记</span><small class="storage-row-hint" data-i18n="把所有文章标记为未读">把所有文章标记为未读</small></span>
+      <span class="storage-row-action" data-i18n="清除">清除</span>
     </div>
 
-    <div class="settings-section-header">订阅源占用</div>
+    <div class="settings-section-header" data-i18n="订阅源占用">订阅源占用</div>
     <div id="storage-feed-list"></div>
 
-    <div class="settings-section-header">危险操作</div>
-    <button class="btn-filled" id="storage-clear-btn" style="width:100%; margin-top:4px; background:var(--md-sys-color-error)">清除所有数据</button>
-    <div class="storage-sub" style="margin:10px 4px 0;">将移除订阅源、文章、收藏等全部内容,且无法恢复。</div>
+    <div class="settings-section-header" data-i18n="危险操作">危险操作</div>
+    <button class="btn-filled" id="storage-clear-btn" style="width:100%; margin-top:4px; background:var(--md-sys-color-error)" data-i18n="清除所有数据">清除所有数据</button>
+    <div class="storage-sub" style="margin:10px 4px 0;" data-i18n="将移除订阅源、文章、收藏等全部内容,且无法恢复。">将移除订阅源、文章、收藏等全部内容,且无法恢复。</div>
   </div>
 </div>
 
@@ -2300,12 +2300,10 @@ const RECOMMENDED_FEEDS = [
   { url:'https://hnrss.org/frontpage', title:'Hacker News', site:'https://news.ycombinator.com', category:'Tech' },
   { url:'https://www.theverge.com/rss/index.xml', title:'The Verge', site:'https://theverge.com', category:'Tech' },
 ];
-const DEFAULT_CATEGORIES = ['博客'];
+const DEFAULT_CATEGORIES = [];
 
 let state = {
-  feeds:{
-    'https://gitfox-enter.github.io/rss.xml': { url:'https://gitfox-enter.github.io/rss.xml', title:'gitfox-enter 博客', site:'https://gitfox-enter.github.io', category:'博客', items:[], lastFetch:0 }
-  }, favorites:{}, bookmarks:{}, categories:[],
+  feeds:{}, favorites:{}, bookmarks:{}, categories:[],
   theme:'light', fontSize:'medium', lastUpdated:null,
   currentView:'news', currentCategory:null, currentFeedUrl:null,
   currentFilter:'unread', refreshing:false, autoRefresh:60,
@@ -2852,16 +2850,16 @@ function renderNews(filterText) {
   const el = $('news-articles'); const loading = $('news-loading');
   if (loading && !state.refreshing) loading.style.display = 'none';
   if (state.refreshing) return;
-  if (articles.length === 0 && Object.keys(state.feeds).length === 0) { if (loading) loading.style.display = 'none'; if (el) el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅?</button><button class="empty-state-link" data-action="add-feed">添加更多订阅?</button></div>`; return; }
+  if (articles.length === 0 && Object.keys(state.feeds).length === 0) { if (loading) loading.style.display = 'none'; if (el) el.innerHTML = `<div class="empty-state"><div class="empty-state-title">${t('没有可阅读的内容。您是否想要...')}</div><button class="empty-state-link" data-action="open-feed">${t('打开另一个订阅?')}</button><button class="empty-state-link" data-action="add-feed">${t('添加更多订阅?')}</button></div>`; return; }
   loading.style.display = 'none';
-  if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
+  if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">${t('没有找到相关文章')}</div><div class="empty-state-desc">${t('试试其他关键词')}</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
 }
 function renderFavorites(filterText) {
   const all = Object.values(state.favorites);
   const filtered = filterText ? all.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase())) : all;
   const el = $('fav-articles');
-  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star-outline"/></svg></div><div class="empty-state-title">已保存为空</div><div class="empty-state-desc">点击文章右上角的收藏按钮保存文章</div></div>`; return; }
+  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star-outline"/></svg></div><div class="empty-state-title">${t('已保存为空')}</div><div class="empty-state-desc">${t('点击文章右上角的收藏按钮保存文章')}</div></div>`; return; }
   if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
   el.innerHTML = filtered.map(a => { const feed = state.feeds[a.feedUrl]; return renderArticleItem(a, feed, true); }).join('');
 }
@@ -2869,7 +2867,7 @@ function renderBookmarks(filterText) {
   const all = Object.values(state.bookmarks);
   const filtered = filterText ? all.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase())) : all;
   const el = $('bm-articles');
-  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-bookmark-outline"/></svg></div><div class="empty-state-title">书签为空</div><div class="empty-state-desc">点击文章右上角的书签按钮添加书签</div></div>`; return; }
+  if (all.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-bookmark-outline"/></svg></div><div class="empty-state-title">${t('书签为空')}</div><div class="empty-state-desc">${t('点击文章右上角的书签按钮添加书签')}</div></div>`; return; }
   if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
   el.innerHTML = filtered.map(a => { const feed = state.feeds[a.feedUrl]; return renderArticleItem(a, feed, true); }).join('');
 }
@@ -2879,19 +2877,19 @@ function renderCategoryView(catName, filterText, onlyFeedUrl) {
   articles.sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
   const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
   const el = $('cat-articles');
-  if (articles.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-folder"/></svg></div><div class="empty-state-title">分类为空</div><div class="empty-state-desc">在「订阅管理」中将订阅分配到此分类</div></div>`; return; }
+  if (articles.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-folder"/></svg></div><div class="empty-state-title">${t('分类为空')}</div><div class="empty-state-desc">${t('在「订阅管理」中将订阅分配到此分类')}</div></div>`; return; }
   if (filtered.length === 0) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
 }
 function renderFeedsList() {
   const feeds = Object.values(state.feeds);
-  if (feeds.length === 0) { $('feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">没有订阅</div><div class="empty-state-desc">点击「更多」菜单添加订阅</div></div>`; return; }
+  if (feeds.length === 0) { $('feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">${t('没有订阅')}</div><div class="empty-state-desc">${t('点击「更多」菜单添加订阅')}</div></div>`; return; }
   $('feeds-list').innerHTML = feeds.map(f => renderFeedCard(f)).join('');
 }
 function renderRecommended() {
   const existingUrls = Object.keys(state.feeds);
   const unadded = RECOMMENDED_FEEDS.filter(f => !existingUrls.includes(f.url));
-  if (unadded.length === 0) { $('rec-feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star"/></svg></div><div class="empty-state-title">已添加全部推荐源</div></div>`; return; }
+  if (unadded.length === 0) { $('rec-feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-star"/></svg></div><div class="empty-state-title">${t('已添加全部推荐源')}</div></div>`; return; }
   $('rec-feeds-list').innerHTML = unadded.map(f => renderRecFeed(f)).join('');
 }
 function renderCategoriesNav() {
@@ -2900,7 +2898,8 @@ function renderCategoriesNav() {
   const catsWithFeeds = cats.filter(c => Object.values(state.feeds).some(f => f.category === c));
   const catItems = catsWithFeeds.map(c => {
     let count = 0; Object.values(state.feeds).forEach(f => { if (f.category === c) count += (f.items || []).length; });
-    return `<button class="nav-dest" data-view="category" data-category="${escapeHtml(c)}"><span class="nav-dest-icon"><svg style="width:20px;height:20px"><use href="#icon-folder"/></svg></span><span class="nav-dest-label">${escapeHtml(c)}</span><span class="nav-dest-badge">${count > 0 ? count : ''}</span></button>`;
+    const displayName = t(c) || c; // 支持分类名称翻译
+    return `<button class="nav-dest" data-view="category" data-category="${escapeHtml(c)}"><span class="nav-dest-icon"><svg style="width:20px;height:20px"><use href="#icon-folder"/></svg></span><span class="nav-dest-label">${escapeHtml(displayName)}</span><span class="nav-dest-badge">${count > 0 ? count : ''}</span></button>`;
   }).join('');
   $('drawer-category-items').innerHTML = catItems;
   $('drawer-categories-section').style.display = catsWithFeeds.length === 0 ? 'none' : '';
@@ -2945,9 +2944,9 @@ function renderStorage() {
   if (list) {
     list.innerHTML = feedSizes.length ? feedSizes.map(({ u, f, n, bytes: b }) =>
       '<div class="storage-feed-row"><div class="storage-feed-info"><div class="storage-feed-title">' + escapeHtml(f.title || u) + '</div>' +
-      '<div class="storage-feed-meta">' + escapeHtml(t(f.category || '默认')) + ' · ' + n + ' 篇 · ' + formatBytes(b) + '</div></div>' +
-      '<button class="btn-text storage-feed-clear" data-url="' + escapeHtml(u) + '">清除</button></div>'
-    ).join('') : '<div class="storage-empty">暂无订阅源</div>';
+      '<div class="storage-feed-meta">' + escapeHtml(t(f.category || '默认')) + ' · ' + n + ' ' + t('篇') + ' · ' + formatBytes(b) + '</div></div>' +
+      '<button class="btn-text storage-feed-clear" data-url="' + escapeHtml(u) + '">' + t('清除') + '</button></div>'
+    ).join('') : '<div class="storage-empty">' + t('暂无订阅源') + '</div>';
   }
 }
 
@@ -3067,7 +3066,7 @@ function closeMoreMenu() { $('more-menu').classList.remove('open'); }
 function openFilterMenu() { $('filter-menu').classList.add('open'); }
 function closeFilterMenu() { $('filter-menu').classList.remove('open'); }
 
-function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"?')) return; delete state.feeds[feedUrl]; saveState(); toast(t('已取消订阅')); renderAll(); }
+function deleteFeed(feedUrl) { if (!confirm(t('确定取消订阅') + ' "' + (state.feeds[feedUrl]?.title || feedUrl) + '"?')) return; delete state.feeds[feedUrl]; saveState(); toast(t('已取消订阅')); renderAll(); }
 function markAllRead() {
   let count = 0;
   Object.values(state.feeds).forEach(feed => { (feed.items || []).forEach(article => { if (!state.readIds.has(article.id)) { state.readIds.add(article.id); count++; } }); });
@@ -3300,20 +3299,20 @@ document.addEventListener('click', async (e) => {
   // Storage
   if (target.id === 'storage-back' || target.closest('#storage-back')) { closeStorage(); return; }
   if (target.id === 'storage-clear-articles' || target.closest('#storage-clear-articles')) {
-    if (confirm('清除全部文章缓存?订阅源会保留,仅清空已缓存文章。')) { Object.values(state.feeds).forEach(f => { f.items = []; }); saveState(); renderStorage(); renderAll(); toast('已清除文章缓存'); } return;
+    if (confirm(t('清除全部文章缓存?订阅源会保留,仅清空已缓存文章。'))) { Object.values(state.feeds).forEach(f => { f.items = []; }); saveState(); renderStorage(); renderAll(); toast(t('已清除文章缓存')); } return;
   }
   if (target.id === 'storage-clear-fav' || target.closest('#storage-clear-fav')) {
-    if (confirm('清除全部收藏?')) { state.favorites = {}; saveState(); renderStorage(); renderAll(); toast('已清除收藏'); } return;
+    if (confirm(t('清除全部收藏?'))) { state.favorites = {}; saveState(); renderStorage(); renderAll(); toast(t('已清除收藏')); } return;
   }
   if (target.id === 'storage-clear-read' || target.closest('#storage-clear-read')) {
-    if (confirm('清除全部已读标记?所有文章将标记为未读。')) { state.readIds = new Set(); saveState(); renderStorage(); renderAll(); toast('已清除已读标记'); } return;
+    if (confirm(t('清除全部已读标记?所有文章将标记为未读。'))) { state.readIds = new Set(); saveState(); renderStorage(); renderAll(); toast(t('已清除已读标记')); } return;
   }
   const feedClearBtn = target.closest('.storage-feed-clear');
   if (feedClearBtn) {
     const u = feedClearBtn.dataset.url;
-    if (confirm('清除「' + (state.feeds[u]?.title || u) + '」的缓存文章?')) { if (state.feeds[u]) state.feeds[u].items = []; saveState(); renderStorage(); renderAll(); toast('已清除该订阅源缓存'); } return;
+    if (confirm(t('清除该订阅源的缓存文章?') + ' "' + (state.feeds[u]?.title || u) + '"')) { if (state.feeds[u]) state.feeds[u].items = []; saveState(); renderStorage(); renderAll(); toast(t('已清除该订阅源缓存')); } return;
   }
-  if (target.id === 'storage-clear-btn') { if (confirm('确定清除所有数据?此操作不可恢复!')) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
+  if (target.id === 'storage-clear-btn') { if (confirm(t('确定清除所有数据?此操作不可恢复!'))) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
 
   // About
   if (target.id === 'about-back' || target.closest('#about-back')) { closeAbout(); return; }
@@ -3328,7 +3327,7 @@ document.addEventListener('click', async (e) => {
   const deleteCatBtn = target.closest('.cat-mgr-delete');
   if (deleteCatBtn) {
     const cat = deleteCatBtn.dataset.cat;
-    if (confirm('删除分类 "' + cat + '"?订阅不会被删除。')) { state.categories = state.categories.filter(c => c !== cat); Object.values(state.feeds).forEach(f => { if (f.category === cat) f.category = 'Default'; }); saveState(); renderCategoryManager(); renderCategoriesNav(); toast('已删除分类'); }
+    if (confirm(t('删除分类?') + ' "' + cat + '". ' + t('订阅不会被删除。'))) { state.categories = state.categories.filter(c => c !== cat); Object.values(state.feeds).forEach(f => { if (f.category === cat) f.category = 'Default'; }); saveState(); renderCategoryManager(); renderCategoriesNav(); toast(t('已删除分类')); }
     return;
   }
 
@@ -3459,6 +3458,16 @@ const I18N = {
     '数据明细':'Data details','清除缓存':'Clear cache','订阅源占用':'Feed usage','危险操作':'Danger zone',
     '订阅源':'Feeds','文章缓存':'Article cache','收藏文章':'Saved articles','已读标记':'Read marks',
     '清除文章缓存':'Clear article cache','清除收藏':'Clear favorites','清除已读标记':'Clear read marks','清除所有数据':'Clear all data','默认':'Default','暂无订阅源':'No feeds',
+    '保留订阅源,仅清空已缓存文章':'Keep feeds, only clear cached articles','移除所有已收藏文章':'Remove all saved articles','把所有文章标记为未读':'Mark all articles as unread',
+    '将移除订阅源、文章、收藏等全部内容,且无法恢复。':'This will remove all feeds, articles, saved items. This cannot be undone.',
+    '清除':'Clear','篇':'items',
+    '清除全部文章缓存?订阅源会保留,仅清空已缓存文章。':'Clear all article cache? Feeds will be kept, only cached articles will be removed.',
+    '清除全部收藏?':'Clear all saved articles?',
+    '清除全部已读标记?所有文章将标记为未读。':'Clear all read marks? All articles will be marked as unread.',
+    '清除该订阅源的缓存文章?':'Clear cached articles for this feed?',
+    '已清除文章缓存':'Article cache cleared','已清除收藏':'Saved articles cleared','已清除已读标记':'Read marks cleared','已清除该订阅源缓存':'Feed cache cleared',
+    '确定清除所有数据?此操作不可恢复!':'Clear all data? This cannot be undone!',
+    '删除分类?':'Delete category?','订阅不会被删除。':'Feeds will not be deleted.','已删除分类':'Category deleted',
     '自动选择':'Auto','AllOrigins':'AllOrigins','CORS Proxy':'CORS Proxy','自定义...':'Custom...',
     '代理设置':'Proxy',
     '从 OPML 导入':'Import from OPML','从文件导入':'Import from file','从链接导入':'Import from URL','选择本地的 OPML 文件':'Select a local OPML file','输入 OPML 文件的在线地址':'Enter the URL of an OPML file','输入 OPML 链接':'Enter OPML URL','导入':'Import',
