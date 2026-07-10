@@ -2072,17 +2072,11 @@ body {
     <div class="divider"></div>
     <div class="settings-section-header">高级</div>
     <div class="settings-row" id="setting-proxy-row">
-      <div class="settings-row-text" style="flex:1">
-        <div class="settings-row-title">自定义代理</div>
-        <div class="settings-row-subtitle">公共代理已失效,需配置自己的 CORS 代理</div>
+      <div class="settings-row-text">
+        <div class="settings-row-title">代理设置</div>
+        <div class="settings-row-subtitle" id="setting-proxy-subtitle">自动选择</div>
       </div>
       <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" style="flex-direction:column;align-items:stretch;padding-top:0">
-      <input class="settings-input" id="setting-proxy-input" type="text" placeholder="https://你的代理/?url=" spellcheck="false" />
-      <div style="margin-top:8px;font-size:12px;color:var(--md-sys-color-on-surface-variant);">
-        💡 推荐:<a href="https://github.com/DIYgod/RSSHub" target="_blank" style="color:var(--md-sys-color-primary);">RSSHub</a> 可生成支持跨域的订阅地址,无需额外代理
-      </div>
     </div>
 
   </div>
@@ -2131,6 +2125,17 @@ body {
     <div class="dialog-body" id="quality-dialog-body"></div>
     <div class="dialog-actions">
       <button class="btn-text" id="quality-dialog-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROXY SELECTOR DIALOG ===== -->
+<div class="dialog-overlay" id="proxy-dialog">
+  <div class="dialog">
+    <div class="dialog-headline" id="proxy-dialog-title">代理设置</div>
+    <div class="dialog-body" id="proxy-dialog-body"></div>
+    <div class="dialog-actions">
+      <button class="btn-text" id="proxy-dialog-cancel">取消</button>
     </div>
   </div>
 </div>
@@ -2237,11 +2242,10 @@ body {
 'use strict';
 
 const CORS_PROXIES = [
-  // 公共代理大多已失效,建议使用自定义代理或 RSSHub
-  // 'https://api.allorigins.win/raw?url=',
-  // 'https://api.codetabs.com/v1/proxy?quest=',
-  // 'https://corsproxy.io/?',
-  // 'https://thingproxy.freeboard.io/fetch/',
+  { id: 'auto', name: '自动选择', url: '' },
+  { id: 'allorigins', name: 'AllOrigins', url: 'https://api.allorigins.win/raw?url=' },
+  { id: 'corsproxy', name: 'CORS Proxy', url: 'https://corsproxy.io/?' },
+  { id: 'custom', name: '自定义...', url: 'custom' }
 ];
 const AUTO_DISCOVER_PATHS = ['/feed','/feed/','/rss','/rss.xml','/feed.xml','/atom.xml','/rss/feed.xml','/index.xml','/blog/feed','/posts/feed','/feed/atom'];
 const RECOMMENDED_FEEDS = [
@@ -2277,6 +2281,7 @@ let state = {
   // device sync (placeholder)
   deviceSync:false,
   customProxy:'',
+  proxyChoice:'auto',
   lang:'zh',
   uiQuality:'comfort',
 };
@@ -2315,10 +2320,20 @@ function applyDynamicColor() {
 function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
 function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function getProxyList() {
-  // 优先直连(很多源自带 CORS 头),其次自定义代理,最后公共代理链
   const list = ['DIRECT'];
-  if (state.customProxy && state.customProxy.trim()) list.push(state.customProxy.trim());
-  return list.concat(CORS_PROXIES);
+  // 根据用户选择返回代理
+  const choice = state.proxyChoice || 'auto';
+  if (choice === 'auto') {
+    // 自动模式：依次尝试所有代理
+    if (state.customProxy && state.customProxy.trim()) list.push(state.customProxy.trim());
+    CORS_PROXIES.filter(p => p.id !== 'auto' && p.id !== 'custom').forEach(p => list.push(p.url));
+  } else if (choice === 'custom' && state.customProxy && state.customProxy.trim()) {
+    list.push(state.customProxy.trim());
+  } else {
+    const proxy = CORS_PROXIES.find(p => p.id === choice);
+    if (proxy && proxy.url) list.push(proxy.url);
+  }
+  return list;
 }
 function buildProxyUrl(proxyBase, url) {
   if (proxyBase === 'DIRECT') return url;
@@ -2556,7 +2571,7 @@ async function confirmEditFeed() {
 function openSettings() {
   $('settings-page').classList.add('open');
   $('setting-lang').value = state.lang || 'zh';
-  $('setting-proxy-input').value = state.customProxy || '';
+  applyProxySubtitle();
   applySubtitles();
   applyLang();
 }
@@ -3341,8 +3356,10 @@ setupSearch('cat-search', 'cat-articles');
 
 // Settings - language
 $('setting-lang')?.addEventListener('change', e => { state.lang = e.target.value; saveState(); applyLang(); });
-// Settings - custom proxy
-$('setting-proxy-input')?.addEventListener('change', (e) => { state.customProxy = e.target.value.trim(); saveState(); toast('代理已保存'); });
+// Settings - proxy dialog
+$('setting-proxy-row')?.addEventListener('click', () => openProxyDialog());
+$('proxy-dialog-cancel')?.addEventListener('click', () => closeProxyDialog());
+$('proxy-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'proxy-dialog') closeProxyDialog(); });
 // Settings - refresh frequency dialog
 $('setting-autorefresh-row')?.addEventListener('click', () => openRefreshDialog());
 $('refresh-dialog-cancel')?.addEventListener('click', () => closeRefreshDialog());
@@ -3371,7 +3388,7 @@ function startAutoRefresh() { if (autoRefreshTimer) { clearInterval(autoRefreshT
 const I18N = {
   en: {
     '通用':'General','界面':'Interface','数据':'Data','高级':'Advanced',
-    '语言':'Language','刷新频率':'Refresh frequency','主题':'Theme','界面质量':'Interface quality','存储管理':'Storage','查看存储占用、清除缓存':'View storage usage, clear cache','自定义代理':'Custom proxy',
+    '语言':'Language','刷新频率':'Refresh frequency','主题':'Theme','界面质量':'Interface quality','存储管理':'Storage','查看存储占用、清除缓存':'View storage usage, clear cache','代理设置':'Proxy',
     '全部订阅':'All subscriptions','已保存文章':'Saved articles','分类':'Categories','订阅源':'Feeds','订阅管理':'Manage feeds','推荐订阅':'Recommended','FeedForge':'FeedForge',
     '浅色':'Light','深色':'Dark','护色':'Sepia','舒适':'Comfortable','紧凑':'Compact','省流':'Data saver',
     '关闭':'Off','每15分钟':'Every 15 min','每小时':'Hourly','每3小时':'Every 3 hours','每天':'Daily',
@@ -3379,7 +3396,8 @@ const I18N = {
     '搜索文章...':'Search articles...','取消':'Cancel',
     '数据明细':'Data details','清除缓存':'Clear cache','订阅源占用':'Feed usage','危险操作':'Danger zone',
     '订阅源':'Feeds','文章缓存':'Article cache','收藏文章':'Saved articles','已读标记':'Read marks',
-    '清除文章缓存':'Clear article cache','清除收藏':'Clear favorites','清除已读标记':'Clear read marks','清除所有数据':'Clear all data','默认':'Default','暂无订阅源':'No feeds'
+    '清除文章缓存':'Clear article cache','清除收藏':'Clear favorites','清除已读标记':'Clear read marks','清除所有数据':'Clear all data','默认':'Default','暂无订阅源':'No feeds',
+    '自动选择':'Auto','AllOrigins':'AllOrigins','CORS Proxy':'CORS Proxy','自定义...':'Custom...'
   }
 };
 function t(s) { return (state.lang === 'en' && I18N.en[s]) ? I18N.en[s] : s; }
@@ -3391,7 +3409,7 @@ function applyLang() {
   setT('#setting-quality-row .settings-row-title', t('界面质量'));
   setT('#setting-storage-row .settings-row-title', t('存储管理'));
   setT('#setting-storage-subtitle', t('查看存储占用、清除缓存'));
-  setT('#setting-proxy-row .settings-row-title', t('自定义代理'));
+  setT('#setting-proxy-row .settings-row-title', t('代理设置'));
   document.querySelectorAll('.settings-section-header').forEach(h => {
     const cur = h.textContent.trim();
     if (state.lang === 'en' && I18N.en[cur]) h.textContent = I18N.en[cur];
@@ -3428,6 +3446,7 @@ function applyLang() {
 // ===== 刷新频率 / 界面质量 弹窗 =====
 const REFRESH_OPTS = [ {v:0,t:'关闭'}, {v:15,t:'每15分钟'}, {v:60,t:'每小时'}, {v:180,t:'每3小时'}, {v:1440,t:'每天'} ];
 const QUALITY_OPTS = [ {v:'comfort',t:'舒适'}, {v:'compact',t:'紧凑'}, {v:'saver',t:'省流'} ];
+const PROXY_OPTS = [ {v:'auto',t:'自动选择'}, {v:'allorigins',t:'AllOrigins'}, {v:'corsproxy',t:'CORS Proxy'}, {v:'custom',t:'自定义...'} ];
 function buildDialog(bodyId, opts, current, onSelect) {
   const body = $(bodyId); if (!body) return;
   body.innerHTML = opts.map(o => '<button class="dialog-option" data-v="' + o.v + '"><span>' + t(o.t) + '</span><span class="dialog-check">✓</span></button>').join('');
@@ -3440,6 +3459,41 @@ function openRefreshDialog() { buildDialog('refresh-dialog-body', REFRESH_OPTS, 
 function closeRefreshDialog() { $('refresh-dialog').classList.remove('open'); }
 function openQualityDialog() { buildDialog('quality-dialog-body', QUALITY_OPTS, state.uiQuality, (v) => { applyQuality(v); closeQualityDialog(); }); $('quality-dialog').classList.add('open'); }
 function closeQualityDialog() { $('quality-dialog').classList.remove('open'); }
+function openProxyDialog() {
+  const body = $('proxy-dialog-body'); if (!body) return;
+  body.innerHTML = CORS_PROXIES.map(p => {
+    const isCustom = p.id === 'custom';
+    const isSelected = state.proxyChoice === p.id;
+    let html = '<button class="dialog-option' + (isSelected ? ' selected' : '') + '" data-v="' + p.id + '"><span>' + t(p.name) + '</span><span class="dialog-check">✓</span></button>';
+    if (isCustom && isSelected) {
+      html += '<input class="settings-input" id="proxy-custom-input" type="text" placeholder="https://your-proxy.com/?url=" value="' + (state.customProxy || '') + '" style="margin:8px 0;width:100%" />';
+    }
+    return html;
+  }).join('');
+  body.querySelectorAll('.dialog-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.v;
+      state.proxyChoice = v;
+      if (v === 'custom') {
+        const input = $('proxy-custom-input');
+        if (input) state.customProxy = input.value.trim();
+      }
+      saveState(); closeProxyDialog(); applyProxySubtitle();
+    });
+  });
+  const customInput = $('proxy-custom-input');
+  if (customInput) {
+    customInput.addEventListener('change', (e) => { state.customProxy = e.target.value.trim(); saveState(); });
+  }
+  $('proxy-dialog').classList.add('open');
+}
+function closeProxyDialog() { $('proxy-dialog').classList.remove('open'); }
+function applyProxySubtitle() {
+  const sub = $('setting-proxy-subtitle'); if (!sub) return;
+  const choice = state.proxyChoice || 'auto';
+  const proxy = CORS_PROXIES.find(p => p.id === choice);
+  sub.textContent = proxy ? t(proxy.name) : t('自动选择');
+}
 function applyQuality(q) {
   state.uiQuality = q;
   if (q === 'comfort') { state.showThumbnails = true; state.showTitleOnly = false; }
