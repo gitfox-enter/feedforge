@@ -2333,6 +2333,11 @@ function loadState() {
     const saved = localStorage.getItem('feedforge_v3');
     if (saved) { const parsed = JSON.parse(saved); state = { ...state, ...parsed }; if (Array.isArray(parsed.readIds)) state.readIds = new Set(parsed.readIds); }
   } catch (e) {}
+  // 确保内置订阅源存在（如果用户没有主动删除）
+  const builtinFeedUrl = 'https://gitfox-enter.github.io/rss.xml';
+  if (!state.feeds[builtinFeedUrl]) {
+    state.feeds[builtinFeedUrl] = { url: builtinFeedUrl, title:'gitfox-enter 博客', site:'https://gitfox-enter.github.io', category:'博客', items:[], lastFetch:0 };
+  }
   state.refreshing = false; // 防止刷新中断后卡在"加载中"
 }
 
