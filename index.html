@@ -2055,6 +2055,16 @@ body {
     </div>
 
     <div class="divider"></div>
+    <div class="settings-section-header">数据</div>
+    <div class="settings-row" id="setting-storage-row">
+      <div class="settings-row-text">
+        <div class="settings-row-title">存储管理</div>
+        <div class="settings-row-subtitle" id="setting-storage-subtitle">查看存储占用、清除缓存</div>
+      </div>
+      <div class="settings-row-value">›</div>
+    </div>
+
+    <div class="divider"></div>
     <div class="settings-section-header">高级</div>
     <div class="settings-row" id="setting-proxy-row">
       <div class="settings-row-text" style="flex:1">
@@ -3337,6 +3347,8 @@ $('refresh-dialog-cancel')?.addEventListener('click', () => closeRefreshDialog()
 $('refresh-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'refresh-dialog') closeRefreshDialog(); });
 // Settings — quality dialog
 $('setting-quality-row')?.addEventListener('click', () => openQualityDialog());
+// Settings — storage
+$('setting-storage-row')?.addEventListener('click', () => { closeSettings(); openStorage(); });
 $('quality-dialog-cancel')?.addEventListener('click', () => closeQualityDialog());
 $('quality-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'quality-dialog') closeQualityDialog(); });
 
@@ -3356,8 +3368,8 @@ function startAutoRefresh() { if (autoRefreshTimer) { clearInterval(autoRefreshT
 // ===== i18n =====
 const I18N = {
   en: {
-    '通用':'General','界面':'Interface','高级':'Advanced',
-    '语言':'Language','刷新频率':'Refresh frequency','主题':'Theme','界面质量':'Interface quality','自定义代理':'Custom proxy',
+    '通用':'General','界面':'Interface','数据':'Data','高级':'Advanced',
+    '语言':'Language','刷新频率':'Refresh frequency','主题':'Theme','界面质量':'Interface quality','存储管理':'Storage','查看存储占用、清除缓存':'View storage usage, clear cache','自定义代理':'Custom proxy',
     '全部订阅':'All subscriptions','已保存文章':'Saved articles','书签':'Bookmarks','分类':'Categories','订阅源':'Feeds','订阅管理':'Manage feeds','推荐订阅':'Recommended','FeedForge':'FeedForge',
     '浅色':'Light','深色':'Dark','护色':'Sepia','舒适':'Comfortable','紧凑':'Compact','省流':'Data saver',
     '关闭':'Off','每15分钟':'Every 15 min','每小时':'Hourly','每3小时':'Every 3 hours','每天':'Daily',
@@ -3375,6 +3387,8 @@ function applyLang() {
   setT('#setting-autorefresh-row .settings-row-title', t('刷新频率'));
   setT('#setting-theme-row .settings-row-title', t('主题'));
   setT('#setting-quality-row .settings-row-title', t('界面质量'));
+  setT('#setting-storage-row .settings-row-title', t('存储管理'));
+  setT('#setting-storage-subtitle', t('查看存储占用、清除缓存'));
   setT('#setting-proxy-row .settings-row-title', t('自定义代理'));
   document.querySelectorAll('.settings-section-header').forEach(h => {
     const cur = h.textContent.trim();
