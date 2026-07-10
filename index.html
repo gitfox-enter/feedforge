@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#f5593d">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FeedForge">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Crect width='180' height='180' rx='32' fill='%23f5593d'/%3E%3Cpath d='M45 60h90v12H45zm0 26h68v12H45zm0 26h90v12H45z' fill='white'/%3E%3C/svg%3E">
 <title>FeedForge</title>
 <style>
 /* ===== MATERIAL DESIGN 3 DESIGN TOKENS ===== */
@@ -1866,7 +1871,7 @@ body {
     <div class="bottom-sheet-body">
       <div class="text-field-label" style="margin-bottom:4px">网址或关键词</div>
       <div class="text-field" style="border-radius:0;border:none;border-bottom:1.5px solid var(--md-sys-color-outline);padding:0;margin-bottom:16px;background:transparent">
-        <input type="text" class="text-field-input" id="feed-url-input" placeholder="网址或关键词，如 sspai.com / 科技" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:none;padding:12px 0;font-size:16px;background:transparent">
+        <input type="text" class="text-field-input" id="feed-url-input" placeholder="网址或关键词,如 sspai.com / 科技" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:none;padding:12px 0;font-size:16px;background:transparent">
       </div>
       <button class="btn-outlined" id="feed-search-btn" style="width:100%;justify-content:center;margin-bottom:16px">搜索</button>
       <div id="feed-preview-area"></div>
@@ -2069,12 +2074,12 @@ body {
     <div class="settings-row" id="setting-proxy-row">
       <div class="settings-row-text" style="flex:1">
         <div class="settings-row-title">自定义代理</div>
-        <div class="settings-row-subtitle">公共代理已失效，需配置自己的 CORS 代理</div>
+        <div class="settings-row-subtitle">公共代理已失效,需配置自己的 CORS 代理</div>
       </div>
     </div>
     <input class="settings-input" id="setting-proxy-input" type="text" placeholder="https://你的代理/?url=" spellcheck="false" />
     <div style="padding:8px 16px;font-size:12px;color:var(--md-sys-color-on-surface-variant);">
-      💡 推荐：<a href="https://github.com/DIYgod/RSSHub" target="_blank" style="color:var(--md-sys-color-primary);">RSSHub</a> 可生成支持跨域的订阅地址，无需额外代理
+      💡 推荐:<a href="https://github.com/DIYgod/RSSHub" target="_blank" style="color:var(--md-sys-color-primary);">RSSHub</a> 可生成支持跨域的订阅地址,无需额外代理
     </div>
 
   </div>
@@ -2138,7 +2143,7 @@ body {
   <div class="storage-scroll">
     <div class="storage-card storage-overview">
       <div class="storage-card-title">本地存储使用</div>
-      <div class="storage-card-value" id="storage-size">—</div>
+      <div class="storage-card-value" id="storage-size">-</div>
     </div>
 
     <div class="settings-section-header">数据明细</div>
@@ -2149,7 +2154,7 @@ body {
 
     <div class="settings-section-header">清除缓存</div>
     <div class="storage-row storage-clickable" id="storage-clear-articles">
-      <span class="storage-row-main"><span class="storage-row-label">清除文章缓存</span><small class="storage-row-hint">保留订阅源，仅清空已缓存文章</small></span>
+      <span class="storage-row-main"><span class="storage-row-label">清除文章缓存</span><small class="storage-row-hint">保留订阅源,仅清空已缓存文章</small></span>
       <span class="storage-row-action">清除</span>
     </div>
     <div class="storage-row storage-clickable" id="storage-clear-fav">
@@ -2166,7 +2171,7 @@ body {
 
     <div class="settings-section-header">危险操作</div>
     <button class="btn-filled" id="storage-clear-btn" style="width:100%; margin-top:4px; background:var(--md-sys-color-error)">清除所有数据</button>
-    <div class="storage-sub" style="margin:10px 4px 0;">将移除订阅源、文章、收藏等全部内容，且无法恢复。</div>
+    <div class="storage-sub" style="margin:10px 4px 0;">将移除订阅源、文章、收藏等全部内容,且无法恢复。</div>
   </div>
 </div>
 
@@ -2198,21 +2203,21 @@ body {
   <div class="about-scroll">
     <div class="about-card">
       <h3>添加订阅</h3>
-      <p>点击右下角的添加按钮，在底部弹窗中粘贴 RSS/Atom 订阅地址，或粘贴任意网站地址（系统会自动发现其中的订阅源）。</p>
+      <p>点击右下角的添加按钮,在底部弹窗中粘贴 RSS/Atom 订阅地址,或粘贴任意网站地址(系统会自动发现其中的订阅源)。</p>
       <p>也可以导入 OPML 文件来批量添加订阅。</p>
     </div>
     <div class="about-card">
       <h3>阅读文章</h3>
       <p>在「全部订阅」页面浏览所有订阅源的文章。点击任意文章卡片可展开完整阅读。</p>
-      <p>点击右上角收藏按钮可将文章加入书签，方便稍后阅读。</p>
+      <p>点击右上角收藏按钮可将文章加入书签,方便稍后阅读。</p>
     </div>
     <div class="about-card">
       <h3>分类管理</h3>
-      <p>添加订阅时，弹窗里会出现「分类」下拉框，可直接选已有分类，或选「+ 新建分类...」即时创建并归入。</p>
+      <p>添加订阅时,弹窗里会出现「分类」下拉框,可直接选已有分类,或选「+ 新建分类...」即时创建并归入。</p>
     </div>
     <div class="about-card">
       <h3>数据安全</h3>
-      <p>所有订阅数据、设置、文章缓存均存储在浏览器本地（localStorage）。不经过任何第三方服务器。</p>
+      <p>所有订阅数据、设置、文章缓存均存储在浏览器本地(localStorage)。不经过任何第三方服务器。</p>
       <p>建议定期导出 OPML 备份订阅列表。</p>
     </div>
   </div>
@@ -2229,7 +2234,7 @@ body {
 'use strict';
 
 const CORS_PROXIES = [
-  // 公共代理大多已失效，建议使用自定义代理或 RSSHub
+  // 公共代理大多已失效,建议使用自定义代理或 RSSHub
   // 'https://api.allorigins.win/raw?url=',
   // 'https://api.codetabs.com/v1/proxy?quest=',
   // 'https://corsproxy.io/?',
@@ -2277,7 +2282,7 @@ const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelector(sel);
 const $$$ = sel => document.querySelectorAll(sel);
 
-// 全局错误显示：把 JS 运行时错误显示在页面底部，便于排查
+// 全局错误显示:把 JS 运行时错误显示在页面底部,便于排查
 window.addEventListener('error', e => {
   console.error('[FeedForge Error]', e.message, e);
   let box = $('global-error-box');
@@ -2307,7 +2312,7 @@ function applyDynamicColor() {
 function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
 function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function getProxyList() {
-  // 优先直连（很多源自带 CORS 头），其次自定义代理，最后公共代理链
+  // 优先直连(很多源自带 CORS 头),其次自定义代理,最后公共代理链
   const list = ['DIRECT'];
   if (state.customProxy && state.customProxy.trim()) list.push(state.customProxy.trim());
   return list.concat(CORS_PROXIES);
@@ -2338,12 +2343,9 @@ function loadState() {
     const saved = localStorage.getItem('feedforge_v3');
     if (saved) { const parsed = JSON.parse(saved); state = { ...state, ...parsed }; if (Array.isArray(parsed.readIds)) state.readIds = new Set(parsed.readIds); }
   } catch (e) {}
-  // 确保内置订阅源存在（如果用户没有主动删除）
-  const builtinFeedUrl = 'https://gitfox-enter.github.io/rss.xml';
-  if (!state.feeds[builtinFeedUrl]) {
-    state.feeds[builtinFeedUrl] = { url: builtinFeedUrl, title:'gitfox-enter 博客', site:'https://gitfox-enter.github.io', category:'博客', items:[], lastFetch:0 };
-  }
-  state.refreshing = false; // 防止刷新中断后卡在"加载中"
+  // 内置订阅源只在首次使用时添加，不强制恢复
+  // 用户可以删除，删除后不会自动出现
+  state.refreshing = false; // 防止刷新中断后卡在“加载中”
 }
 
 // THEME
@@ -2368,10 +2370,10 @@ function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); close
 async function fetchFeed(feedUrl, silent) {
   const proxies = getProxyList();
   let lastErr;
-  // 检查是否有可用代理（DIRECT 或自定义）
+  // 检查是否有可用代理(DIRECT 或自定义)
   const hasProxy = proxies.some(p => p === 'DIRECT' || (p && p.length > 0));
   if (!hasProxy || proxies.length === 0) {
-    throw new Error('未配置代理。请在设置中添加自定义 CORS 代理，或使用 RSSHub 等服务');
+    throw new Error('未配置代理。请在设置中添加自定义 CORS 代理,或使用 RSSHub 等服务');
   }
   for (const base of proxies) {
     try {
@@ -2381,13 +2383,13 @@ async function fetchFeed(feedUrl, silent) {
       return parseFeed(await r.text(), feedUrl);
     } catch (e) { lastErr = e; }
   }
-  throw new Error('无法访问此订阅源。建议：1) 在设置中配置自定义代理；2) 使用 RSSHub 生成订阅地址');
+  throw new Error('无法访问此订阅源。建议:1) 在设置中配置自定义代理;2) 使用 RSSHub 生成订阅地址');
 }
 function parseFeed(xmlText, feedUrl) {
   if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
   const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
   const parseError = doc.querySelector('parsererror');
-  if (parseError) throw new Error('XML 解析失败：' + ((parseError.textContent || '').slice(0, 80) || '格式不正确'));
+  if (parseError) throw new Error('XML 解析失败:' + ((parseError.textContent || '').slice(0, 80) || '格式不正确'));
   const feedTitle = doc.querySelector('channel > title, feed > title')?.textContent?.trim() || 'Unknown Feed';
   const feedSite = doc.querySelector('channel > link, feed > link[rel="alternate"]')?.textContent?.trim() || feedUrl;
   let items = [];
@@ -2434,7 +2436,7 @@ async function addFeedByUrl(feedUrl, silent, category, overrideTitle) {
   const parsed = await fetchFeed(feedUrl, silent);
   const title = overrideTitle || parsed.title || truncate(feedUrl, 30);
   state.feeds[feedUrl] = { url: feedUrl, title: title, site: parsed.site || feedUrl, category: category || 'Default', items: (parsed.items || []).slice(0, 200), lastFetch: Date.now() };
-  saveState(); if (!silent) toast('订阅成功！已获取 ' + (parsed.items?.length || 0) + ' 篇文章'); return true;
+  saveState(); if (!silent) toast('订阅成功!已获取 ' + (parsed.items?.length || 0) + ' 篇文章'); return true;
 }
 
 async function refreshAllFeeds(silent) {
@@ -2475,10 +2477,10 @@ function importOPML(file) {
           added++;
         }
       });
-      if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源，正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
+      if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源,正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
       else if (doc.querySelectorAll('outline').length === 0) toast('OPML 中没有找到订阅源');
       else toast('没有找到新的订阅源');
-    } catch (err) { toast('解析失败：' + err.message); }
+    } catch (err) { toast('解析失败:' + err.message); }
   };
   reader.onerror = () => toast('文件读取失败'); reader.readAsText(file);
 }
@@ -2498,10 +2500,10 @@ async function importOPMLFromURL(opmlUrl) {
         added++;
       }
     });
-    if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源，正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
+    if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源,正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
     else if (doc.querySelectorAll('outline').length === 0) toast('OPML 中没有找到订阅源');
     else toast('没有找到新的订阅源');
-  } catch (e) { toast('导入失败：' + (e.message || '网络错误')); }
+  } catch (e) { toast('导入失败:' + (e.message || '网络错误')); }
   finally { btn.disabled = false; btn.textContent = '导入'; }
 }
 
@@ -2779,7 +2781,7 @@ function renderNews(filterText) {
   const el = $('news-articles'); const loading = $('news-loading');
   if (loading && !state.refreshing) loading.style.display = 'none';
   if (state.refreshing) return;
-  if (articles.length === 0 && Object.keys(state.feeds).length === 0) { if (loading) loading.style.display = 'none'; if (el) el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅？</button><button class="empty-state-link" data-action="add-feed">添加更多订阅？</button></div>`; return; }
+  if (articles.length === 0 && Object.keys(state.feeds).length === 0) { if (loading) loading.style.display = 'none'; if (el) el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅?</button><button class="empty-state-link" data-action="add-feed">添加更多订阅?</button></div>`; return; }
   loading.style.display = 'none';
   if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
@@ -2994,7 +2996,7 @@ function closeMoreMenu() { $('more-menu').classList.remove('open'); }
 function openFilterMenu() { $('filter-menu').classList.add('open'); }
 function closeFilterMenu() { $('filter-menu').classList.remove('open'); }
 
-function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"？')) return; delete state.feeds[feedUrl]; saveState(); toast('已取消订阅'); renderAll(); }
+function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"?')) return; delete state.feeds[feedUrl]; saveState(); toast('已取消订阅'); renderAll(); }
 function markAllRead() {
   let count = 0;
   Object.values(state.feeds).forEach(feed => { (feed.items || []).forEach(article => { if (!state.readIds.has(article.id)) { state.readIds.add(article.id); count++; } }); });
@@ -3014,7 +3016,7 @@ function init() {
  } catch (err) {
   console.error('[init error]', err);
   const box = document.createElement('div'); box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:8px 12px;z-index:99999;white-space:pre-wrap;max-height:160px;overflow:auto'; box.textContent = 'init错误: ' + (err && err.message || err); document.body.appendChild(box);
-  // 即使初始化出错，也要隐藏加载中
+  // 即使初始化出错,也要隐藏加载中
   const ld = document.getElementById('news-loading'); if (ld) ld.style.display = 'none';
  }
 }
@@ -3174,7 +3176,7 @@ document.addEventListener('click', async (e) => {
     const url = recCard.dataset.url;
     if (state.feeds[url]) { toast('已订阅'); return; }
     try { await addFeedByUrl(url, false); recCard.disabled = true; recCard.classList.add('added'); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-    catch (e) { toast('添加失败：' + (e.message || '网络错误')); }
+    catch (e) { toast('添加失败:' + (e.message || '网络错误')); }
     return;
   }
 
@@ -3195,7 +3197,7 @@ document.addEventListener('click', async (e) => {
     else if (action === 'edit-feed') {
       const feed = state.feeds[url]; if (!feed) return;
       const current = feed.category || 'Default';
-      const sel = prompt(`修改「${feed.title}」的分类：\n\n当前分类：${current}\n\n输入新的分类名称（留空则设为「默认」）：`);
+      const sel = prompt(`修改「${feed.title}」的分类:\n\n当前分类:${current}\n\n输入新的分类名称(留空则设为「默认」):`);
       if (sel !== null) { const newCat = sel.trim() || 'Default'; if (newCat !== current) { feed.category = newCat; saveState(); renderAll(); toast(`已移至「${newCat}」`); } }
       return;
     }
@@ -3227,20 +3229,20 @@ document.addEventListener('click', async (e) => {
   // Storage
   if (target.id === 'storage-back' || target.closest('#storage-back')) { closeStorage(); return; }
   if (target.id === 'storage-clear-articles' || target.closest('#storage-clear-articles')) {
-    if (confirm('清除全部文章缓存？订阅源会保留，仅清空已缓存文章。')) { Object.values(state.feeds).forEach(f => { f.items = []; }); saveState(); renderStorage(); renderAll(); toast('已清除文章缓存'); } return;
+    if (confirm('清除全部文章缓存?订阅源会保留,仅清空已缓存文章。')) { Object.values(state.feeds).forEach(f => { f.items = []; }); saveState(); renderStorage(); renderAll(); toast('已清除文章缓存'); } return;
   }
   if (target.id === 'storage-clear-fav' || target.closest('#storage-clear-fav')) {
-    if (confirm('清除全部收藏？')) { state.favorites = {}; saveState(); renderStorage(); renderAll(); toast('已清除收藏'); } return;
+    if (confirm('清除全部收藏?')) { state.favorites = {}; saveState(); renderStorage(); renderAll(); toast('已清除收藏'); } return;
   }
   if (target.id === 'storage-clear-read' || target.closest('#storage-clear-read')) {
-    if (confirm('清除全部已读标记？所有文章将标记为未读。')) { state.readIds = new Set(); saveState(); renderStorage(); renderAll(); toast('已清除已读标记'); } return;
+    if (confirm('清除全部已读标记?所有文章将标记为未读。')) { state.readIds = new Set(); saveState(); renderStorage(); renderAll(); toast('已清除已读标记'); } return;
   }
   const feedClearBtn = target.closest('.storage-feed-clear');
   if (feedClearBtn) {
     const u = feedClearBtn.dataset.url;
-    if (confirm('清除「' + (state.feeds[u]?.title || u) + '」的缓存文章？')) { if (state.feeds[u]) state.feeds[u].items = []; saveState(); renderStorage(); renderAll(); toast('已清除该订阅源缓存'); } return;
+    if (confirm('清除「' + (state.feeds[u]?.title || u) + '」的缓存文章?')) { if (state.feeds[u]) state.feeds[u].items = []; saveState(); renderStorage(); renderAll(); toast('已清除该订阅源缓存'); } return;
   }
-  if (target.id === 'storage-clear-btn') { if (confirm('确定清除所有数据？此操作不可恢复！')) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
+  if (target.id === 'storage-clear-btn') { if (confirm('确定清除所有数据?此操作不可恢复!')) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
 
   // About
   if (target.id === 'about-back' || target.closest('#about-back')) { closeAbout(); return; }
@@ -3249,13 +3251,13 @@ document.addEventListener('click', async (e) => {
   if (target.id === 'cat-mgr-back' || target.closest('#cat-mgr-back')) { closeCategoryManager(); return; }
   if (target.id === 'add-cat-btn' || target.closest('#add-cat-btn')) {
     const name = $('new-cat-input').value.trim();
-    if (name) { if (!state.categories.includes(name)) { state.categories.push(name); saveState(); renderCategoryManager(); $('new-cat-input').value = ''; toast('已创建分类：' + name); renderCategoriesNav(); } else toast('分类已存在'); }
+    if (name) { if (!state.categories.includes(name)) { state.categories.push(name); saveState(); renderCategoryManager(); $('new-cat-input').value = ''; toast('已创建分类:' + name); renderCategoriesNav(); } else toast('分类已存在'); }
     return;
   }
   const deleteCatBtn = target.closest('.cat-mgr-delete');
   if (deleteCatBtn) {
     const cat = deleteCatBtn.dataset.cat;
-    if (confirm('删除分类 "' + cat + '"？订阅不会被删除。')) { state.categories = state.categories.filter(c => c !== cat); Object.values(state.feeds).forEach(f => { if (f.category === cat) f.category = 'Default'; }); saveState(); renderCategoryManager(); renderCategoriesNav(); toast('已删除分类'); }
+    if (confirm('删除分类 "' + cat + '"?订阅不会被删除。')) { state.categories = state.categories.filter(c => c !== cat); Object.values(state.feeds).forEach(f => { if (f.category === cat) f.category = 'Default'; }); saveState(); renderCategoryManager(); renderCategoriesNav(); toast('已删除分类'); }
     return;
   }
 
@@ -3293,7 +3295,7 @@ async function doFeedSearch() {
       $('feed-preview-area').innerHTML = renderFeedSearchResults(results);
     }
   } catch (e2) {
-    $('feed-preview-area').innerHTML = renderFeedError(raw, e2.message || '搜索失败，请稍后再试');
+    $('feed-preview-area').innerHTML = renderFeedError(raw, e2.message || '搜索失败,请稍后再试');
   }
 }
 
@@ -3334,17 +3336,17 @@ setupSearch('cat-search', 'cat-articles');
   el.addEventListener('scroll', () => { const btn = $(id.replace('-content', '') + '-scroll-top'); if (btn) btn.classList.toggle('visible', el.scrollTop > 300); });
 });
 
-// Settings — language
+// Settings - language
 $('setting-lang')?.addEventListener('change', e => { state.lang = e.target.value; saveState(); applyLang(); });
-// Settings — custom proxy
+// Settings - custom proxy
 $('setting-proxy-input')?.addEventListener('change', (e) => { state.customProxy = e.target.value.trim(); saveState(); toast('代理已保存'); });
-// Settings — refresh frequency dialog
+// Settings - refresh frequency dialog
 $('setting-autorefresh-row')?.addEventListener('click', () => openRefreshDialog());
 $('refresh-dialog-cancel')?.addEventListener('click', () => closeRefreshDialog());
 $('refresh-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'refresh-dialog') closeRefreshDialog(); });
-// Settings — quality dialog
+// Settings - quality dialog
 $('setting-quality-row')?.addEventListener('click', () => openQualityDialog());
-// Settings — storage
+// Settings - storage
 $('setting-storage-row')?.addEventListener('click', () => { closeSettings(); openStorage(); });
 $('quality-dialog-cancel')?.addEventListener('click', () => closeQualityDialog());
 $('quality-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'quality-dialog') closeQualityDialog(); });
@@ -3352,8 +3354,8 @@ $('quality-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'qua
 // Category select
 $('feed-category-select')?.addEventListener('change', (e) => {
   const sel = e.target; if (sel.value === '__new__') {
-    const name = prompt('输入新分类名称：');
-    if (name && name.trim()) { const cat = name.trim(); if (!state.categories.includes(cat)) { state.categories.push(cat); saveState(); renderCategoriesNav(); } populateCategorySelect(); sel.value = cat; toast('已创建分类：' + cat); }
+    const name = prompt('输入新分类名称:');
+    if (name && name.trim()) { const cat = name.trim(); if (!state.categories.includes(cat)) { state.categories.push(cat); saveState(); renderCategoriesNav(); } populateCategorySelect(); sel.value = cat; toast('已创建分类:' + cat); }
     else sel.value = 'Default';
   }
 });
@@ -3459,6 +3461,11 @@ document.addEventListener('keydown', (e) => {
 
 // Start
 init();
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
