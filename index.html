@@ -230,11 +230,87 @@ body {
 }
 .nav-drawer.open { transform: translateX(0); }
 .nav-drawer-header {
-  padding: 28px 16px 16px;
+  padding: 24px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+.nav-drawer-headline {
+  font: var(--md-sys-typescale-title-large);
+  color: var(--md-sys-color-on-surface);
+}
+.nav-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 12px 12px;
+}
+.nav-drawer-divider {
+  height: 1px;
+  background: var(--md-sys-color-outline-variant);
+  margin: 4px 16px;
+}
+.nav-drawer-section {
+  margin-bottom: 4px;
+}
+.nav-drawer-section-label {
+  padding: 12px 16px 4px;
+  font: var(--md-sys-typescale-label-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.nav-dest {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  height: var(--list-item-height);
+  border-radius: var(--md-sys-shape-corner-large);
+  cursor: pointer;
+  transition: background 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-label-large);
+}
+.nav-dest:hover { background: rgba(0,0,0,0.08); }
+[data-theme="dark"] .nav-dest:hover { background: rgba(255,255,255,0.08); }
+.nav-dest.active {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.nav-dest-icon {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-dest-icon svg { width: 24px; height: 24px; }
+.nav-dest-icon img {
+  width: 24px; height: 24px;
+  border-radius: var(--md-sys-shape-corner-small);
+  object-fit: cover;
+}
+.nav-dest-label { flex: 1; }
+.nav-dest-badge {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  font: var(--md-sys-typescale-label-small);
+  padding: 2px 8px;
+  border-radius: var(--md-sys-shape-corner-full);
+  min-width: 20px;
+  text-align: center;
+}
+.nav-dest-badge.unread {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.nav-drawer-footer {
+  padding: 0 12px 12px;
+  flex-shrink: 0;
+}
+.nav-drawer-footer .nav-drawer-divider { margin-bottom: 4px; }
 .nav-drawer-headline {
   font: var(--md-sys-typescale-title-small);
   color: var(--md-sys-color-on-surface-variant);
@@ -1486,7 +1562,6 @@ body {
 <nav class="nav-drawer" id="nav-drawer">
   <div class="nav-drawer-header">
     <div class="nav-drawer-headline">FeedForge</div>
-    <div class="nav-drawer-title" id="drawer-last-updated">未更新</div>
   </div>
   <div class="nav-drawer-body">
     <div class="nav-drawer-section">
@@ -1501,23 +1576,19 @@ body {
         <span class="nav-dest-badge" id="drawer-badge-fav" style="display:none">0</span>
       </button>
     </div>
+    <div class="nav-drawer-divider"></div>
     <div class="nav-drawer-section" id="drawer-categories-section">
       <div class="nav-drawer-section-label">分类</div>
       <div id="drawer-category-items"></div>
     </div>
-    <div class="nav-drawer-section">
-      <div class="nav-drawer-section-label">管理</div>
-      <button class="nav-dest" data-view="feeds">
-        <span class="nav-dest-icon"><svg><use href="#icon-rss"/></svg></span>
-        <span class="nav-dest-label">订阅管理</span>
-      </button>
-      <button class="nav-dest" data-view="recommended">
-        <span class="nav-dest-icon"><svg><use href="#icon-add"/></svg></span>
-        <span class="nav-dest-label">推荐订阅</span>
-      </button>
+    <div class="nav-drawer-divider"></div>
+    <div class="nav-drawer-section" id="drawer-feeds-section">
+      <div class="nav-drawer-section-label">订阅源</div>
+      <div id="drawer-feed-items"></div>
     </div>
   </div>
   <div class="nav-drawer-footer">
+    <div class="nav-drawer-divider"></div>
     <button class="nav-dest" data-action="settings">
       <span class="nav-dest-icon"><svg><use href="#icon-settings"/></svg></span>
       <span class="nav-dest-label">设置</span>
@@ -2629,14 +2700,30 @@ function renderRecommended() {
   $('rec-feeds-list').innerHTML = unadded.map(f => renderRecFeed(f)).join('');
 }
 function renderCategoriesNav() {
-  const usedCats = new Set(); Object.values(state.feeds).forEach(f => { if (f.category && f.category !== 'Default') usedCats.add(f.category); });
-  const cats = state.categories.filter(c => usedCats.has(c));
+  const cats = state.categories || [];
   const catItems = cats.map(c => {
-    const count = Object.values(state.feeds).filter(f => f.category === c).reduce((sum, f) => sum + (f.items || []).length, 0);
+    let count = 0; Object.values(state.feeds).forEach(f => { if (f.category === c) count += (f.items || []).length; });
     return `<button class="nav-dest" data-view="category" data-category="${escapeHtml(c)}"><span class="nav-dest-icon"><svg style="width:20px;height:20px"><use href="#icon-folder"/></svg></span><span class="nav-dest-label">${escapeHtml(c)}</span><span class="nav-dest-badge">${count > 0 ? count : ''}</span></button>`;
   }).join('');
   $('drawer-category-items').innerHTML = catItems;
   $('drawer-categories-section').style.display = cats.length === 0 ? 'none' : '';
+}
+function renderFeedsNav() {
+  const feeds = Object.entries(state.feeds);
+  if (feeds.length === 0) { $('drawer-feeds-section').style.display = 'none'; return; }
+  const feedItems = feeds.map(([url, feed]) => {
+    const count = (feed.items || []).length;
+    // Get favicon from feed URL
+    const domain = (new URL(url)).hostname;
+    const favicon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+    return `<button class="nav-dest" data-view="feed" data-feed-url="${escapeHtml(url)}">
+      <span class="nav-dest-icon"><img src="${escapeHtml(favicon)}" alt="" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<svg style=width:20px;height:20px><use href=\\#icon-rss/></svg>'"></span>
+      <span class="nav-dest-label">${escapeHtml(feed.title || url)}</span>
+      <span class="nav-dest-badge">${count > 0 ? count : ''}</span>
+    </button>`;
+  }).join('');
+  $('drawer-feed-items').innerHTML = feedItems;
+  $('drawer-feeds-section').style.display = feeds.length === 0 ? 'none' : '';
 }
 function renderCategoryManager() {
   $('cat-mgr-list').innerHTML = state.categories.length === 0 ? '<div style="text-align:center;color:var(--md-sys-color-on-surface-variant);padding:24px;font-size:14px">还没有分类</div>' : state.categories.map(c => `<div class="cat-mgr-row"><span class="cat-mgr-name">${escapeHtml(c)}</span><button class="cat-mgr-delete" data-cat="${escapeHtml(c)}"><svg style="width:20px;height:20px"><use href="#icon-delete"/></svg></button></div>`).join('');
@@ -2652,17 +2739,28 @@ function renderStorage() {
 
 function renderAll() {
   renderNews($('news-search').value); renderFavorites($('fav-search').value); renderBookmarks($('bm-search').value);
-  renderFeedsList(); renderRecommended(); renderCategoriesNav(); updateNavBadges(); updateLastUpdated(); updateAppBarTitle();
+  renderFeedsList(); renderRecommended(); renderCategoriesNav(); renderFeedsNav(); updateNavBadges(); updateAppBarTitle();
 }
 function updateNavBadges() {
   let total = 0; Object.values(state.feeds).forEach(f => { total += (f.items || []).length; });
   $('drawer-badge-news').textContent = total > 0 ? (total > 99 ? '99+' : total) : ''; $('drawer-badge-news').style.display = total > 0 ? '' : 'none';
   $('drawer-badge-fav').textContent = Object.keys(state.favorites).length > 0 ? Object.keys(state.favorites).length : ''; $('drawer-badge-fav').style.display = Object.keys(state.favorites).length > 0 ? '' : 'none';
+  // Update feed badges
+  document.querySelectorAll('#drawer-feed-items .nav-dest').forEach(btn => {
+    const url = btn.dataset.feedUrl; const feed = state.feeds[url]; const count = feed ? (feed.items || []).length : 0;
+    const badge = btn.querySelector('.nav-dest-badge'); if (badge) { badge.textContent = count > 0 ? count : ''; }
+  });
 }
-function updateLastUpdated() { $('drawer-last-updated').textContent = state.lastUpdated ? '更新于 ' + timeAgo(state.lastUpdated) : '未更新'; }
 function updateAppBarTitle() {
-  const titles = { news: '全部订阅', favorites: '已保存文章', bookmarks: '书签', feeds: '订阅管理', recommended: '推荐订阅', category: state.currentCategory || '分类' };
-  $('app-bar-title').textContent = titles[state.currentView] || 'FeedForge';
+  let title;
+  if (state.currentView === 'feed' && state.currentFeedUrl) {
+    const feed = state.feeds[state.currentFeedUrl];
+    title = feed ? feed.title : state.currentFeedUrl;
+  } else {
+    const titles = { news: '全部订阅', favorites: '已保存文章', bookmarks: '书签', feeds: '订阅管理', recommended: '推荐订阅', category: state.currentCategory || '分类' };
+    title = titles[state.currentView] || 'FeedForge';
+  }
+  $('app-bar-title').textContent = title;
   const filterBtn = $('app-bar-filter-btn');
   if (state.currentView === 'news') filterBtn.classList.remove('hidden'); else filterBtn.classList.add('hidden');
 }
@@ -2738,12 +2836,14 @@ function shareArticle(article) {
 // NAVIGATION
 function showView(viewName, extra) {
   $$$('.view').forEach(v => v.classList.remove('active')); $$$('.nav-dest').forEach(n => n.classList.remove('active'));
-  const view = $('view-' + viewName); if (view) view.classList.add('active');
-  const navItem = $$(`.nav-dest[data-view="${viewName}"]${extra ? `[data-category="${escapeHtml(extra)}"]` : ''}`); if (navItem) navItem.classList.add('active');
+  const domViewName = viewName === 'feed' ? 'category' : viewName;
+  const view = $('view-' + domViewName); if (view) view.classList.add('active');
+  const navItem = $$(`.nav-dest[data-view="${viewName}"]${extra ? (viewName === 'category' ? `[data-category="${escapeHtml(extra)}"]` : `[data-feed-url="${escapeHtml(extra)}"]`) : ''}`); if (navItem) navItem.classList.add('active');
   state.currentView = viewName;
   if (viewName === 'feeds') renderFeedsList(); if (viewName === 'recommended') renderRecommended();
   if (viewName === 'favorites') renderFavorites(''); if (viewName === 'bookmarks') renderBookmarks('');
-  if (viewName === 'category') { const cat = extra || state.currentCategory; state.currentCategory = cat; renderCategoryView(cat, '', state.currentFeedUrl); if (cat) navigate('/category/' + encodeURIComponent(cat), true); }
+  if (viewName === 'category') { const cat = extra || state.currentCategory; state.currentCategory = cat; state.currentFeedUrl = null; renderCategoryView(cat, '', null); if (cat) navigate('/category/' + encodeURIComponent(cat), true); }
+  if (viewName === 'feed') { state.currentCategory = null; state.currentFeedUrl = extra || state.currentFeedUrl; renderCategoryView(null, '', state.currentFeedUrl); }
   updateAppBarTitle(); closeNavDrawer(); closeMoreMenu(); closeFilterMenu();
 }
 function openNavDrawer() { $('nav-drawer').classList.add('open'); $('nav-scrim').classList.add('open'); }
@@ -2858,7 +2958,7 @@ document.addEventListener('click', async (e) => {
   const navDest = target.closest('.nav-dest');
   if (navDest) {
     const view = navDest.dataset.view; const action = navDest.dataset.action;
-    if (view) { if (view === 'category') { state.currentCategory = navDest.dataset.category || null; state.currentFeedUrl = null; showView('category', state.currentCategory); } else showView(view); }
+    if (view) { if (view === 'category') { state.currentCategory = navDest.dataset.category || null; state.currentFeedUrl = null; showView('category', state.currentCategory); } else if (view === 'feed') { state.currentFeedUrl = navDest.dataset.feedUrl || null; state.currentCategory = null; showView('feed', state.currentFeedUrl); } else showView(view); }
     else if (action === 'settings') { openSettings(); closeNavDrawer(); }
     return;
   }
