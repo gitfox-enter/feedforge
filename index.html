@@ -3459,7 +3459,10 @@ const I18N = {
     '清除文章缓存':'Clear article cache','清除收藏':'Clear favorites','清除已读标记':'Clear read marks','清除所有数据':'Clear all data','默认':'Default','暂无订阅源':'No feeds',
     '自动选择':'Auto','AllOrigins':'AllOrigins','CORS Proxy':'CORS Proxy','自定义...':'Custom...',
     '代理设置':'Proxy',
-    '从 OPML 导入':'Import from OPML','从文件导入':'Import from file','从链接导入':'Import from URL','选择本地的 OPML 文件':'Select a local OPML file','输入 OPML 文件的在线地址':'Enter the URL of an OPML file','输入 OPML 链接':'Enter OPML URL','导入':'Import'
+    '从 OPML 导入':'Import from OPML','从文件导入':'Import from file','从链接导入':'Import from URL','选择本地的 OPML 文件':'Select a local OPML file','输入 OPML 文件的在线地址':'Enter the URL of an OPML file','输入 OPML 链接':'Enter OPML URL','导入':'Import',
+    '全部标记为已读':'Mark all as read','同步订阅源':'Refresh feeds','添加订阅':'Add feed','编辑订阅':'Edit feeds','删除订阅':'Delete feed','从 OPML 导入订阅':'Import from OPML','将订阅导出为 OPML':'Export as OPML','导入已保存的文章':'Import saved articles','导出已保存的文章':'Export saved articles',
+    '网址或关键词':'URL or keyword','搜索':'Search','确定':'OK','添加':'Add','仍要添加':'Add anyway','没有可阅读的内容。您是否想要...':'No content. Would you like to...','打开另一个订阅?':'Open another feed?','添加更多订阅?':'Add more feeds?','没有找到相关文章':'No articles found','试试其他关键词':'Try other keywords','已保存为空':'No saved articles','点击文章右上角的收藏按钮保存文章':'Click the star button to save articles','书签为空':'No bookmarks','点击文章右上角的书签按钮添加书签':'Click the bookmark button to add bookmarks','分类为空':'Category is empty','在「订阅管理」中将订阅分配到此分类':'Assign feeds to this category in "Manage feeds"','没有订阅':'No feeds','点击「更多」菜单添加订阅':'Click "More" menu to add feeds','已添加全部推荐源':'All recommended feeds added','没有找到':'Not found',
+    '网址或关键词,如 sspai.com / 科技':'URL or keyword, e.g. sspai.com / tech','编辑订阅':'Edit feed','内容默认打开方式':'Default open method'
   }
 };
 function t(s) { return (state.lang === 'en' && I18N.en[s]) ? I18N.en[s] : s; }
@@ -3497,6 +3500,23 @@ function applyLang() {
     const map = { light: '浅色', dark: '深色', sepia: '护色' };
     const sp = btn.querySelector('span'); if (sp) sp.textContent = t(map[btn.dataset.theme] || btn.dataset.theme);
   });
+  // Translate menu items
+  document.querySelectorAll('.menu-item').forEach(item => {
+    const text = item.textContent.trim();
+    if (state.lang === 'en' && I18N.en[text]) {
+      const iconSpan = item.querySelector('.menu-item-icon');
+      item.textContent = I18N.en[text];
+      if (iconSpan) item.prepend(iconSpan);
+    } else if (state.lang !== 'en') {
+      const enText = text;
+      const zhText = Object.keys(I18N.en).find(k => I18N.en[k] === enText);
+      if (zhText) {
+        const iconSpan = item.querySelector('.menu-item-icon');
+        item.textContent = zhText;
+        if (iconSpan) item.prepend(iconSpan);
+      }
+    }
+  });
   const rd = $('refresh-dialog-title'); if (rd) rd.textContent = t('刷新频率');
   const qd = $('quality-dialog-title'); if (qd) qd.textContent = t('界面质量');
   const rc = $('refresh-dialog-cancel'); if (rc) rc.textContent = t('取消');
@@ -3507,6 +3527,41 @@ function applyLang() {
   const of = $('opml-import-file .dialog-option-title'); if (of) of.textContent = t('从文件导入');
   const ou = $('opml-import-url .dialog-option-title'); if (ou) ou.textContent = t('从链接导入');
   const ob = $('opml-url-btn'); if (ob) ob.textContent = t('导入');
+  // Translate add-feed overlay
+  const addFeedHeadline = $('add-feed-overlay .bottom-sheet-headline');
+  if (addFeedHeadline) {
+    const backBtn = addFeedHeadline.querySelector('button');
+    const text = addFeedHeadline.textContent.trim();
+    if (state.lang === 'en') {
+      addFeedHeadline.textContent = '';
+      if (backBtn) addFeedHeadline.appendChild(backBtn);
+      addFeedHeadline.appendChild(document.createTextNode(' ' + t('添加订阅')));
+    } else {
+      addFeedHeadline.textContent = '';
+      if (backBtn) addFeedHeadline.appendChild(backBtn);
+      addFeedHeadline.appendChild(document.createTextNode(' 添加订阅'));
+    }
+  }
+  setT('#add-feed-overlay .text-field-label', t('网址或关键词'));
+  const feedInput = $('feed-url-input'); if (feedInput) feedInput.placeholder = t('网址或关键词,如 sspai.com / 科技');
+  setT('#feed-search-btn', t('搜索'));
+  // Translate edit-feed overlay
+  const editFeedHeadline = $('edit-feed-overlay .bottom-sheet-headline');
+  if (editFeedHeadline) {
+    const backBtn = editFeedHeadline.querySelector('button');
+    if (state.lang === 'en') {
+      editFeedHeadline.textContent = '';
+      if (backBtn) editFeedHeadline.appendChild(backBtn);
+      editFeedHeadline.appendChild(document.createTextNode(' ' + t('编辑订阅')));
+    } else {
+      editFeedHeadline.textContent = '';
+      if (backBtn) editFeedHeadline.appendChild(backBtn);
+      editFeedHeadline.appendChild(document.createTextNode(' 编辑订阅'));
+    }
+  }
+  setT('#edit-feed-confirm', t('确定'));
+  setT('#add-cat-btn', t('添加'));
+  setT('#storage-clear-btn', t('清除所有数据'));
   applySubtitles();
   updateAppBarTitle();
 }

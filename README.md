@@ -100,13 +100,7 @@ FeedForge includes a public proxy, but it may have rate limits. For personal use
 5. In FeedForge: Settings → Advanced → Custom Proxy
 6. Enter: `https://your-worker.workers.dev/?url=`
 
-#### Solution 3: Tampermonkey Script
-If you have Tampermonkey/Greasemonkey installed:
-1. Install `FeedForge-Tampermonkey.js`
-2. The script intercepts fetch requests and bypasses CORS
-3. Works on localhost and GitHub Pages
-
-#### Solution 4: RSSHub (No Proxy Needed)
+#### Solution 3: RSSHub (No Proxy Needed)
 Use [RSSHub](https://github.com/DIYgod/RSSHub) to generate CORS-enabled feeds:
 - Many RSSHub instances already support CORS
 - Self-host for full control
@@ -159,7 +153,6 @@ feedforge/
 ├── sw.js              # Service Worker for offline support
 ├── server.js          # Local development server (Node.js)
 ├── proxy-worker.js    # Cloudflare Worker for CORS proxy
-├── FeedForge-Tampermonkey.js  # Tampermonkey userscript
 ├── SPEC.md            # Product specification document
 └── README.md          # This file
 ```
