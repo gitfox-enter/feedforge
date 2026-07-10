@@ -79,7 +79,6 @@
   --nav-drawer-width: 280px;
   --nav-rail-width: 80px;
   --list-item-height: 56px;
-  --fab-size: 56px;
 }
 
 /* Dark theme */
@@ -673,25 +672,6 @@ body {
   color: var(--md-sys-color-on-surface-variant);
 }
 .feed-card-action:hover { background: rgba(0,0,0,0.08); }
-
-/* ===== FLOATING ACTION BUTTON ===== */
-.fab {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  width: var(--fab-size); height: var(--fab-size);
-  border-radius: var(--md-sys-shape-corner-extra-large);
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  border: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--md-sys-elevation-level3);
-  z-index: 100;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.fab:hover { transform: scale(1.05); box-shadow: var(--md-sys-elevation-level4); }
-.fab:active { transform: scale(0.95); }
-.fab svg { width: 24px; height: 24px; }
 
 /* ===== DROPDOWN MENU ===== */
 .dropdown-menu {
@@ -1701,11 +1681,6 @@ body {
 
 </main>
 
-<!-- ===== FLOATING ACTION BUTTON ===== -->
-<button class="fab" id="main-fab" title="添加订阅">
-  <svg><use href="#icon-add"/></svg>
-</button>
-
 <!-- ===== MORE MENU ===== -->
 <div class="dropdown-menu" id="more-menu">
   <button class="menu-item" data-action="mark-all-read">
@@ -1957,24 +1932,6 @@ body {
         <div class="settings-row-subtitle" id="setting-article-style-subtitle">卡片</div>
       </div>
       <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-show-fab-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">显示悬浮操作按钮</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-show-fab" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-show-feed-after-read-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">标记所有为已读后显示订阅源</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-show-feed-after-read">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
     </div>
     <div class="settings-row" id="setting-sort-row">
       <div class="settings-row-text">
@@ -2466,9 +2423,6 @@ function openSettings() {
   $('setting-swipe-mark').checked = state.swipeMarkRead;
   $('setting-scroll-mark').checked = state.scrollMarkRead;
   $('setting-show-thumbnails').checked = state.showThumbnails;
-  $('setting-reading-time').checked = state.showReadingTime;
-  $('setting-unread-count').checked = state.showUnreadCount;
-  $('setting-show-fab').checked = true; // FAB is always shown for now
   $('setting-show-feed-after-read').checked = false; // placeholder
   // reading
   $('setting-paging').checked = state.pagingMode;
@@ -3085,9 +3039,6 @@ document.addEventListener('click', async (e) => {
   // Scroll to top
   const scrollTopBtn = target.closest('.scroll-top-btn');
   if (scrollTopBtn) { const content = scrollTopBtn.closest('.view')?.querySelector('.content-scroll'); if (content) content.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-
-  // FAB
-  if (target.id === 'main-fab' || target.closest('#main-fab')) { openAddFeed(); return; }
 });
 
 // Input handlers
@@ -3164,9 +3115,8 @@ $('setting-swipe-mark')?.addEventListener('change', e => { state.swipeMarkRead =
 $('setting-scroll-mark')?.addEventListener('change', e => { state.scrollMarkRead = e.target.checked; saveState(); });
 $('setting-show-thumbnails')?.addEventListener('change', e => { state.showThumbnails = e.target.checked; saveState(); renderAll(); });
 $('setting-reading-time')?.addEventListener('change', e => { state.showReadingTime = e.target.checked; saveState(); renderAll(); });
-$('setting-unread-count')?.addEventListener('change', e => { state.showUnreadCount = e.target.checked; saveState(); renderAll(); });
-$('setting-show-fab')?.addEventListener('change', e => { saveState(); });
-$('setting-show-feed-after-read')?.addEventListener('change', e => { saveState(); });
+  $('setting-unread-count')?.addEventListener('change', e => { state.showUnreadCount = e.target.checked; saveState(); renderAll(); });
+  $('setting-show-feed-after-read')?.addEventListener('change', e => { saveState(); });
 
 // Reader settings
 $('setting-paging')?.addEventListener('change', e => { state.pagingMode = e.target.checked; saveState(); });
