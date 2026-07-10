@@ -740,6 +740,41 @@ body {
 .filter-item svg { width: 20px; height: 20px; }
 .filter-item.active { color: var(--md-sys-color-primary); }
 
+/* ===== BOTTOM NAVIGATION ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  background: var(--md-sys-color-surface);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+  z-index: 100;
+}
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: color 0.15s;
+  min-width: 64px;
+}
+.bottom-nav-item.active {
+  color: var(--md-sys-color-primary);
+}
+.bottom-nav-item:active { transform: scale(0.95); }
+.bottom-nav-icon svg { width: 24px; height: 24px; }
+.bottom-nav-label {
+  font: var(--md-sys-typescale-label-small);
+  font-size: 11px;
+}
+
 /* ===== DIALOG ===== */
 .dialog-overlay {
   display: none;
@@ -1680,6 +1715,30 @@ body {
   </div>
 
 </main>
+
+<!-- ===== BOTTOM NAVIGATION BAR ===== -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" data-view="news">
+    <span class="bottom-nav-icon"><svg><use href="#icon-article"/></svg></span>
+    <span class="bottom-nav-label">全部</span>
+  </button>
+  <button class="bottom-nav-item" data-view="favorites">
+    <span class="bottom-nav-icon"><svg><use href="#icon-star-outline"/></svg></span>
+    <span class="bottom-nav-label">已保存</span>
+  </button>
+  <button class="bottom-nav-item" id="bottom-nav-add" data-action="add-feed">
+    <span class="bottom-nav-icon"><svg><use href="#icon-add"/></svg></span>
+    <span class="bottom-nav-label">添加</span>
+  </button>
+  <button class="bottom-nav-item" data-view="bookmarks">
+    <span class="bottom-nav-icon"><svg><use href="#icon-bookmark-outline"/></svg></span>
+    <span class="bottom-nav-label">书签</span>
+  </button>
+  <button class="bottom-nav-item" data-action="settings">
+    <span class="bottom-nav-icon"><svg><use href="#icon-settings"/></svg></span>
+    <span class="bottom-nav-label">设置</span>
+  </button>
+</nav>
 
 <!-- ===== MORE MENU ===== -->
 <div class="dropdown-menu" id="more-menu">
@@ -2799,9 +2858,11 @@ function shareArticle(article) {
 // NAVIGATION
 function showView(viewName, extra) {
   $$$('.view').forEach(v => v.classList.remove('active')); $$$('.nav-dest').forEach(n => n.classList.remove('active'));
+  $$$('.bottom-nav-item').forEach(n => n.classList.remove('active'));
   const domViewName = viewName === 'feed' ? 'category' : viewName;
   const view = $('view-' + domViewName); if (view) view.classList.add('active');
   const navItem = $$(`.nav-dest[data-view="${viewName}"]${extra ? (viewName === 'category' ? `[data-category="${escapeHtml(extra)}"]` : `[data-feed-url="${escapeHtml(extra)}"]`) : ''}`); if (navItem) navItem.classList.add('active');
+  const bottomNavItem = $$(`.bottom-nav-item[data-view="${viewName}"]`); if (bottomNavItem) bottomNavItem.classList.add('active');
   state.currentView = viewName;
   if (viewName === 'feeds') renderFeedsList(); if (viewName === 'recommended') renderRecommended();
   if (viewName === 'favorites') renderFavorites(''); if (viewName === 'bookmarks') renderBookmarks('');
@@ -2926,6 +2987,17 @@ document.addEventListener('click', async (e) => {
     return;
   }
   if (target.id === 'nav-scrim') { closeNavDrawer(); return; }
+
+  // Bottom navigation
+  const bottomNavItem = target.closest('.bottom-nav-item');
+  if (bottomNavItem) {
+    const view = bottomNavItem.dataset.view;
+    const action = bottomNavItem.dataset.action;
+    if (view) showView(view);
+    else if (action === 'add-feed') openAddFeed();
+    else if (action === 'settings') openSettings();
+    return;
+  }
 
   // More menu
   const menuItem = target.closest('.menu-item');
