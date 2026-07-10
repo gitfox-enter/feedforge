@@ -2090,18 +2090,18 @@ body {
 <div class="dialog-overlay" id="theme-dialog">
   <div class="dialog">
     <div class="dialog-headline">主题</div>
-    <div class="dialog-body">
-      <button class="menu-item theme-option" data-theme="light" style="width:100%; border-radius:28px">
-        <svg><use href="#icon-check-box"/></svg>
-        <span>浅色</span>
+    <div class="dialog-body" style="display:flex;flex-direction:column;gap:8px">
+      <button class="dialog-option theme-option" data-theme="light">
+        <span class="dialog-option-title">浅色</span>
+        <span class="dialog-check">✓</span>
       </button>
-      <button class="menu-item theme-option" data-theme="dark" style="width:100%; border-radius:28px">
-        <svg><use href="#icon-check-box-outline"/></svg>
-        <span>深色</span>
+      <button class="dialog-option theme-option" data-theme="dark">
+        <span class="dialog-option-title">深色</span>
+        <span class="dialog-check">✓</span>
       </button>
-      <button class="menu-item theme-option" data-theme="sepia" style="width:100%; border-radius:28px">
-        <svg><use href="#icon-check-box-outline"/></svg>
-        <span>护色</span>
+      <button class="dialog-option theme-option" data-theme="sepia">
+        <span class="dialog-option-title">护色</span>
+        <span class="dialog-check">✓</span>
       </button>
     </div>
     <div class="dialog-actions">
@@ -2389,10 +2389,11 @@ function firstProxyUrl(url) { const list = getProxyList(); return buildProxyUrl(
 function timeAgo(dateStr) {
   if (!dateStr) return ''; const d = new Date(dateStr); if (isNaN(d)) return dateStr;
   const diff = Date.now() - d.getTime(), mins = Math.floor(diff / 60000);
-  if (mins < 1) return '刚刚'; if (mins < 60) return mins + ' 分钟前';
-  const hrs = Math.floor(mins / 60); if (hrs < 24) return hrs + ' 小时前';
-  const days = Math.floor(hrs / 24); if (days < 7) return days + ' 天前';
-  return d.toLocaleDateString('zh-CN');
+  if (mins < 1) return t('刚刚');
+  if (mins < 60) return mins + t(' 分钟前');
+  const hrs = Math.floor(mins / 60); if (hrs < 24) return hrs + t(' 小时前');
+  const days = Math.floor(hrs / 24); if (days < 7) return days + t(' 天前');
+  return d.toLocaleDateString(state.lang === 'en' ? 'en-US' : 'zh-CN');
 }
 function articleId(feedUrl, link) { return btoa(unescape(encodeURIComponent(feedUrl + '|' + link))).slice(0, 40); }
 function getFontSize() { const sizes = { small:'14px', medium:'16px', large:'19px' }; return sizes[state.fontSize] || '16px'; }
@@ -2422,11 +2423,12 @@ function openThemeDialog() {
   $('theme-dialog').classList.add('open');
   $$$('.theme-option').forEach(btn => {
     const isCurrent = btn.dataset.theme === state.theme;
-    btn.querySelector('svg use').setAttribute('href', isCurrent ? '#icon-check-box' : '#icon-check-box-outline');
+    if (isCurrent) btn.classList.add('selected');
+    else btn.classList.remove('selected');
   });
 }
 function closeThemeDialog() { $('theme-dialog').classList.remove('open'); }
-function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); closeThemeDialog(); applyLang(); toast('主题已切换'); }
+function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); closeThemeDialog(); applyLang(); toast(t('主题已切换')); }
 
 // FEED FETCHING
 async function fetchFeed(feedUrl, silent) {
@@ -2494,11 +2496,11 @@ async function discoverFeedOnPage(websiteUrl) {
 }
 
 async function addFeedByUrl(feedUrl, silent, category, overrideTitle) {
-  if (state.feeds[feedUrl]) { if (!silent) toast('该订阅源已存在'); return true; }
+  if (state.feeds[feedUrl]) { if (!silent) toast(t('该订阅源已存在')); return true; }
   const parsed = await fetchFeed(feedUrl, silent);
   const title = overrideTitle || parsed.title || truncate(feedUrl, 30);
   state.feeds[feedUrl] = { url: feedUrl, title: title, site: parsed.site || feedUrl, category: category || 'Default', items: (parsed.items || []).slice(0, 200), lastFetch: Date.now() };
-  saveState(); if (!silent) toast('订阅成功!已获取 ' + (parsed.items?.length || 0) + ' 篇文章'); return true;
+  saveState(); if (!silent) toast(t('订阅成功!已获取 ') + (parsed.items?.length || 0) + t('篇文章')); return true;
 }
 
 async function refreshAllFeeds(silent) {
@@ -2522,7 +2524,7 @@ function exportOPML() {
   Object.values(state.feeds).forEach(feed => { xml += `  <outline type="rss" text="${escapeHtml(feed.title)}" title="${escapeHtml(feed.title)}" xmlUrl="${escapeHtml(feed.url)}" htmlUrl="${escapeHtml(feed.site || '')}"/>\n`; });
   xml += '</body>\n</opml>';
   const blob = new Blob([xml], { type: 'text/xml' }); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'feedforge-opml.xml'; a.click(); URL.revokeObjectURL(url); toast('OPML 已导出');
+  const a = document.createElement('a'); a.href = url; a.download = 'feedforge-opml.xml'; a.click(); URL.revokeObjectURL(url); toast(t('OPML 已导出'));
 }
 function importOPML(file) {
   const reader = new FileReader();
@@ -2530,7 +2532,7 @@ function importOPML(file) {
     try {
       let xmlText = e.target.result; if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
       const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      if (doc.querySelector('parsererror')) { toast('文件格式错误'); return; }
+      if (doc.querySelector('parsererror')) { toast(t('文件格式错误')); return; }
       let added = 0;
       doc.querySelectorAll('outline').forEach(ol => {
         const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
@@ -2539,12 +2541,12 @@ function importOPML(file) {
           added++;
         }
       });
-      if (added > 0) { saveState(); toast('导入了 ' + added + ' 个订阅源,正在刷新...'); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
-      else if (doc.querySelectorAll('outline').length === 0) toast('OPML 中没有找到订阅源');
-      else toast('没有找到新的订阅源');
-    } catch (err) { toast('解析失败:' + err.message); }
+      if (added > 0) { saveState(); toast(t('导入了 ') + added + t(' 个订阅源,正在刷新...')); closeAddFeed(); renderAll(); refreshAllFeeds(false); }
+      else if (doc.querySelectorAll('outline').length === 0) toast(t('OPML 中没有找到订阅源'));
+      else toast(t('没有找到新的订阅源'));
+    } catch (err) { toast(t('解析失败') + ': ' + err.message); }
   };
-  reader.onerror = () => toast('文件读取失败'); reader.readAsText(file);
+  reader.onerror = () => toast(t('文件读取失败')); reader.readAsText(file);
 }
 // OPML Import Dialog
 function openOPMLImportDialog() { $('opml-import-dialog').classList.add('open'); }
@@ -2559,7 +2561,7 @@ async function importOPMLFromURL(opmlUrl) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     let xmlText = await r.text(); if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
     const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-    if (doc.querySelector('parsererror')) { toast('链接内容不是有效的 OPML 文件'); return; }
+    if (doc.querySelector('parsererror')) { toast(t('链接内容不是有效的 OPML 文件')); return; }
     let added = 0;
     doc.querySelectorAll('outline').forEach(ol => {
       const url = ol.getAttribute('xmlUrl') || ol.getAttribute('xmlurl') || ol.getAttribute('XMLURL');
@@ -2615,7 +2617,7 @@ async function confirmEditFeed() {
     renderAll();
     refreshAllFeeds(false).then(() => renderAll());
   } catch(e) {
-    toast('添加失败: ' + e.message);
+    toast(t('添加失败') + ': ' + e.message);
   }
 }
 function openSettings() {
@@ -3025,15 +3027,15 @@ function navigate(path, replace) { _updatingHash = true; const newHash = path ? 
 
 function toggleFav(articleId) {
   const article = findArticleById(articleId); if (!article) return;
-  if (state.favorites[articleId]) { delete state.favorites[articleId]; toast('已取消保存'); }
-  else { state.favorites[articleId] = { ...article, feedUrl: article._feedUrl }; toast('已保存'); }
+  if (state.favorites[articleId]) { delete state.favorites[articleId]; toast(t('已取消保存')); }
+  else { state.favorites[articleId] = { ...article, feedUrl: article._feedUrl }; toast(t('已保存')); }
   saveState(); renderAll();
   if (currentArticle && currentArticle.id === articleId) updateDetailBookmarkIcons(!!state.favorites[articleId], !!state.bookmarks[articleId]);
 }
 function toggleBm(articleId) {
   const article = findArticleById(articleId); if (!article) return;
-  if (state.bookmarks[articleId]) { delete state.bookmarks[articleId]; toast('已移除书签'); }
-  else { state.bookmarks[articleId] = { ...article, feedUrl: article._feedUrl }; toast('已添加书签'); }
+  if (state.bookmarks[articleId]) { delete state.bookmarks[articleId]; toast(t('已移除书签')); }
+  else { state.bookmarks[articleId] = { ...article, feedUrl: article._feedUrl }; toast(t('已添加书签')); }
   saveState(); renderAll();
 }
 function findArticleById(id) {
@@ -3042,7 +3044,7 @@ function findArticleById(id) {
 }
 function shareArticle(article) {
   if (navigator.share) navigator.share({ title: article.title, url: article.link || '' });
-  else navigator.clipboard.writeText(article.link || '').then(() => toast('链接已复制'));
+  else navigator.clipboard.writeText(article.link || '').then(() => toast(t('链接已复制')));
 }
 
 // NAVIGATION
@@ -3065,7 +3067,7 @@ function closeMoreMenu() { $('more-menu').classList.remove('open'); }
 function openFilterMenu() { $('filter-menu').classList.add('open'); }
 function closeFilterMenu() { $('filter-menu').classList.remove('open'); }
 
-function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"?')) return; delete state.feeds[feedUrl]; saveState(); toast('已取消订阅'); renderAll(); }
+function deleteFeed(feedUrl) { if (!confirm('确定取消订阅 "' + (state.feeds[feedUrl]?.title || feedUrl) + '"?')) return; delete state.feeds[feedUrl]; saveState(); toast(t('已取消订阅')); renderAll(); }
 function markAllRead() {
   let count = 0;
   Object.values(state.feeds).forEach(feed => { (feed.items || []).forEach(article => { if (!state.readIds.has(article.id)) { state.readIds.add(article.id); count++; } }); });
@@ -3121,8 +3123,8 @@ function setupSwipeMarkRead() {
       currentEl.classList.remove('swiping'); currentEl.style.transform = '';
       if (dragging && Math.abs(dx) > 80) {
         const id = currentEl.dataset.id;
-        if (id && !state.readIds.has(id)) { state.readIds.add(id); saveState(); currentEl.classList.add('read'); currentEl.classList.remove('unread'); toast('已标记为已读'); }
-        else if (id && state.readIds.has(id)) { state.readIds.delete(id); saveState(); currentEl.classList.remove('read'); currentEl.classList.add('unread'); toast('已标记为未读'); }
+        if (id && !state.readIds.has(id)) { state.readIds.add(id); saveState(); currentEl.classList.add('read'); currentEl.classList.remove('unread'); toast(t('已标记为已读')); }
+        else if (id && state.readIds.has(id)) { state.readIds.delete(id); saveState(); currentEl.classList.remove('read'); currentEl.classList.add('unread'); toast(t('已标记为未读')); }
       }
       currentEl = null; dragging = false;
     });
@@ -3203,8 +3205,8 @@ document.addEventListener('click', async (e) => {
     else if (action === 'delete-feed') { showView('feeds'); }
     else if (action === 'import-opml') openOPMLImportDialog();
     else if (action === 'export-opml') exportOPML();
-    else if (action === 'import-saved') toast('功能开发中');
-    else if (action === 'export-saved') toast('功能开发中');
+    else if (action === 'import-saved') toast(t('功能开发中'));
+    else if (action === 'export-saved') toast(t('功能开发中'));
     else if (action === 'settings') openSettings();
     return;
   }
@@ -3220,7 +3222,7 @@ document.addEventListener('click', async (e) => {
   const resultCard = target.closest('.feeder-result-card');
   if (resultCard && resultCard.dataset.feedUrl) {
     const url = resultCard.dataset.feedUrl;
-    if (state.feeds[url]) { toast('已订阅'); return; }
+    if (state.feeds[url]) { toast(t('已订阅')); return; }
     fetchFeed(url, true).then(parsed => { openEditFeed(url, parsed); }).catch(() => { openEditFeed(url, {}); });
     return;
   }
@@ -3228,8 +3230,8 @@ document.addEventListener('click', async (e) => {
   const forceAddBtn = target.closest('.feeder-force-add');
   if (forceAddBtn && forceAddBtn.dataset.feedUrl) {
     const url = forceAddBtn.dataset.feedUrl;
-    if (state.feeds[url]) { toast('已订阅'); return; }
-    try { await addFeedByUrl(url, false, 'Default'); closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); } catch(e) { toast('添加失败'); }
+    if (state.feeds[url]) { toast(t('已订阅')); return; }
+    try { await addFeedByUrl(url, false, 'Default'); closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); } catch(e) { toast(t('添加失败')); }
     return;
   }
 
@@ -3243,7 +3245,7 @@ document.addEventListener('click', async (e) => {
   const recCard = target.closest('.rec-card');
   if (recCard && !recCard.disabled) {
     const url = recCard.dataset.url;
-    if (state.feeds[url]) { toast('已订阅'); return; }
+    if (state.feeds[url]) { toast(t('已订阅')); return; }
     try { await addFeedByUrl(url, false); recCard.disabled = true; recCard.classList.add('added'); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
     catch (e) { toast('添加失败:' + (e.message || '网络错误')); }
     return;
@@ -3462,7 +3464,15 @@ const I18N = {
     '从 OPML 导入':'Import from OPML','从文件导入':'Import from file','从链接导入':'Import from URL','选择本地的 OPML 文件':'Select a local OPML file','输入 OPML 文件的在线地址':'Enter the URL of an OPML file','输入 OPML 链接':'Enter OPML URL','导入':'Import',
     '全部标记为已读':'Mark all as read','同步订阅源':'Refresh feeds','添加订阅':'Add feed','编辑订阅':'Edit feeds','删除订阅':'Delete feed','从 OPML 导入订阅':'Import from OPML','将订阅导出为 OPML':'Export as OPML','导入已保存的文章':'Import saved articles','导出已保存的文章':'Export saved articles',
     '网址或关键词':'URL or keyword','搜索':'Search','确定':'OK','添加':'Add','仍要添加':'Add anyway','没有可阅读的内容。您是否想要...':'No content. Would you like to...','打开另一个订阅?':'Open another feed?','添加更多订阅?':'Add more feeds?','没有找到相关文章':'No articles found','试试其他关键词':'Try other keywords','已保存为空':'No saved articles','点击文章右上角的收藏按钮保存文章':'Click the star button to save articles','书签为空':'No bookmarks','点击文章右上角的书签按钮添加书签':'Click the bookmark button to add bookmarks','分类为空':'Category is empty','在「订阅管理」中将订阅分配到此分类':'Assign feeds to this category in "Manage feeds"','没有订阅':'No feeds','点击「更多」菜单添加订阅':'Click "More" menu to add feeds','已添加全部推荐源':'All recommended feeds added','没有找到':'Not found',
-    '网址或关键词,如 sspai.com / 科技':'URL or keyword, e.g. sspai.com / tech','编辑订阅':'Edit feed','内容默认打开方式':'Default open method'
+    '网址或关键词,如 sspai.com / 科技':'URL or keyword, e.g. sspai.com / tech','编辑订阅':'Edit feed','内容默认打开方式':'Default open method',
+    // Toast messages
+    '主题已切换':'Theme changed','该订阅源已存在':'Feed already exists','订阅成功!已获取 ':'Subscribed! Fetched ','篇文章':' articles','OPML 已导出':'OPML exported','文件格式错误':'Invalid file format','导入了 ':'Imported ',' 个订阅源,正在刷新...':' feeds, refreshing...','OPML 中没有找到订阅源':'No feeds found in OPML','没有找到新的订阅源':'No new feeds found','解析失败':'Parse failed','文件读取失败':'File read failed','链接内容不是有效的 OPML 文件':'URL is not a valid OPML file','导入失败':'Import failed','添加失败':'Add failed','已取消保存':'Removed from saved','已保存':'Saved','已移除书签':'Removed bookmark','已添加书签':'Added bookmark','链接已复制':'Link copied','确定取消订阅':'Unsubscribe','已取消订阅':'Unsubscribed','已将 ':'Marked ',' 篇文章标记为已读':' articles as read','没有未读文章':'No unread articles','已标记为已读':'Marked as read','已标记为未读':'Marked as unread','功能开发中':'Coming soon','已订阅':'Already subscribed','已移至':'Moved to',
+    // Time ago
+    '刚刚':'Just now',' 分钟前':' min ago',' 小时前':' hr ago',' 天前':' days ago',
+    // Error messages
+    '未配置代理。请在设置中添加自定义 CORS 代理,或使用 RSSHub 等服务':'No proxy configured. Please add a custom CORS proxy in settings, or use RSSHub',
+    '无法访问此订阅源。建议:1) 在设置中配置自定义代理;2) 使用 RSSHub 生成订阅地址':'Cannot access this feed. Suggestions: 1) Configure a custom proxy in settings; 2) Use RSSHub to generate feed URL',
+    '建议定期导出 OPML 备份订阅列表':'Recommend exporting OPML regularly to backup your subscriptions'
   }
 };
 function t(s) { return (state.lang === 'en' && I18N.en[s]) ? I18N.en[s] : s; }
@@ -3498,8 +3508,9 @@ function applyLang() {
   const ns = $('news-search'); if (ns) ns.placeholder = t('搜索文章...');
   document.querySelectorAll('.theme-option').forEach(btn => {
     const map = { light: '浅色', dark: '深色', sepia: '护色' };
-    const sp = btn.querySelector('span'); if (sp) sp.textContent = t(map[btn.dataset.theme] || btn.dataset.theme);
+    const title = btn.querySelector('.dialog-option-title'); if (title) title.textContent = t(map[btn.dataset.theme] || btn.dataset.theme);
   });
+  const th = $('theme-dialog .dialog-headline'); if (th) th.textContent = t('主题');
   // Translate menu items
   document.querySelectorAll('.menu-item').forEach(item => {
     const text = item.textContent.trim();
