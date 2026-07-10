@@ -239,7 +239,6 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 .nav-drawer-body {
-  flex: 1;
   overflow-y: auto;
   padding: 0 12px 12px;
 }
@@ -319,7 +318,6 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 .nav-drawer-body {
-  flex: 1;
   overflow-y: auto;
   padding: 0 12px 12px;
 }
@@ -1081,21 +1079,29 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 80px 24px;
   text-align: center;
-  gap: 12px;
+  gap: 24px;
 }
 .empty-state-icon {
-  font-size: 48px;
-  opacity: 0.5;
+  display: none;
 }
 .empty-state-title {
-  font: var(--md-sys-typescale-title-medium);
-  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface);
 }
 .empty-state-desc {
-  font: var(--md-sys-typescale-body-medium);
-  color: var(--md-sys-color-on-surface-variant);
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface);
+}
+.empty-state-link {
+  color: var(--md-sys-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: var(--md-sys-typescale-body-large);
+  padding: 4px 0;
 }
 
 /* ===== TOAST ===== */
@@ -1407,39 +1413,93 @@ body {
 .animate-fade { animation: fadeIn 0.3s ease; }
 
 /* ===== FEED PREVIEW ===== */
-.feed-preview-card {
-  background: var(--md-sys-color-surface);
+/* ===== FEEDER-STYLE RESULT CARD ===== */
+.feeder-result-card {
+  background: var(--md-sys-color-surface-container);
   border-radius: var(--md-sys-shape-corner-large);
   padding: 16px;
-  margin: 12px 0;
-  box-shadow: var(--md-sys-elevation-level1);
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  margin-top: 8px;
+  cursor: pointer;
 }
-.feed-preview-icon {
-  width: 48px; height: 48px;
-  border-radius: var(--md-sys-shape-corner-small);
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.feed-preview-info { flex: 1; min-width: 0; }
-.feed-preview-title {
-  font: var(--md-sys-typescale-title-small);
+.feeder-result-card:hover { background: var(--md-sys-color-surface-container-high); }
+.feeder-result-title {
+  font: var(--md-sys-typescale-body-large);
   color: var(--md-sys-color-on-surface);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-bottom: 4px;
 }
-.feed-preview-site {
+.feeder-result-sub {
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 4px;
+}
+.feeder-result-url {
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-outline);
+}
+
+/* ===== FEEDER-STYLE ERROR CARD ===== */
+.feeder-error-card {
+  background: var(--md-sys-color-error-container);
+  border-radius: var(--md-sys-shape-corner-large);
+  padding: 16px;
+  margin-top: 8px;
+}
+.feeder-error-title {
+  font: var(--md-sys-typescale-label-large);
+  color: var(--md-sys-color-error);
+  margin-bottom: 8px;
+}
+.feeder-error-detail {
+  font: var(--md-sys-typescale-body-medium);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 4px;
+}
+.feeder-error-msg {
   font: var(--md-sys-typescale-body-small);
   color: var(--md-sys-color-on-surface-variant);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+/* ===== EDIT FEED OPTIONS ===== */
+.edit-feed-option-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 12px 0; gap: 12px;
+}
+.edit-feed-option-text { flex: 1; min-width: 0; }
+.edit-feed-option-title {
+  font: var(--md-sys-typescale-body-large); color: var(--md-sys-color-on-surface);
+}
+.edit-feed-option-desc {
+  font: var(--md-sys-typescale-body-small); color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px; line-height: 1.4;
+}
+.radio-group { display: flex; flex-direction: column; gap: 0; }
+.radio-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  cursor: pointer; border-bottom: 0.5px solid var(--md-sys-color-outline-variant);
+  font: var(--md-sys-typescale-body-large); color: var(--md-sys-color-on-surface);
+}
+.radio-item:last-child { border-bottom: none; }
+.radio-item input { display: none; }
+.radio-circle {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--md-sys-color-outline);
+  position: relative; flex-shrink: 0;
+}
+.radio-item input:checked + .radio-circle {
+  border-color: var(--md-sys-color-primary);
+}
+.radio-item input:checked + .radio-circle::after {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--md-sys-color-primary);
+}
+.btn-text {
+  background: none; border: none;
+  font: var(--md-sys-typescale-label-large);
+  color: var(--md-sys-color-primary);
+  cursor: pointer; padding: 8px 16px;
 }
 
 /* ===== OPML ROW ===== */
@@ -1528,7 +1588,7 @@ body {
     <button class="app-bar-action" id="app-bar-search-btn">
       <svg><use href="#icon-search"/></svg>
     </button>
-    <button class="app-bar-action hidden" id="app-bar-filter-btn">
+    <button class="app-bar-action" id="app-bar-filter-btn">
       <svg><use href="#icon-filter"/></svg>
     </button>
     <button class="app-bar-action" id="app-bar-more-btn">
@@ -1566,13 +1626,6 @@ body {
       <div class="nav-drawer-section-label">订阅源</div>
       <div id="drawer-feed-items"></div>
     </div>
-  </div>
-  <div class="nav-drawer-footer">
-    <div class="nav-drawer-divider"></div>
-    <button class="nav-dest" data-action="settings">
-      <span class="nav-dest-icon"><svg><use href="#icon-settings"/></svg></span>
-      <span class="nav-dest-label">设置</span>
-    </button>
   </div>
 </nav>
 
@@ -1697,12 +1750,12 @@ body {
     添加订阅
   </button>
   <button class="menu-item" data-action="manage-feeds">
-    <span class="menu-item-icon"><svg><use href="#icon-rss"/></svg></span>
-    订阅管理
+    <span class="menu-item-icon"><svg><use href="#icon-edit"/></svg></span>
+    编辑订阅
   </button>
-  <button class="menu-item" data-action="recommended">
-    <span class="menu-item-icon"><svg><use href="#icon-star"/></svg></span>
-    推荐订阅
+  <button class="menu-item" data-action="delete-feed">
+    <span class="menu-item-icon"><svg><use href="#icon-delete"/></svg></span>
+    删除订阅
   </button>
   <div class="menu-divider"></div>
   <button class="menu-item" data-action="import-opml">
@@ -1731,54 +1784,142 @@ body {
 
 <!-- ===== FILTER MENU ===== -->
 <div class="filter-menu" id="filter-menu">
-  <button class="filter-item active" data-filter="all">
+  <button class="filter-item active" data-filter="unread">
     <svg><use href="#icon-check-box"/></svg>
-    全部
-  </button>
-  <button class="filter-item" data-filter="unread">
-    <svg><use href="#icon-check-box-outline"/></svg>
     未读
   </button>
   <button class="filter-item" data-filter="saved">
-    <svg><use href="#icon-star-outline"/></svg>
+    <svg><use href="#icon-check-box-outline"/></svg>
     已保存
+  </button>
+  <button class="filter-item" data-filter="recent">
+    <svg><use href="#icon-check-box-outline"/></svg>
+    最近读过
   </button>
   <button class="filter-item" data-filter="read">
     <svg><use href="#icon-check-box-outline"/></svg>
-    最近读过
+    已读
   </button>
 </div>
 
 <!-- ===== ADD FEED BOTTOM SHEET ===== -->
 <div class="bottom-sheet-overlay" id="add-feed-overlay">
   <div class="bottom-sheet">
-    <div class="bottom-sheet-handle"></div>
-    <div class="bottom-sheet-headline">添加订阅</div>
-    <div class="bottom-sheet-body">
-      <div class="text-field">
-        <input type="text" class="text-field-input" id="feed-url-input" placeholder="输入网站或 RSS 地址，系统自动识别" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      </div>
-      <div style="display:flex; gap:8px; margin-bottom:16px">
-        <select class="select-field" id="feed-category-select">
-          <option value="Default">默认</option>
-          <option value="__new__">+ 新建分类...</option>
-        </select>
-      </div>
-      <button class="btn-filled" id="feed-add-btn" style="width:100%; justify-content:center">查找订阅源</button>
-      <div id="feed-preview-area"></div>
-      <div class="divider"></div>
-      <div class="text-field-label" style="margin-top:16px">导入 OPML</div>
-      <div class="opml-row">
-        <input type="text" class="text-field-input" id="opml-url-input" placeholder="输入 OPML 链接" autocomplete="off">
-        <button class="btn-tonal" id="opml-url-btn" style="flex-shrink:0">导入</button>
-      </div>
-      <button class="btn-outlined" id="opml-file-btn" style="width:100%; margin-top:8px">
-        <svg style="width:18px;height:18px"><use href="#icon-folder"/></svg>
-        从文件导入 OPML
+    <div class="bottom-sheet-headline" style="display:flex;align-items:center;gap:12px;padding:16px 20px">
+      <button class="app-bar-nav-icon" id="add-feed-back-btn" style="margin-left:-8px" onclick="closeAddFeed()">
+        <svg style="width:24px;height:24px"><use href="#icon-arrow-back"/></svg>
       </button>
+      添加订阅
+    </div>
+    <div class="bottom-sheet-body">
+      <div class="text-field-label" style="margin-bottom:4px">订阅 URL</div>
+      <div class="text-field" style="border-radius:0;border:none;border-bottom:1.5px solid var(--md-sys-color-outline);padding:0;margin-bottom:16px;background:transparent">
+        <input type="text" class="text-field-input" id="feed-url-input" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:none;padding:12px 0;font-size:16px;background:transparent">
+      </div>
+      <button class="btn-outlined" id="feed-search-btn" style="width:100%;justify-content:center;margin-bottom:16px">搜索</button>
+      <div id="feed-preview-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDIT FEED OVERLAY (Feeder-style) ===== -->
+<div class="bottom-sheet-overlay" id="edit-feed-overlay">
+  <div class="bottom-sheet" style="max-height:90vh">
+    <div class="bottom-sheet-headline" style="display:flex;align-items:center;gap:12px;padding:16px 20px">
+      <button class="app-bar-nav-icon" id="edit-feed-back-btn" style="margin-left:-8px">
+        <svg style="width:24px;height:24px"><use href="#icon-arrow-back"/></svg>
+      </button>
+      编辑订阅
+    </div>
+    <div class="bottom-sheet-body" style="overflow-y:auto;flex:1">
+      <!-- URL -->
+      <div class="text-field-label">URL</div>
+      <div class="text-field" style="background:#f5f5f5;margin-bottom:4px">
+        <input type="text" class="text-field-input" id="edit-feed-url" readonly style="background:#f5f5f5;color:#666">
+      </div>
+      <!-- 标题 -->
+      <div class="text-field-label">标题</div>
+      <div class="text-field" style="margin-bottom:4px">
+        <input type="text" class="text-field-input" id="edit-feed-title" placeholder="">
+      </div>
+      <!-- 标签/分类 -->
+      <div class="text-field-label">标签</div>
+      <div class="text-field" style="margin-bottom:16px">
+        <input type="text" class="text-field-input" id="edit-feed-tag" placeholder="">
+      </div>
+
       <div class="divider"></div>
-      <div class="text-field-label" style="margin-top:16px">推荐订阅源</div>
-      <div class="rec-grid" id="recommended-feeds"></div>
+
+      <!-- Toggles -->
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">默认获取全文</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-fulltext" checked><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">打开时总结</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-summarize"><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">从文章元数据增强缩略图</div>
+          <div class="edit-feed-option-desc">尝试改进此订阅源中缺失或质量较低的缩略图</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-thumbs"><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">新内容通知</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-notify" checked><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">跳过重复的文章</div>
+          <div class="edit-feed-option-desc">忽略链接或标题和现存文章相同的新文章</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-dedup" checked><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+      <div class="edit-feed-option-row">
+        <div class="edit-feed-option-text">
+          <div class="edit-feed-option-title">生成附加的唯一 ID</div>
+          <div class="edit-feed-option-desc">只对环 ID 源启用</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="opt-uniqueid"><span class="switch-track"><span class="switch-thumb"></span></span></label>
+      </div>
+
+      <div class="divider"></div>
+      <div class="text-field-label" style="margin-top:8px">内容默认打开方式</div>
+
+      <div class="radio-group" id="open-mode-group">
+        <label class="radio-item">
+          <input type="radio" name="openMode" value="default" checked>
+          <span class="radio-circle"></span>
+          <span>使用应用默认值</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="openMode" value="reader">
+          <span class="radio-circle"></span>
+          <span>阅读器</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="openMode" value="customtab">
+          <span class="radio-circle"></span>
+          <span>自定义标签页</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="openMode" value="browser">
+          <span class="radio-circle"></span>
+          <span>默认浏览器</span>
+        </label>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--md-sys-color-outline-variant);flex-shrink:0">
+      <button class="btn-text" id="edit-feed-cancel">取消</button>
+      <button class="btn-filled" id="edit-feed-confirm">确定</button>
     </div>
   </div>
 </div>
@@ -2187,7 +2328,12 @@ body {
 <script>
 'use strict';
 
-const CORS_PROXIES = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
+const CORS_PROXIES = [
+  '/proxy?url=',
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://api.codetabs.com/v1/proxy?quest=',
+];
 const AUTO_DISCOVER_PATHS = ['/feed','/feed/','/rss','/rss.xml','/feed.xml','/atom.xml','/rss/feed.xml','/index.xml','/blog/feed','/posts/feed','/feed/atom'];
 const RECOMMENDED_FEEDS = [
   { url:'https://feeds.bbci.co.uk/news/rss.xml', title:'BBC News', site:'https://bbc.co.uk/news', category:'News' },
@@ -2203,7 +2349,7 @@ let state = {
   feeds:{}, favorites:{}, bookmarks:{}, categories:[],
   theme:'light', fontSize:'medium', lastUpdated:null,
   currentView:'news', currentCategory:null, currentFeedUrl:null,
-  currentFilter:'all', refreshing:false, autoRefresh:0,
+  currentFilter:'unread', refreshing:false, autoRefresh:0,
   readIds:new Set(), dynamicColor:true, launchSync:false, wifiOnly:false,
   // article list style
   showTitleOnly:false, maxLines:2, showThumbnails:true, showReadingTime:false, showUnreadCount:true,
@@ -2246,7 +2392,13 @@ function applyDynamicColor() {
 }
 function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
 function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function getProxyUrl(url) { return CORS_PROXIES[proxyIndex % CORS_PROXIES.length] + encodeURIComponent(url); }
+function getProxyUrl(url) {
+  const proxy = CORS_PROXIES[proxyIndex % CORS_PROXIES.length];
+  const encoded = encodeURIComponent(url);
+  // Relative URL → resolve against current origin
+  if (proxy.startsWith('/')) return window.location.origin + proxy + encoded;
+  return proxy + encoded;
+}
 function timeAgo(dateStr) {
   if (!dateStr) return ''; const d = new Date(dateStr); if (isNaN(d)) return dateStr;
   const diff = Date.now() - d.getTime(), mins = Math.floor(diff / 60000);
@@ -2344,10 +2496,11 @@ async function discoverFeedOnPage(websiteUrl) {
   return null;
 }
 
-async function addFeedByUrl(feedUrl, silent, category) {
+async function addFeedByUrl(feedUrl, silent, category, overrideTitle) {
   if (state.feeds[feedUrl]) { if (!silent) toast('该订阅源已存在'); return true; }
   const parsed = await fetchFeed(feedUrl, silent);
-  state.feeds[feedUrl] = { url: feedUrl, title: parsed.title || truncate(feedUrl, 30), site: parsed.site || feedUrl, category: category || 'Default', items: (parsed.items || []).slice(0, 200), lastFetch: Date.now() };
+  const title = overrideTitle || parsed.title || truncate(feedUrl, 30);
+  state.feeds[feedUrl] = { url: feedUrl, title: title, site: parsed.site || feedUrl, category: category || 'Default', items: (parsed.items || []).slice(0, 200), lastFetch: Date.now() };
   saveState(); if (!silent) toast('订阅成功！已获取 ' + (parsed.items?.length || 0) + ' 篇文章'); return true;
 }
 
@@ -2422,6 +2575,46 @@ async function importOPMLFromURL(opmlUrl) {
 // PANELS
 function openAddFeed() { $('add-feed-overlay').classList.add('open'); $('feed-url-input').value = ''; $('feed-url-input').focus(); $('feed-preview-area').innerHTML = ''; populateCategorySelect(); renderRecommendedFeeds(); }
 function closeAddFeed() { $('add-feed-overlay').classList.remove('open'); if (discoverAbort) { discoverAbort = false; } }
+
+// EDIT FEED (Feeder-style)
+let pendingEditFeedUrl = null;
+let pendingEditParsed = null;
+function openEditFeed(feedUrl, parsed) {
+  pendingEditFeedUrl = feedUrl;
+  pendingEditParsed = parsed || {};
+  $('edit-feed-url').value = feedUrl;
+  $('edit-feed-title').value = parsed?.title || '';
+  const existing = state.feeds[feedUrl];
+  $('edit-feed-tag').value = existing?.category || 'Default';
+  // Reset toggles to defaults
+  $('opt-fulltext').checked = true;
+  $('opt-summarize').checked = false;
+  $('opt-thumbs').checked = false;
+  $('opt-notify').checked = true;
+  $('opt-dedup').checked = true;
+  $('opt-uniqueid').checked = false;
+  $$$('input[name="openMode"]').forEach(r => { r.checked = r.value === 'default'; });
+  $('edit-feed-overlay').classList.add('open');
+}
+function closeEditFeed() {
+  $('edit-feed-overlay').classList.remove('open');
+  pendingEditFeedUrl = null;
+  pendingEditParsed = null;
+}
+async function confirmEditFeed() {
+  if (!pendingEditFeedUrl) return;
+  const title = $('edit-feed-title').value.trim() || pendingEditParsed.title || '';
+  const category = $('edit-feed-tag').value.trim() || 'Default';
+  try {
+    await addFeedByUrl(pendingEditFeedUrl, false, category, title);
+    closeEditFeed();
+    closeAddFeed();
+    renderAll();
+    refreshAllFeeds(false).then(() => renderAll());
+  } catch(e) {
+    toast('添加失败: ' + e.message);
+  }
+}
 function openSettings() {
   $('settings-page').classList.add('open');
   $('setting-dynamic-color').checked = state.dynamicColor;
@@ -2583,15 +2776,18 @@ function renderRecFeed(feed) {
   </button>`;
 }
 function renderFeedPreview(parsed, feedUrl) {
-  const exists = !!state.feeds[feedUrl];
-  const initials = parsed.title ? parsed.title.charAt(0).toUpperCase() : '?';
-  return `<div class="feed-preview-card">
-    <div class="feed-preview-icon">${escapeHtml(initials)}</div>
-    <div class="feed-preview-info">
-      <div class="feed-preview-title">${escapeHtml(parsed.title)}</div>
-      <div class="feed-preview-site">${escapeHtml(parsed.site || feedUrl)}</div>
-    </div>
-    <button class="btn-filled ${exists ? 'added' : ''}" data-url="${escapeHtml(feedUrl)}" style="flex-shrink:0" ${exists ? 'disabled' : ''}>${exists ? '已订阅' : '添加'}</button>
+  return `<div class="feeder-result-card" data-feed-url="${escapeHtml(feedUrl)}">
+    <div class="feeder-result-title">${escapeHtml(parsed.title || '未知源')}</div>
+    <div class="feeder-result-sub">${escapeHtml(parsed.site || feedUrl)}</div>
+    <div class="feeder-result-url">${escapeHtml(feedUrl)}</div>
+  </div>`;
+}
+function renderFeedError(url, errMsg) {
+  return `<div class="feeder-error-card">
+    <div class="feeder-error-title">下载失败</div>
+    <div class="feeder-error-detail">${escapeHtml(url)}</div>
+    <div class="feeder-error-msg">${escapeHtml(errMsg)}</div>
+    <button class="btn-outlined feeder-force-add" data-feed-url="${escapeHtml(url)}" style="margin-top:12px;width:auto;padding:0 24px;height:36px;font-size:14px;border-radius:18px">仍要添加</button>
   </div>`;
 }
 function renderRecommendedFeeds() { $('recommended-feeds').innerHTML = RECOMMENDED_FEEDS.map(f => renderRecFeed(f)).join(''); }
@@ -2620,7 +2816,7 @@ function renderNews(filterText) {
   articles = filterArticles(articles);
   const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase()) || (a.description || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
   const el = $('news-articles'); const loading = $('news-loading');
-  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">还没有订阅</div><div class="empty-state-desc">点击「更多」菜单添加 RSS 订阅源</div></div>`; return; }
+  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅？</button><button class="empty-state-link" data-action="add-feed">添加更多订阅？</button></div>`; return; }
   loading.style.display = 'none';
   if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
@@ -2927,6 +3123,15 @@ document.addEventListener('click', async (e) => {
   }
   if (target.id === 'nav-scrim') { closeNavDrawer(); return; }
 
+  // Empty state links
+  const emptyLink = target.closest('.empty-state-link');
+  if (emptyLink) {
+    const action = emptyLink.dataset.action;
+    if (action === 'open-feed') openNavDrawer();
+    else if (action === 'add-feed') openAddFeed();
+    return;
+  }
+
   // More menu
   const menuItem = target.closest('.menu-item');
   if (menuItem) {
@@ -2935,7 +3140,7 @@ document.addEventListener('click', async (e) => {
     else if (action === 'refresh-feeds') { state.refreshing = true; $('news-loading').style.display = 'flex'; $('news-articles').innerHTML = ''; refreshAllFeeds(false).then(() => { state.refreshing = false; renderAll(); }); }
     else if (action === 'add-feed') openAddFeed();
     else if (action === 'manage-feeds') { showView('feeds'); }
-    else if (action === 'recommended') { showView('recommended'); }
+    else if (action === 'delete-feed') { showView('feeds'); }
     else if (action === 'import-opml') $('opml-file-input').click();
     else if (action === 'export-opml') exportOPML();
     else if (action === 'import-saved') toast('功能开发中');
@@ -2951,32 +3156,28 @@ document.addEventListener('click', async (e) => {
   // Add feed overlay
   if (target.id === 'add-feed-overlay' && !target.closest('.bottom-sheet')) { closeAddFeed(); return; }
 
-  // Add feed button
-  if (target.id === 'feed-add-btn' || target.closest('#feed-add-btn')) {
-    const btn = $('feed-add-btn'); const inputVal = $('feed-url-input').value.trim();
-    if (!inputVal) { toast('请输入 RSS 地址或网站地址'); return; }
-    let targetUrl = inputVal; if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
-    btn.disabled = true; btn.textContent = '添加中...';
-    try {
-      let discovered = false;
-      try { await addFeedByUrl(targetUrl, false, currentAddCategory()); discovered = true; }
-      catch (e) { const parsed = await discoverFeedOnPage(targetUrl); if (parsed && parsed._url) { await addFeedByUrl(parsed._url, false, currentAddCategory()); discovered = true; } }
-      if (discovered) { closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-      else toast('添加失败：无法获取订阅源');
-    } catch (err) { toast('添加失败：' + (err.message || '无法获取订阅源')); }
-    finally { btn.disabled = false; btn.textContent = '查找订阅源'; }
+  // Feed result card click → open edit dialog (Feeder-style)
+  const resultCard = target.closest('.feeder-result-card');
+  if (resultCard && resultCard.dataset.feedUrl) {
+    const url = resultCard.dataset.feedUrl;
+    if (state.feeds[url]) { toast('已订阅'); return; }
+    fetchFeed(url, true).then(parsed => { openEditFeed(url, parsed); }).catch(() => { openEditFeed(url, {}); });
+    return;
+  }
+  // "仍要添加" button → force add without validation
+  const forceAddBtn = target.closest('.feeder-force-add');
+  if (forceAddBtn && forceAddBtn.dataset.feedUrl) {
+    const url = forceAddBtn.dataset.feedUrl;
+    if (state.feeds[url]) { toast('已订阅'); return; }
+    try { await addFeedByUrl(url, false, 'Default'); closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); } catch(e) { toast('添加失败'); }
     return;
   }
 
-  // Feed preview add
-  const previewAdd = target.closest('.btn-filled');
-  if (previewAdd && previewAdd.dataset.url) {
-    const url = previewAdd.dataset.url;
-    if (state.feeds[url]) { toast('已订阅'); return; }
-    try { await addFeedByUrl(url, false, currentAddCategory()); previewAdd.textContent = '已订阅'; previewAdd.disabled = true; closeAddFeed(); renderAll(); refreshAllFeeds(false).then(() => renderAll()); }
-    catch (e) { toast('添加失败：' + (e.message || '网络错误')); }
-    return;
-  }
+  // Edit feed overlay handlers
+  if (target.id === 'edit-feed-back-btn' || target.closest('#edit-feed-back-btn')) { closeEditFeed(); return; }
+  if (target.id === 'edit-feed-cancel' || target.closest('#edit-feed-cancel')) { closeEditFeed(); return; }
+  if (target.id === 'edit-feed-confirm' || target.closest('#edit-feed-confirm')) { confirmEditFeed(); return; }
+  if (target.id === 'edit-feed-overlay' && !target.closest('.bottom-sheet')) { closeEditFeed(); return; }
 
   // Recommended card
   const recCard = target.closest('.rec-card');
@@ -3060,33 +3261,32 @@ document.addEventListener('click', async (e) => {
   if (scrollTopBtn) { const content = scrollTopBtn.closest('.view')?.querySelector('.content-scroll'); if (content) content.scrollTo({ top: 0, behavior: 'smooth' }); return; }
 });
 
-// Input handlers
+// Add feed: input clears preview, search button triggers fetch
 $('feed-url-input').addEventListener('input', () => {
-  const url = $('feed-url-input').value.trim(); if (!url) { $('feed-preview-area').innerHTML = ''; return; }
-  clearTimeout(discoverAbort);
-  discoverAbort = setTimeout(async () => {
-    const btn = $('feed-add-btn'); btn.textContent = '检测中...'; btn.disabled = true;
-    try {
-      let targetUrl = url; if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
-      const parsed = await fetchFeed(targetUrl, true);
-      $('feed-preview-area').innerHTML = renderFeedPreview(parsed, targetUrl);
-      btn.textContent = state.feeds[targetUrl] ? '已订阅' : '添加此订阅源';
-    } catch (e) {
-      try {
-        const parsed = await discoverFeedOnPage(targetUrl || ('https://' + url));
-        if (parsed && parsed._url) { $('feed-preview-area').innerHTML = renderFeedPreview(parsed, parsed._url); btn.textContent = state.feeds[parsed._url] ? '已订阅' : '添加此订阅源'; }
-        else { $('feed-preview-area').innerHTML = `<div style="color:var(--md-sys-color-error);font-size:13px;padding:8px 0">无法访问此地址</div>`; btn.textContent = '查找订阅源'; }
-      } catch (e2) { $('feed-preview-area').innerHTML = `<div style="color:var(--md-sys-color-error);font-size:13px;padding:8px 0">无法访问此地址</div>`; btn.textContent = '查找订阅源'; }
-    }
-    btn.disabled = false;
-  }, 500);
+  if (!$('feed-url-input').value.trim()) $('feed-preview-area').innerHTML = '';
 });
-$('feed-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('feed-add-btn').click(); });
+$('feed-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doFeedSearch(); } });
+$('feed-search-btn').addEventListener('click', () => doFeedSearch());
 
-// OPML
-$('opml-url-btn').addEventListener('click', () => { const url = $('opml-url-input').value.trim(); if (!url) { toast('请输入 OPML 链接'); return; } let finalUrl = url; if (!url.startsWith('http')) finalUrl = 'https://' + url; importOPMLFromURL(finalUrl); });
-$('opml-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('opml-url-btn').click(); });
-$('opml-file-btn').addEventListener('click', () => $('opml-file-input').click());
+async function doFeedSearch() {
+  const url = $('feed-url-input').value.trim();
+  if (!url) { toast('请输入 URL'); return; }
+  let targetUrl = url;
+  if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+  $('feed-preview-area').innerHTML = '<div style="padding:12px;color:var(--md-sys-color-on-surface-variant);font-size:14px">搜索中...</div>';
+  try {
+    const parsed = await fetchFeed(targetUrl, true);
+    $('feed-preview-area').innerHTML = renderFeedPreview(parsed, targetUrl);
+  } catch (e) {
+    try {
+      const parsed = await discoverFeedOnPage(targetUrl);
+      if (parsed && parsed._url) { $('feed-preview-area').innerHTML = renderFeedPreview(parsed, parsed._url); }
+      else { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e.message || '无法找到 RSS 订阅源'); }
+    } catch (e2) { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e2.message || '无法访问此地址'); }
+  }
+}
+
+// OPML file import (hidden input, triggered from more-menu)
 $('opml-file-input').addEventListener('change', (e) => { if (e.target.files[0]) { importOPML(e.target.files[0]); e.target.value = ''; } });
 
 // Search
@@ -3213,6 +3413,7 @@ document.addEventListener('keydown', (e) => {
     else if ($('about-page').classList.contains('open')) closeAbout();
     else if ($('cat-mgr-page').classList.contains('open')) closeCategoryManager();
     else if ($('add-feed-overlay').classList.contains('open')) closeAddFeed();
+    else if ($('edit-feed-overlay').classList.contains('open')) closeEditFeed();
     else if ($('nav-drawer').classList.contains('open')) closeNavDrawer();
   }
 });
