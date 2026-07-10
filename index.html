@@ -933,6 +933,38 @@ body {
   transition: background 0.15s;
 }
 .settings-row:hover { background: rgba(0,0,0,0.04); }
+.settings-input {
+  width: calc(100% - 32px);
+  margin: 0 16px 8px;
+  padding: 12px 14px;
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+.settings-input:focus { border-color: var(--md-sys-color-primary); }
+.settings-select {
+  font: var(--md-sys-typescale-body-large);
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 10px;
+  padding: 6px 10px;
+  outline: none;
+}
+.dialog-option {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 14px 16px; border: none; background: transparent;
+  font: var(--md-sys-typescale-body-large); color: var(--md-sys-color-on-surface);
+  border-radius: 28px; cursor: pointer; text-align: left;
+}
+.dialog-option:hover { background: rgba(0,0,0,0.06); }
+.dialog-check { display: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 18px; margin-left: 12px; }
+.dialog-option.selected .dialog-check { display: inline; }
+
 .settings-row-text {
   display: flex;
   flex-direction: column;
@@ -1255,6 +1287,21 @@ body {
   border-radius: 4px;
   transition: width 0.5s;
 }
+.storage-overview { margin-top: 16px; }
+.storage-sub { font: var(--md-sys-typescale-body-small); color: var(--md-sys-color-on-surface-variant); margin-top: 6px; }
+.storage-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--md-sys-color-surface); border-radius: var(--md-sys-shape-corner-medium); margin: 6px 0; box-shadow: var(--md-sys-elevation-level1); }
+.storage-row-label { font: var(--md-sys-typescale-body-large); color: var(--md-sys-color-on-surface); }
+.storage-row-val { font: var(--md-sys-typescale-title-small); color: var(--md-sys-color-on-surface-variant); }
+.storage-clickable { cursor: pointer; }
+.storage-clickable:hover { background: var(--md-sys-color-surface-variant); }
+.storage-row-main { display: flex; flex-direction: column; gap: 2px; }
+.storage-row-hint { font: var(--md-sys-typescale-body-small); color: var(--md-sys-color-on-surface-variant); }
+.storage-row-action { font: var(--md-sys-typescale-label-large); color: var(--md-sys-color-error); font-weight: 500; }
+.storage-feed-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--md-sys-color-surface); border-radius: var(--md-sys-shape-corner-medium); margin: 6px 0; box-shadow: var(--md-sys-elevation-level1); }
+.storage-feed-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.storage-feed-title { font: var(--md-sys-typescale-body-large); color: var(--md-sys-color-on-surface); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.storage-feed-meta { font: var(--md-sys-typescale-body-small); color: var(--md-sys-color-on-surface-variant); }
+.storage-empty { font: var(--md-sys-typescale-body-medium); color: var(--md-sys-color-on-surface-variant); text-align: center; padding: 24px 0; }
 
 /* ===== CATEGORY MANAGER ===== */
 .cat-mgr-page {
@@ -1435,6 +1482,11 @@ body {
 .feeder-result-url {
   font: var(--md-sys-typescale-body-small);
   color: var(--md-sys-color-outline);
+}
+.feeder-result-meta {
+  font: var(--md-sys-typescale-body-small);
+  color: var(--md-sys-color-primary);
+  margin-top: 4px;
 }
 
 /* ===== FEEDER-STYLE ERROR CARD ===== */
@@ -1812,9 +1864,9 @@ body {
       添加订阅
     </div>
     <div class="bottom-sheet-body">
-      <div class="text-field-label" style="margin-bottom:4px">订阅 URL</div>
+      <div class="text-field-label" style="margin-bottom:4px">网址或关键词</div>
       <div class="text-field" style="border-radius:0;border:none;border-bottom:1.5px solid var(--md-sys-color-outline);padding:0;margin-bottom:16px;background:transparent">
-        <input type="text" class="text-field-input" id="feed-url-input" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:none;padding:12px 0;font-size:16px;background:transparent">
+        <input type="text" class="text-field-input" id="feed-url-input" placeholder="网址或关键词，如 sspai.com / 科技" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border:none;padding:12px 0;font-size:16px;background:transparent">
       </div>
       <button class="btn-outlined" id="feed-search-btn" style="width:100%;justify-content:center;margin-bottom:16px">搜索</button>
       <div id="feed-preview-area"></div>
@@ -1965,248 +2017,53 @@ body {
     <div class="app-bar-title">设置</div>
   </div>
   <div class="settings-scroll">
-    <div class="settings-section-header">外观</div>
-    <div class="settings-row" id="setting-theme-row">
+    <div class="settings-section-header">通用</div>
+    <div class="settings-row" id="setting-lang-row">
       <div class="settings-row-text">
-        <div class="settings-row-title">主题</div>
-        <div class="settings-row-subtitle" id="setting-theme-subtitle">跟随系统</div>
+        <div class="settings-row-title">语言</div>
       </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-dynamic-color-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">动态颜色</div>
+      <div class="settings-row-value">
+        <select id="setting-lang" class="settings-select">
+          <option value="zh">简体中文</option>
+          <option value="en">English</option>
+        </select>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-dynamic-color" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
     </div>
-    <div class="settings-row" id="setting-dark-mode-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">夜间主题偏好</div>
-        <div class="settings-row-subtitle" id="setting-dark-subtitle">黑色</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-
-    <div class="settings-section-header">阅读</div>
-    <div class="settings-row" id="setting-font-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">文本设置</div>
-        <div class="settings-row-subtitle" id="setting-font-subtitle">Roboto</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-
-    <div class="settings-section-header">管理</div>
-    <div class="settings-row" id="setting-blocklist-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">拦截列表</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-notify-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">新内容通知</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-
-    <div class="settings-section-header">文章列表</div>
-    <div class="settings-row" id="setting-max-lines-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">最大行数</div>
-        <div class="settings-row-subtitle" id="setting-max-lines-subtitle">2</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-title-only-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">只显示标题</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-title-only">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-swipe-mark-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">滑动标记为已读</div>
-        <div class="settings-row-subtitle" id="setting-swipe-mark-subtitle">仅从右侧</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-swipe-mark" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-scroll-mark-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">滚动时自动标记为已读</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-scroll-mark">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-show-thumbnails-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">显示缩略图</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-show-thumbnails" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-reading-time-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">显示预估的阅读时间</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-reading-time">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-unread-count-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">在标题中显示未读数</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-unread-count" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-article-style-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">文章样式</div>
-        <div class="settings-row-subtitle" id="setting-article-style-subtitle">卡片</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-sort-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">排序</div>
-        <div class="settings-row-subtitle" id="setting-sort-subtitle">时间降序</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="settings-section-header">阅读器</div>
-    <div class="settings-row" id="setting-open-mode-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">内容默认打开方式</div>
-        <div class="settings-row-subtitle" id="setting-open-mode-subtitle">阅读器</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-link-mode-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">链接打开方式</div>
-        <div class="settings-row-subtitle" id="setting-link-mode-subtitle">自定义标签页</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-paging-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">分页模式</div>
-        <div class="settings-row-subtitle">通过"翻页"而非持续滚动来浏览文章。为 e-ink 设备优化。</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-paging">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-
-    <div class="divider"></div>
-    <div class="settings-section-header">图片加载</div>
-    <div class="settings-row" id="setting-wifi-images-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">仅在连接 Wi-Fi 时</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-wifi-images" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-charging-images-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">仅在充电时</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-charging-images">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-
-    <div class="divider"></div>
-    <div class="settings-section-header">管理</div>
-    <div class="settings-row" id="setting-max-items-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">每个订阅的最大内容数</div>
-        <div class="settings-row-subtitle" id="setting-max-items-subtitle">100</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-battery-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">电池优化</div>
-        <div class="settings-row-subtitle" id="setting-battery-subtitle">已启用</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-battery" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-device-sync-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">设备同步</div>
-      </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-device-sync">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
-    </div>
-    <div class="settings-row" id="setting-blocklist-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">拦截列表</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-    <div class="settings-row" id="setting-notify-row">
-      <div class="settings-row-text">
-        <div class="settings-row-title">新内容通知</div>
-      </div>
-      <div class="settings-row-value">›</div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="settings-section-header">同步</div>
     <div class="settings-row" id="setting-autorefresh-row">
       <div class="settings-row-text">
-        <div class="settings-row-title">查找新文章...</div>
+        <div class="settings-row-title">刷新频率</div>
         <div class="settings-row-subtitle" id="setting-autorefresh-subtitle">每小时</div>
       </div>
       <div class="settings-row-value">›</div>
     </div>
-    <div class="settings-row" id="setting-launch-sync-row">
+
+    <div class="divider"></div>
+    <div class="settings-section-header">界面</div>
+    <div class="settings-row" id="setting-theme-row">
       <div class="settings-row-text">
-        <div class="settings-row-title">应用启动时</div>
+        <div class="settings-row-title">主题</div>
+        <div class="settings-row-subtitle" id="setting-theme-subtitle">浅色</div>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-launch-sync">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
+      <div class="settings-row-value">›</div>
     </div>
-    <div class="settings-row" id="setting-wifi-only-row">
+    <div class="settings-row" id="setting-quality-row">
       <div class="settings-row-text">
-        <div class="settings-row-title">仅在连接 Wi-Fi 时</div>
+        <div class="settings-row-title">界面质量</div>
+        <div class="settings-row-subtitle" id="setting-quality-subtitle">舒适</div>
       </div>
-      <label class="switch">
-        <input type="checkbox" id="setting-wifi-only">
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-      </label>
+      <div class="settings-row-value">›</div>
     </div>
+
+    <div class="divider"></div>
+    <div class="settings-section-header">高级</div>
+    <div class="settings-row" id="setting-proxy-row">
+      <div class="settings-row-text" style="flex:1">
+        <div class="settings-row-title">自定义代理</div>
+        <div class="settings-row-subtitle">留空走公共代理（国内可能不稳）；可填自己的 Cloudflare Worker 或服务器地址</div>
+      </div>
+    </div>
+    <input class="settings-input" id="setting-proxy-input" type="text" placeholder="https://你的代理/?url=" spellcheck="false" />
+
   </div>
 </div>
 
@@ -2234,6 +2091,29 @@ body {
   </div>
 </div>
 
+
+<!-- ===== REFRESH FREQUENCY DIALOG ===== -->
+<div class="dialog-overlay" id="refresh-dialog">
+  <div class="dialog">
+    <div class="dialog-headline" id="refresh-dialog-title">刷新频率</div>
+    <div class="dialog-body" id="refresh-dialog-body"></div>
+    <div class="dialog-actions">
+      <button class="btn-text" id="refresh-dialog-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== UI QUALITY DIALOG ===== -->
+<div class="dialog-overlay" id="quality-dialog">
+  <div class="dialog">
+    <div class="dialog-headline" id="quality-dialog-title">界面质量</div>
+    <div class="dialog-body" id="quality-dialog-body"></div>
+    <div class="dialog-actions">
+      <button class="btn-text" id="quality-dialog-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== STORAGE PAGE ===== -->
 <div class="storage-page" id="storage-page">
   <div class="app-bar">
@@ -2243,30 +2123,46 @@ body {
     <div class="app-bar-title">存储</div>
   </div>
   <div class="storage-scroll">
-    <div class="storage-card">
-      <div class="storage-card-title">订阅源数量</div>
-      <div class="storage-card-value" id="storage-feed-count">0</div>
-    </div>
-    <div class="storage-card">
-      <div class="storage-card-title">文章缓存数量</div>
-      <div class="storage-card-value" id="storage-article-count">0</div>
-    </div>
-    <div class="storage-card">
-      <div class="storage-card-title">收藏文章数</div>
-      <div class="storage-card-value" id="storage-fav-count">0</div>
-    </div>
-    <div class="storage-card">
-      <div class="storage-card-title">书签数量</div>
-      <div class="storage-card-value" id="storage-bm-count">0</div>
-    </div>
-    <div class="storage-card">
+    <div class="storage-card storage-overview">
       <div class="storage-card-title">本地存储使用</div>
       <div class="storage-card-value" id="storage-size">—</div>
       <div class="storage-bar-bg">
         <div class="storage-bar-fill" id="storage-bar" style="width:0%"></div>
       </div>
+      <div class="storage-sub" id="storage-quota">上限 5 MB</div>
     </div>
-    <button class="btn-filled" id="storage-clear-btn" style="width:100%; margin-top:16px; background:var(--md-sys-color-error)">清除所有数据</button>
+
+    <div class="settings-section-header">数据明细</div>
+    <div class="storage-row"><span class="storage-row-label">订阅源</span><span class="storage-row-val" id="storage-feed-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label">文章缓存</span><span class="storage-row-val" id="storage-article-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label">收藏文章</span><span class="storage-row-val" id="storage-fav-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label">书签</span><span class="storage-row-val" id="storage-bm-count">0</span></div>
+    <div class="storage-row"><span class="storage-row-label">已读标记</span><span class="storage-row-val" id="storage-read-count">0</span></div>
+
+    <div class="settings-section-header">清除缓存</div>
+    <div class="storage-row storage-clickable" id="storage-clear-articles">
+      <span class="storage-row-main"><span class="storage-row-label">清除文章缓存</span><small class="storage-row-hint">保留订阅源，仅清空已缓存文章</small></span>
+      <span class="storage-row-action">清除</span>
+    </div>
+    <div class="storage-row storage-clickable" id="storage-clear-fav">
+      <span class="storage-row-main"><span class="storage-row-label">清除收藏</span><small class="storage-row-hint">移除所有已收藏文章</small></span>
+      <span class="storage-row-action">清除</span>
+    </div>
+    <div class="storage-row storage-clickable" id="storage-clear-bm">
+      <span class="storage-row-main"><span class="storage-row-label">清除书签</span><small class="storage-row-hint">移除所有书签</small></span>
+      <span class="storage-row-action">清除</span>
+    </div>
+    <div class="storage-row storage-clickable" id="storage-clear-read">
+      <span class="storage-row-main"><span class="storage-row-label">清除已读标记</span><small class="storage-row-hint">把所有文章标记为未读</small></span>
+      <span class="storage-row-action">清除</span>
+    </div>
+
+    <div class="settings-section-header">订阅源占用</div>
+    <div id="storage-feed-list"></div>
+
+    <div class="settings-section-header">危险操作</div>
+    <button class="btn-filled" id="storage-clear-btn" style="width:100%; margin-top:4px; background:var(--md-sys-color-error)">清除所有数据</button>
+    <div class="storage-sub" style="margin:10px 4px 0;">将移除订阅源、文章、收藏、书签等全部内容，且无法恢复。</div>
   </div>
 </div>
 
@@ -2329,10 +2225,10 @@ body {
 'use strict';
 
 const CORS_PROXIES = [
-  '/proxy?url=',
-  'https://api.allorigins.win/raw?url=',
-  'https://corsproxy.io/?',
   'https://api.codetabs.com/v1/proxy?quest=',
+  'https://corsproxy.io/?',
+  'https://api.allorigins.win/raw?url=',
+  'https://thingproxy.freeboard.io/fetch/',
 ];
 const AUTO_DISCOVER_PATHS = ['/feed','/feed/','/rss','/rss.xml','/feed.xml','/atom.xml','/rss/feed.xml','/index.xml','/blog/feed','/posts/feed','/feed/atom'];
 const RECOMMENDED_FEEDS = [
@@ -2343,13 +2239,15 @@ const RECOMMENDED_FEEDS = [
   { url:'https://hnrss.org/frontpage', title:'Hacker News', site:'https://news.ycombinator.com', category:'Tech' },
   { url:'https://www.theverge.com/rss/index.xml', title:'The Verge', site:'https://theverge.com', category:'Tech' },
 ];
-const DEFAULT_CATEGORIES = [];
+const DEFAULT_CATEGORIES = ['博客'];
 
 let state = {
-  feeds:{}, favorites:{}, bookmarks:{}, categories:[],
+  feeds:{
+    'https://gitfox-enter.github.io/rss.xml': { url:'https://gitfox-enter.github.io/rss.xml', title:'gitfox-enter 博客', site:'https://gitfox-enter.github.io', category:'博客', items:[], lastFetch:0 }
+  }, favorites:{}, bookmarks:{}, categories:[],
   theme:'light', fontSize:'medium', lastUpdated:null,
   currentView:'news', currentCategory:null, currentFeedUrl:null,
-  currentFilter:'unread', refreshing:false, autoRefresh:0,
+  currentFilter:'unread', refreshing:false, autoRefresh:60,
   readIds:new Set(), dynamicColor:true, launchSync:false, wifiOnly:false,
   // article list style
   showTitleOnly:false, maxLines:2, showThumbnails:true, showReadingTime:false, showUnreadCount:true,
@@ -2365,11 +2263,22 @@ let state = {
   batteryOptimization:true,
   // device sync (placeholder)
   deviceSync:false,
+  customProxy:'',
+  lang:'zh',
+  uiQuality:'comfort',
 };
-let proxyIndex = 0, discoverAbort = null;
+let discoverAbort = null;
 const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelector(sel);
 const $$$ = sel => document.querySelectorAll(sel);
+
+// 全局错误显示：把 JS 运行时错误显示在页面底部，便于排查
+window.addEventListener('error', e => {
+  console.error('[FeedForge Error]', e.message, e);
+  let box = $('global-error-box');
+  if (!box) { box = document.createElement('div'); box.id = 'global-error-box'; box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:8px 12px;z-index:99999;white-space:pre-wrap;max-height:160px;overflow:auto'; document.body.appendChild(box); }
+  box.textContent = 'JS错误: ' + (e.message || e.error) + (e.filename ? ' @' + e.lineno : '');
+});
 
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
@@ -2392,13 +2301,19 @@ function applyDynamicColor() {
 }
 function truncate(str, len) { return !str ? '' : str.length > len ? str.slice(0, len) + '...' : str; }
 function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function getProxyUrl(url) {
-  const proxy = CORS_PROXIES[proxyIndex % CORS_PROXIES.length];
-  const encoded = encodeURIComponent(url);
-  // Relative URL → resolve against current origin
-  if (proxy.startsWith('/')) return window.location.origin + proxy + encoded;
-  return proxy + encoded;
+function getProxyList() {
+  // 优先直连（很多源自带 CORS 头），其次自定义代理，最后公共代理链
+  const list = ['DIRECT'];
+  if (state.customProxy && state.customProxy.trim()) list.push(state.customProxy.trim());
+  return list.concat(CORS_PROXIES);
 }
+function buildProxyUrl(proxyBase, url) {
+  if (proxyBase === 'DIRECT') return url;
+  const encoded = encodeURIComponent(url);
+  if (proxyBase.startsWith('/')) return window.location.origin + proxyBase + encoded;
+  return proxyBase + encoded;
+}
+function firstProxyUrl(url) { const list = getProxyList(); return buildProxyUrl(list[0], url); }
 function timeAgo(dateStr) {
   if (!dateStr) return ''; const d = new Date(dateStr); if (isNaN(d)) return dateStr;
   const diff = Date.now() - d.getTime(), mins = Math.floor(diff / 60000);
@@ -2418,6 +2333,7 @@ function loadState() {
     const saved = localStorage.getItem('feedforge_v3');
     if (saved) { const parsed = JSON.parse(saved); state = { ...state, ...parsed }; if (Array.isArray(parsed.readIds)) state.readIds = new Set(parsed.readIds); }
   } catch (e) {}
+  state.refreshing = false; // 防止刷新中断后卡在"加载中"
 }
 
 // THEME
@@ -2426,7 +2342,7 @@ function applyTheme() {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) { const colors = { light:'#f5593d', dark:'#ffb4a9', sepia:'#c17a3a' }; meta.content = colors[state.theme] || '#f5593d'; }
   const subtitle = $('setting-theme-subtitle');
-  if (subtitle) { const names = { light:'浅色', dark:'深色', sepia:'护色' }; subtitle.textContent = names[state.theme] || state.theme; }
+  if (subtitle) { const names = { light: t('浅色'), dark: t('深色'), sepia: t('护色') }; subtitle.textContent = names[state.theme] || state.theme; }
 }
 function openThemeDialog() {
   $('theme-dialog').classList.add('open');
@@ -2436,19 +2352,21 @@ function openThemeDialog() {
   });
 }
 function closeThemeDialog() { $('theme-dialog').classList.remove('open'); }
-function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); closeThemeDialog(); toast('主题已切换'); }
+function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); closeThemeDialog(); applyLang(); toast('主题已切换'); }
 
 // FEED FETCHING
 async function fetchFeed(feedUrl, silent) {
-  for (let attempt = 0; attempt < CORS_PROXIES.length; attempt++) {
+  const proxies = getProxyList();
+  let lastErr;
+  for (const base of proxies) {
     try {
-      const proxyUrl = getProxyUrl(feedUrl);
+      const proxyUrl = buildProxyUrl(base, feedUrl);
       const r = await fetch(proxyUrl, { headers: { 'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*' }, signal: AbortSignal.timeout(15000) });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return parseFeed(await r.text(), feedUrl);
-    } catch (e) { proxyIndex++; }
+    } catch (e) { lastErr = e; }
   }
-  throw new Error('网络错误，请稍后重试');
+  throw new Error('所有代理均失败，请在设置中填写自定义代理');
 }
 function parseFeed(xmlText, feedUrl) {
   if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
@@ -2474,12 +2392,12 @@ async function discoverFeedOnPage(websiteUrl) {
   for (const path of AUTO_DISCOVER_PATHS) {
     try {
       const testUrl = websiteUrl.replace(/\/$/, '') + path;
-      const r = await fetch(getProxyUrl(testUrl), { headers: { 'Accept': 'application/rss+xml, application/atom+xml, */*' }, signal: AbortSignal.timeout(8000) });
+      const r = await fetch(firstProxyUrl(testUrl), { headers: { 'Accept': 'application/rss+xml, application/atom+xml, */*' }, signal: AbortSignal.timeout(8000) });
       if (r.ok) { const text = await r.text(); if (text.includes('<rss') || text.includes('<feed') || text.includes('<atom')) return parseFeed(text, testUrl); }
     } catch (e) {}
   }
   try {
-    const r = await fetch(getProxyUrl(websiteUrl), { headers: { 'Accept': 'text/html, */*' }, signal: AbortSignal.timeout(10000) });
+    const r = await fetch(firstProxyUrl(websiteUrl), { headers: { 'Accept': 'text/html, */*' }, signal: AbortSignal.timeout(10000) });
     if (r.ok) {
       const html = await r.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -2550,9 +2468,9 @@ function importOPML(file) {
   reader.onerror = () => toast('文件读取失败'); reader.readAsText(file);
 }
 async function importOPMLFromURL(opmlUrl) {
-  const btn = $('opml-url-btn'); btn.disabled = true; btn.textContent = '...';
+  const btn = $('opml-url-btn'); if (btn) { btn.disabled = true; btn.textContent = '...'; }
   try {
-    const r = await fetch(getProxyUrl(opmlUrl), { headers: { 'Accept': 'application/xml, text/xml, */*' } });
+    const r = await fetch(firstProxyUrl(opmlUrl), { headers: { 'Accept': 'application/xml, text/xml, */*' } });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     let xmlText = await r.text(); if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
     const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
@@ -2617,31 +2535,18 @@ async function confirmEditFeed() {
 }
 function openSettings() {
   $('settings-page').classList.add('open');
-  $('setting-dynamic-color').checked = state.dynamicColor;
-  $('setting-launch-sync').checked = state.launchSync;
-  $('setting-wifi-only').checked = state.wifiOnly;
-  // article list
-  $('setting-title-only').checked = state.showTitleOnly;
-  $('setting-swipe-mark').checked = state.swipeMarkRead;
-  $('setting-scroll-mark').checked = state.scrollMarkRead;
-  $('setting-show-thumbnails').checked = state.showThumbnails;
-  $('setting-show-feed-after-read').checked = false; // placeholder
-  // reading
-  $('setting-paging').checked = state.pagingMode;
-  // image loading
-  $('setting-wifi-images').checked = state.loadImagesWifi;
-  $('setting-charging-images').checked = state.loadImagesCharging;
-  // management
-  $('setting-battery').checked = state.batteryOptimization;
-  $('setting-device-sync').checked = state.deviceSync;
-  // update subtitles
-  $('setting-max-lines-subtitle').textContent = state.maxLines;
-  $('setting-max-items-subtitle').textContent = state.maxItemsPerFeed;
-  const openModes = { reader: '阅读器', original: '原文' };
-  $('setting-open-mode-subtitle').textContent = openModes[state.openMode] || state.openMode;
-  const linkModes = { tab: '自定义标签页', self: '当前页' };
-  $('setting-link-mode-subtitle').textContent = linkModes[state.linkOpenMode] || state.linkOpenMode;
-  $('setting-battery-subtitle').textContent = state.batteryOptimization ? '已启用' : '已禁用';
+  $('setting-lang').value = state.lang || 'zh';
+  $('setting-proxy-input').value = state.customProxy || '';
+  applySubtitles();
+  applyLang();
+}
+function applySubtitles() {
+  const themeNames = { light:'浅色', dark:'深色', sepia:'护色' };
+  const qNames = { comfort:'舒适', compact:'紧凑', saver:'省流' };
+  const arNames = { 0:'关闭', 15:'每15分钟', 60:'每小时', 180:'每3小时', 1440:'每天' };
+  const ts = $('setting-theme-subtitle'); if (ts) ts.textContent = t(themeNames[state.theme] || '浅色');
+  const qs = $('setting-quality-subtitle'); if (qs) qs.textContent = t(qNames[state.uiQuality] || '舒适');
+  const as = $('setting-autorefresh-subtitle'); if (as) as.textContent = t(arNames[state.autoRefresh] || '每小时');
 }
 function closeSettings() { $('settings-page').classList.remove('open'); }
 function openAbout() { $('about-page').classList.add('open'); }
@@ -2790,7 +2695,48 @@ function renderFeedError(url, errMsg) {
     <button class="btn-outlined feeder-force-add" data-feed-url="${escapeHtml(url)}" style="margin-top:12px;width:auto;padding:0 24px;height:36px;font-size:14px;border-radius:18px">仍要添加</button>
   </div>`;
 }
-function renderRecommendedFeeds() { $('recommended-feeds').innerHTML = RECOMMENDED_FEEDS.map(f => renderRecFeed(f)).join(''); }
+function renderRecommendedFeeds() { const recEl = $('recommended-feeds'); if (recEl) recEl.innerHTML = RECOMMENDED_FEEDS.map(f => renderRecFeed(f)).join(''); }
+
+// ===== FEEDLY SEARCH (feed discovery, like newsfeeder.esstudio.site) =====
+function isLikelyUrl(str) {
+  if (/^https?:\/\//i.test(str)) return true;
+  if (/^www\./i.test(str)) return true;
+  if (/^[^\s/]+\.[^\s/]+(\/.*)?$/.test(str) && !/\s/.test(str)) return true;
+  return false;
+}
+function formatSubs(n) {
+  if (!n || n < 1) return '';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return '' + n;
+}
+async function searchFeedsViaFeedly(query) {
+  const apiUrl = 'https://feedly.com/v3/search/feeds?query=' + encodeURIComponent(query) + '&count=20';
+  const r = await fetch(firstProxyUrl(apiUrl), { headers: { 'Accept': 'application/json' }, signal: AbortSignal.timeout(12000) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const data = await r.json();
+  return (data.results || []).map(it => {
+    let feedUrl = (it.feedId || '').replace(/^feed\//, '');
+    feedUrl = feedUrl.replace(/^feed\//, ''); // feedburner 双 feed/ 前缀
+    return {
+      url: feedUrl,
+      title: it.title || feedUrl,
+      site: it.website || feedUrl,
+      subscribers: it.subscribers || 0,
+      description: it.description || '',
+      icon: it.iconUrl || (it.visualUrl || '')
+    };
+  }).filter(x => x.url);
+}
+function renderFeedSearchResults(results) {
+  if (!results.length) return `<div class="feeder-error-card"><div class="feeder-error-title">未找到相关订阅源</div><div class="feeder-error-msg">换个关键词试试</div></div>`;
+  return results.map(f => `<div class="feeder-result-card" data-feed-url="${escapeHtml(f.url)}" data-feed-title="${escapeHtml(f.title)}">
+    <div class="feeder-result-title">${escapeHtml(f.title)}</div>
+    <div class="feeder-result-sub">${escapeHtml(f.site)}</div>
+    ${f.subscribers ? `<div class="feeder-result-meta">${formatSubs(f.subscribers)} 订阅者</div>` : ''}
+    <div class="feeder-result-url">${escapeHtml(f.url)}</div>
+  </div>`).join('');
+}
 
 function filterArticles(articles) {
   const filter = state.currentFilter;
@@ -2816,7 +2762,9 @@ function renderNews(filterText) {
   articles = filterArticles(articles);
   const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase()) || (a.description || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
   const el = $('news-articles'); const loading = $('news-loading');
-  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅？</button><button class="empty-state-link" data-action="add-feed">添加更多订阅？</button></div>`; return; }
+  if (loading && !state.refreshing) loading.style.display = 'none';
+  if (state.refreshing) return;
+  if (articles.length === 0 && Object.keys(state.feeds).length === 0) { if (loading) loading.style.display = 'none'; if (el) el.innerHTML = `<div class="empty-state"><div class="empty-state-title">没有可阅读的内容。您是否想要...</div><button class="empty-state-link" data-action="open-feed">打开另一个订阅？</button><button class="empty-state-link" data-action="add-feed">添加更多订阅？</button></div>`; return; }
   loading.style.display = 'none';
   if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
@@ -2887,13 +2835,32 @@ function renderFeedsNav() {
 function renderCategoryManager() {
   $('cat-mgr-list').innerHTML = state.categories.length === 0 ? '<div style="text-align:center;color:var(--md-sys-color-on-surface-variant);padding:24px;font-size:14px">还没有分类</div>' : state.categories.map(c => `<div class="cat-mgr-row"><span class="cat-mgr-name">${escapeHtml(c)}</span><button class="cat-mgr-delete" data-cat="${escapeHtml(c)}"><svg style="width:20px;height:20px"><use href="#icon-delete"/></svg></button></div>`).join('');
 }
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
 function renderStorage() {
-  const feedCount = Object.keys(state.feeds).length; let articleCount = 0; Object.values(state.feeds).forEach(f => { articleCount += (f.items || []).length; });
-  $('storage-feed-count').textContent = feedCount; $('storage-article-count').textContent = articleCount;
-  $('storage-fav-count').textContent = Object.keys(state.favorites).length; $('storage-bm-count').textContent = Object.keys(state.bookmarks).length;
-  const data = JSON.stringify(state); const bytes = new Blob([data]).size;
-  $('storage-size').textContent = bytes < 1024 ? bytes + ' B' : bytes < 1024 * 1024 ? (bytes / 1024).toFixed(1) + ' KB' : (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  const feedEntries = Object.entries(state.feeds);
+  const feedCount = feedEntries.length;
+  let articleCount = 0;
+  const feedSizes = feedEntries.map(([u, f]) => { const n = (f.items || []).length; articleCount += n; return { u, f, n, bytes: JSON.stringify(f).length }; });
+  $('storage-feed-count').textContent = feedCount;
+  $('storage-article-count').textContent = articleCount;
+  $('storage-fav-count').textContent = Object.keys(state.favorites).length;
+  $('storage-bm-count').textContent = Object.keys(state.bookmarks).length;
+  $('storage-read-count').textContent = state.readIds.size;
+  const bytes = new Blob([JSON.stringify(state)]).size;
+  $('storage-size').textContent = formatBytes(bytes);
   $('storage-bar').style.width = Math.min(100, (bytes / (5 * 1024 * 1024)) * 100) + '%';
+  const list = $('storage-feed-list');
+  if (list) {
+    list.innerHTML = feedSizes.length ? feedSizes.map(({ u, f, n, bytes: b }) =>
+      '<div class="storage-feed-row"><div class="storage-feed-info"><div class="storage-feed-title">' + escapeHtml(f.title || u) + '</div>' +
+      '<div class="storage-feed-meta">' + escapeHtml(t(f.category || '默认')) + ' · ' + n + ' 篇 · ' + formatBytes(b) + '</div></div>' +
+      '<button class="btn-text storage-feed-clear" data-url="' + escapeHtml(u) + '">清除</button></div>'
+    ).join('') : '<div class="storage-empty">暂无订阅源</div>';
+  }
 }
 
 function renderAll() {
@@ -2916,7 +2883,7 @@ function updateAppBarTitle() {
     const feed = state.feeds[state.currentFeedUrl];
     title = feed ? feed.title : state.currentFeedUrl;
   } else {
-    const titles = { news: '全部订阅', favorites: '已保存文章', bookmarks: '书签', feeds: '订阅管理', recommended: '推荐订阅', category: state.currentCategory || '分类' };
+    const titles = { news: t('全部订阅'), favorites: t('已保存文章'), bookmarks: t('书签'), feeds: t('订阅管理'), recommended: t('推荐订阅'), category: state.currentCategory || t('分类') };
     title = titles[state.currentView] || 'FeedForge';
   }
   $('app-bar-title').textContent = title;
@@ -3020,14 +2987,21 @@ function markAllRead() {
 }
 
 function init() {
+ try {
   loadState(); if (!state.categories.length) state.categories = [...DEFAULT_CATEGORIES]; applyTheme();
   applyDynamicColor();
-  renderAll(); startAutoRefresh();
+  renderAll(); applyLang(); startAutoRefresh();
   if (state.launchSync && Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
   else if (Object.keys(state.feeds).length > 0) refreshAllFeeds(true).then(() => renderAll());
   window.addEventListener('hashchange', handleRoute); handleRoute();
   setupSwipeMarkRead();
   setupScrollMarkRead();
+ } catch (err) {
+  console.error('[init error]', err);
+  const box = document.createElement('div'); box.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#b00020;color:#fff;font:12px/1.4 monospace;padding:8px 12px;z-index:99999;white-space:pre-wrap;max-height:160px;overflow:auto'; box.textContent = 'init错误: ' + (err && err.message || err); document.body.appendChild(box);
+  // 即使初始化出错，也要隐藏加载中
+  const ld = document.getElementById('news-loading'); if (ld) ld.style.display = 'none';
+ }
 }
 
 // Swipe-to-mark-read on article items
@@ -3237,6 +3211,23 @@ document.addEventListener('click', async (e) => {
 
   // Storage
   if (target.id === 'storage-back' || target.closest('#storage-back')) { closeStorage(); return; }
+  if (target.id === 'storage-clear-articles' || target.closest('#storage-clear-articles')) {
+    if (confirm('清除全部文章缓存？订阅源会保留，仅清空已缓存文章。')) { Object.values(state.feeds).forEach(f => { f.items = []; }); saveState(); renderStorage(); renderAll(); toast('已清除文章缓存'); } return;
+  }
+  if (target.id === 'storage-clear-fav' || target.closest('#storage-clear-fav')) {
+    if (confirm('清除全部收藏？')) { state.favorites = {}; saveState(); renderStorage(); renderAll(); toast('已清除收藏'); } return;
+  }
+  if (target.id === 'storage-clear-bm' || target.closest('#storage-clear-bm')) {
+    if (confirm('清除全部书签？')) { state.bookmarks = {}; saveState(); renderStorage(); renderAll(); toast('已清除书签'); } return;
+  }
+  if (target.id === 'storage-clear-read' || target.closest('#storage-clear-read')) {
+    if (confirm('清除全部已读标记？所有文章将标记为未读。')) { state.readIds = new Set(); saveState(); renderStorage(); renderAll(); toast('已清除已读标记'); } return;
+  }
+  const feedClearBtn = target.closest('.storage-feed-clear');
+  if (feedClearBtn) {
+    const u = feedClearBtn.dataset.url;
+    if (confirm('清除「' + (state.feeds[u]?.title || u) + '」的缓存文章？')) { if (state.feeds[u]) state.feeds[u].items = []; saveState(); renderStorage(); renderAll(); toast('已清除该订阅源缓存'); } return;
+  }
   if (target.id === 'storage-clear-btn') { if (confirm('确定清除所有数据？此操作不可恢复！')) { localStorage.removeItem('feedforge_v3'); location.reload(); } return; }
 
   // About
@@ -3269,20 +3260,28 @@ $('feed-url-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') 
 $('feed-search-btn').addEventListener('click', () => doFeedSearch());
 
 async function doFeedSearch() {
-  const url = $('feed-url-input').value.trim();
-  if (!url) { toast('请输入 URL'); return; }
-  let targetUrl = url;
-  if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+  const raw = $('feed-url-input').value.trim();
+  if (!raw) { toast('请输入网址或关键词'); return; }
   $('feed-preview-area').innerHTML = '<div style="padding:12px;color:var(--md-sys-color-on-surface-variant);font-size:14px">搜索中...</div>';
   try {
-    const parsed = await fetchFeed(targetUrl, true);
-    $('feed-preview-area').innerHTML = renderFeedPreview(parsed, targetUrl);
-  } catch (e) {
-    try {
-      const parsed = await discoverFeedOnPage(targetUrl);
-      if (parsed && parsed._url) { $('feed-preview-area').innerHTML = renderFeedPreview(parsed, parsed._url); }
-      else { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e.message || '无法找到 RSS 订阅源'); }
-    } catch (e2) { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e2.message || '无法访问此地址'); }
+    if (isLikelyUrl(raw)) {
+      let targetUrl = raw; if (!targetUrl.startsWith('http')) targetUrl = 'https://' + targetUrl;
+      try {
+        const parsed = await fetchFeed(targetUrl, true);
+        $('feed-preview-area').innerHTML = renderFeedPreview(parsed, targetUrl);
+      } catch (e) {
+        try {
+          const parsed = await discoverFeedOnPage(targetUrl);
+          if (parsed && parsed._url) { $('feed-preview-area').innerHTML = renderFeedPreview(parsed, parsed._url); }
+          else { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e.message || '无法找到 RSS 订阅源'); }
+        } catch (e2) { $('feed-preview-area').innerHTML = renderFeedError(targetUrl, e2.message || '无法访问此地址'); }
+      }
+    } else {
+      const results = await searchFeedsViaFeedly(raw);
+      $('feed-preview-area').innerHTML = renderFeedSearchResults(results);
+    }
+  } catch (e2) {
+    $('feed-preview-area').innerHTML = renderFeedError(raw, e2.message || '搜索失败，请稍后再试');
   }
 }
 
@@ -3323,76 +3322,21 @@ setupSearch('cat-search', 'cat-articles');
   el.addEventListener('scroll', () => { const btn = $(id.replace('-content', '') + '-scroll-top'); if (btn) btn.classList.toggle('visible', el.scrollTop > 300); });
 });
 
-// Settings
-$('setting-dynamic-color').addEventListener('change', (e) => { state.dynamicColor = e.target.checked; saveState(); applyDynamicColor(); });
-$('setting-launch-sync').addEventListener('change', (e) => { state.launchSync = e.target.checked; saveState(); });
-$('setting-wifi-only').addEventListener('change', (e) => { state.wifiOnly = e.target.checked; saveState(); });
-
-// Article list settings
-$('setting-title-only')?.addEventListener('change', e => { state.showTitleOnly = e.target.checked; saveState(); renderAll(); });
-$('setting-swipe-mark')?.addEventListener('change', e => { state.swipeMarkRead = e.target.checked; saveState(); });
-$('setting-scroll-mark')?.addEventListener('change', e => { state.scrollMarkRead = e.target.checked; saveState(); });
-$('setting-show-thumbnails')?.addEventListener('change', e => { state.showThumbnails = e.target.checked; saveState(); renderAll(); });
-$('setting-reading-time')?.addEventListener('change', e => { state.showReadingTime = e.target.checked; saveState(); renderAll(); });
-  $('setting-unread-count')?.addEventListener('change', e => { state.showUnreadCount = e.target.checked; saveState(); renderAll(); });
-  $('setting-show-feed-after-read')?.addEventListener('change', e => { saveState(); });
-
-// Reader settings
-$('setting-paging')?.addEventListener('change', e => { state.pagingMode = e.target.checked; saveState(); });
-$('setting-open-mode-row')?.addEventListener('click', () => {
-  state.openMode = state.openMode === 'reader' ? 'original' : 'reader';
-  const m = { reader: '阅读器', original: '原文' };
-  $('setting-open-mode-subtitle').textContent = m[state.openMode] || state.openMode;
-  saveState();
-});
-$('setting-link-mode-row')?.addEventListener('click', () => {
-  state.linkOpenMode = state.linkOpenMode === 'tab' ? 'self' : 'tab';
-  const m = { tab: '自定义标签页', self: '当前页' };
-  $('setting-link-mode-subtitle').textContent = m[state.linkOpenMode] || state.linkOpenMode;
-  saveState();
-});
-$('setting-max-lines-row')?.addEventListener('click', () => {
-  state.maxLines = state.maxLines >= 5 ? 1 : state.maxLines + 1;
-  $('setting-max-lines-subtitle').textContent = state.maxLines;
-  saveState(); renderAll();
-});
-$('setting-article-style-row')?.addEventListener('click', () => {
-  const styles = ['卡片', '紧凑', '杂志'];
-  const cur = parseInt(localStorage.getItem('ff_article_style') || '0');
-  const next = (cur + 1) % styles.length;
-  localStorage.setItem('ff_article_style', next.toString());
-  $('setting-article-style-subtitle').textContent = styles[next];
-  renderAll();
-});
-$('setting-sort-row')?.addEventListener('click', () => {
-  const opts = ['时间降序', '时间升序', '按标题'];
-  const cur = parseInt(localStorage.getItem('ff_sort') || '0');
-  const next = (cur + 1) % opts.length;
-  localStorage.setItem('ff_sort', next.toString());
-  $('setting-sort-subtitle').textContent = opts[next];
-  renderAll();
-});
-
-// Image loading settings
-$('setting-wifi-images')?.addEventListener('change', e => { state.loadImagesWifi = e.target.checked; saveState(); renderAll(); });
-$('setting-charging-images')?.addEventListener('change', e => { state.loadImagesCharging = e.target.checked; saveState(); renderAll(); });
-
-// Management settings
-$('setting-battery')?.addEventListener('change', e => { state.batteryOptimization = e.target.checked; saveState(); $('setting-battery-subtitle').textContent = e.target.checked ? '已启用' : '已禁用'; });
-$('setting-device-sync')?.addEventListener('change', e => { state.deviceSync = e.target.checked; saveState(); });
-$('setting-max-items-row')?.addEventListener('click', () => {
-  const opts = [50, 100, 200, 500];
-  const cur = opts.indexOf(state.maxItemsPerFeed);
-  const next = cur < 0 ? 1 : (cur + 1) % opts.length;
-  state.maxItemsPerFeed = opts[next];
-  $('setting-max-items-subtitle').textContent = state.maxItemsPerFeed;
-  saveState();
-});
-$('setting-blocklist-row')?.addEventListener('click', () => toast('拦截列表功能即将推出'));
-$('setting-notify-row')?.addEventListener('click', () => toast('通知功能即将推出'));
+// Settings — language
+$('setting-lang')?.addEventListener('change', e => { state.lang = e.target.value; saveState(); applyLang(); });
+// Settings — custom proxy
+$('setting-proxy-input')?.addEventListener('change', (e) => { state.customProxy = e.target.value.trim(); saveState(); toast('代理已保存'); });
+// Settings — refresh frequency dialog
+$('setting-autorefresh-row')?.addEventListener('click', () => openRefreshDialog());
+$('refresh-dialog-cancel')?.addEventListener('click', () => closeRefreshDialog());
+$('refresh-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'refresh-dialog') closeRefreshDialog(); });
+// Settings — quality dialog
+$('setting-quality-row')?.addEventListener('click', () => openQualityDialog());
+$('quality-dialog-cancel')?.addEventListener('click', () => closeQualityDialog());
+$('quality-dialog')?.addEventListener('click', (e) => { if (e.target.id === 'quality-dialog') closeQualityDialog(); });
 
 // Category select
-$('feed-category-select').addEventListener('change', (e) => {
+$('feed-category-select')?.addEventListener('change', (e) => {
   const sel = e.target; if (sel.value === '__new__') {
     const name = prompt('输入新分类名称：');
     if (name && name.trim()) { const cat = name.trim(); if (!state.categories.includes(cat)) { state.categories.push(cat); saveState(); renderCategoriesNav(); } populateCategorySelect(); sel.value = cat; toast('已创建分类：' + cat); }
@@ -3403,6 +3347,85 @@ $('feed-category-select').addEventListener('change', (e) => {
 // Auto refresh
 let autoRefreshTimer = null;
 function startAutoRefresh() { if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; } const mins = Number(state.autoRefresh) || 0; if (mins <= 0) return; autoRefreshTimer = setInterval(() => { if (document.hidden) return; refreshAllFeeds(true).then(() => renderAll()); }, mins * 60000); }
+
+// ===== i18n =====
+const I18N = {
+  en: {
+    '通用':'General','界面':'Interface','高级':'Advanced',
+    '语言':'Language','刷新频率':'Refresh frequency','主题':'Theme','界面质量':'Interface quality','自定义代理':'Custom proxy',
+    '全部订阅':'All subscriptions','已保存文章':'Saved articles','书签':'Bookmarks','分类':'Categories','订阅源':'Feeds','订阅管理':'Manage feeds','推荐订阅':'Recommended','FeedForge':'FeedForge',
+    '浅色':'Light','深色':'Dark','护色':'Sepia','舒适':'Comfortable','紧凑':'Compact','省流':'Data saver',
+    '关闭':'Off','每15分钟':'Every 15 min','每小时':'Hourly','每3小时':'Every 3 hours','每天':'Daily',
+    '设置':'Settings','存储':'Storage','管理分类':'Categories','关于':'About','文章':'Article',
+    '搜索文章...':'Search articles...','取消':'Cancel',
+    '数据明细':'Data details','清除缓存':'Clear cache','订阅源占用':'Feed usage','危险操作':'Danger zone',
+    '订阅源':'Feeds','文章缓存':'Article cache','收藏文章':'Saved articles','书签':'Bookmarks','已读标记':'Read marks',
+    '清除文章缓存':'Clear article cache','清除收藏':'Clear favorites','清除书签':'Clear bookmarks','清除已读标记':'Clear read marks','清除所有数据':'Clear all data','默认':'Default','暂无订阅源':'No feeds'
+  }
+};
+function t(s) { return (state.lang === 'en' && I18N.en[s]) ? I18N.en[s] : s; }
+function applyLang() {
+  const setT = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
+  setT('#setting-lang-row .settings-row-title', t('语言'));
+  setT('#setting-autorefresh-row .settings-row-title', t('刷新频率'));
+  setT('#setting-theme-row .settings-row-title', t('主题'));
+  setT('#setting-quality-row .settings-row-title', t('界面质量'));
+  setT('#setting-proxy-row .settings-row-title', t('自定义代理'));
+  document.querySelectorAll('.settings-section-header').forEach(h => {
+    const cur = h.textContent.trim();
+    if (state.lang === 'en' && I18N.en[cur]) h.textContent = I18N.en[cur];
+    else if (state.lang !== 'en') { const zh = Object.keys(I18N.en).find(k => I18N.en[k] === cur); if (zh) h.textContent = zh; }
+  });
+  const navT = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
+  navT('.nav-dest[data-view="news"] .nav-dest-label', t('全部订阅'));
+  navT('.nav-dest[data-view="favorites"] .nav-dest-label', t('已保存文章'));
+  navT('#drawer-categories-section .nav-drawer-section-label', t('分类'));
+  navT('#drawer-feeds-section .nav-drawer-section-label', t('订阅源'));
+  setT('#settings-page .app-bar-title', t('设置'));
+  setT('#view-article .app-bar-title', t('文章'));
+  setT('#storage-page .app-bar-title', t('存储'));
+  setT('#cat-mgr-page .app-bar-title', t('管理分类'));
+  setT('#about-page .app-bar-title', t('关于'));
+  document.querySelectorAll('.storage-row-label').forEach(el => {
+    const cur = el.textContent.trim();
+    if (state.lang === 'en' && I18N.en[cur]) el.textContent = I18N.en[cur];
+    else if (state.lang !== 'en') { const zh = Object.keys(I18N.en).find(k => I18N.en[k] === cur); if (zh) el.textContent = zh; }
+  });
+  const ns = $('news-search'); if (ns) ns.placeholder = t('搜索文章...');
+  document.querySelectorAll('.theme-option').forEach(btn => {
+    const map = { light: '浅色', dark: '深色', sepia: '护色' };
+    const sp = btn.querySelector('span'); if (sp) sp.textContent = t(map[btn.dataset.theme] || btn.dataset.theme);
+  });
+  const rd = $('refresh-dialog-title'); if (rd) rd.textContent = t('刷新频率');
+  const qd = $('quality-dialog-title'); if (qd) qd.textContent = t('界面质量');
+  const rc = $('refresh-dialog-cancel'); if (rc) rc.textContent = t('取消');
+  const qc = $('quality-dialog-cancel'); if (qc) qc.textContent = t('取消');
+  applySubtitles();
+  updateAppBarTitle();
+}
+
+// ===== 刷新频率 / 界面质量 弹窗 =====
+const REFRESH_OPTS = [ {v:0,t:'关闭'}, {v:15,t:'每15分钟'}, {v:60,t:'每小时'}, {v:180,t:'每3小时'}, {v:1440,t:'每天'} ];
+const QUALITY_OPTS = [ {v:'comfort',t:'舒适'}, {v:'compact',t:'紧凑'}, {v:'saver',t:'省流'} ];
+function buildDialog(bodyId, opts, current, onSelect) {
+  const body = $(bodyId); if (!body) return;
+  body.innerHTML = opts.map(o => '<button class="dialog-option" data-v="' + o.v + '"><span>' + t(o.t) + '</span><span class="dialog-check">✓</span></button>').join('');
+  body.querySelectorAll('.dialog-option').forEach(btn => {
+    btn.classList.toggle('selected', String(btn.dataset.v) === String(current));
+    btn.addEventListener('click', () => { onSelect(btn.dataset.v); });
+  });
+}
+function openRefreshDialog() { buildDialog('refresh-dialog-body', REFRESH_OPTS, state.autoRefresh, (v) => { state.autoRefresh = Number(v); saveState(); startAutoRefresh(); closeRefreshDialog(); applySubtitles(); }); $('refresh-dialog').classList.add('open'); }
+function closeRefreshDialog() { $('refresh-dialog').classList.remove('open'); }
+function openQualityDialog() { buildDialog('quality-dialog-body', QUALITY_OPTS, state.uiQuality, (v) => { applyQuality(v); closeQualityDialog(); }); $('quality-dialog').classList.add('open'); }
+function closeQualityDialog() { $('quality-dialog').classList.remove('open'); }
+function applyQuality(q) {
+  state.uiQuality = q;
+  if (q === 'comfort') { state.showThumbnails = true; state.showTitleOnly = false; }
+  else if (q === 'compact') { state.showThumbnails = true; state.showTitleOnly = true; }
+  else if (q === 'saver') { state.showThumbnails = false; state.showTitleOnly = true; }
+  saveState(); renderAll();
+}
 
 // Keyboard
 document.addEventListener('keydown', (e) => {
