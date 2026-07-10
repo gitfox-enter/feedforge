@@ -1696,6 +1696,15 @@ body {
     <span class="menu-item-icon"><svg><use href="#icon-add"/></svg></span>
     添加订阅
   </button>
+  <button class="menu-item" data-action="manage-feeds">
+    <span class="menu-item-icon"><svg><use href="#icon-rss"/></svg></span>
+    订阅管理
+  </button>
+  <button class="menu-item" data-action="recommended">
+    <span class="menu-item-icon"><svg><use href="#icon-star"/></svg></span>
+    推荐订阅
+  </button>
+  <div class="menu-divider"></div>
   <button class="menu-item" data-action="import-opml">
     <span class="menu-item-icon"><svg><use href="#icon-import-export"/></svg></span>
     从 OPML 导入订阅
@@ -2611,7 +2620,7 @@ function renderNews(filterText) {
   articles = filterArticles(articles);
   const filtered = filterText ? articles.filter(a => a.title.toLowerCase().includes(filterText.toLowerCase()) || (a.feed?.title || '').toLowerCase().includes(filterText.toLowerCase()) || (a.description || '').toLowerCase().includes(filterText.toLowerCase())) : articles;
   const el = $('news-articles'); const loading = $('news-loading');
-  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">还没有订阅</div><div class="empty-state-desc">点击右下角添加按钮添加 RSS 订阅源</div></div>`; return; }
+  if (!state.refreshing && articles.length === 0 && Object.keys(state.feeds).length === 0) { loading.style.display = 'none'; el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">还没有订阅</div><div class="empty-state-desc">点击「更多」菜单添加 RSS 订阅源</div></div>`; return; }
   loading.style.display = 'none';
   if (filtered.length === 0 && filterText) { el.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-search"/></svg></div><div class="empty-state-title">没有找到相关文章</div><div class="empty-state-desc">试试其他关键词</div></div>`; return; }
   el.innerHTML = filtered.slice(0, 200).map(a => renderArticleItem(a, a.feed, true)).join('');
@@ -2644,7 +2653,7 @@ function renderCategoryView(catName, filterText, onlyFeedUrl) {
 }
 function renderFeedsList() {
   const feeds = Object.values(state.feeds);
-  if (feeds.length === 0) { $('feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">没有订阅</div><div class="empty-state-desc">点击右下角添加按钮添加订阅</div></div>`; return; }
+  if (feeds.length === 0) { $('feeds-list').innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg style="width:48px;height:48px"><use href="#icon-rss"/></svg></div><div class="empty-state-title">没有订阅</div><div class="empty-state-desc">点击「更多」菜单添加订阅</div></div>`; return; }
   $('feeds-list').innerHTML = feeds.map(f => renderFeedCard(f)).join('');
 }
 function renderRecommended() {
@@ -2925,6 +2934,8 @@ document.addEventListener('click', async (e) => {
     if (action === 'mark-all-read') markAllRead();
     else if (action === 'refresh-feeds') { state.refreshing = true; $('news-loading').style.display = 'flex'; $('news-articles').innerHTML = ''; refreshAllFeeds(false).then(() => { state.refreshing = false; renderAll(); }); }
     else if (action === 'add-feed') openAddFeed();
+    else if (action === 'manage-feeds') { showView('feeds'); }
+    else if (action === 'recommended') { showView('recommended'); }
     else if (action === 'import-opml') $('opml-file-input').click();
     else if (action === 'export-opml') exportOPML();
     else if (action === 'import-saved') toast('功能开发中');
@@ -2985,19 +2996,27 @@ document.addEventListener('click', async (e) => {
     if (article) openArticleDetail(article, feed); return;
   }
 
-  // Feed card
-  const feedCard = target.closest('.feed-card');
-  if (feedCard) {
-    const action = target.dataset.action || feedCard.dataset.action;
-    const url = target.dataset.url || feedCard.dataset.url;
-    const cat = target.dataset.category || feedCard.dataset.category;
-    if (action === 'delete-feed') deleteFeed(url);
+  // Feed card - handle inner buttons first
+  const feedCardAction = target.closest('.feed-card-action');
+  if (feedCardAction) {
+    const action = feedCardAction.dataset.action;
+    const url = feedCardAction.dataset.url;
+    if (action === 'delete-feed') { deleteFeed(url); return; }
     else if (action === 'edit-feed') {
       const feed = state.feeds[url]; if (!feed) return;
       const current = feed.category || 'Default';
       const sel = prompt(`修改「${feed.title}」的分类：\n\n当前分类：${current}\n\n输入新的分类名称（留空则设为「默认」）：`);
       if (sel !== null) { const newCat = sel.trim() || 'Default'; if (newCat !== current) { feed.category = newCat; saveState(); renderAll(); toast(`已移至「${newCat}」`); } }
-    } else if (action === 'open-category') { state.currentCategory = cat; state.currentFeedUrl = null; showView('category', cat); }
+      return;
+    }
+  }
+
+  // Feed card - body click (not on inner buttons)
+  const feedCard = target.closest('.feed-card');
+  if (feedCard) {
+    const url = feedCard.dataset.url;
+    const cat = feedCard.dataset.category;
+    if (cat) { state.currentCategory = cat; state.currentFeedUrl = null; showView('category', cat); }
     else if (url && state.feeds[url]) { state.currentCategory = state.feeds[url].category || 'Default'; state.currentFeedUrl = url; showView('category', state.currentCategory); }
     return;
   }
