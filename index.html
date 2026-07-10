@@ -2069,10 +2069,13 @@ body {
     <div class="settings-row" id="setting-proxy-row">
       <div class="settings-row-text" style="flex:1">
         <div class="settings-row-title">自定义代理</div>
-        <div class="settings-row-subtitle">留空走公共代理（国内可能不稳）；可填自己的 Cloudflare Worker 或服务器地址</div>
+        <div class="settings-row-subtitle">公共代理已失效，需配置自己的 CORS 代理</div>
       </div>
     </div>
     <input class="settings-input" id="setting-proxy-input" type="text" placeholder="https://你的代理/?url=" spellcheck="false" />
+    <div style="padding:8px 16px;font-size:12px;color:var(--md-sys-color-on-surface-variant);">
+      💡 推荐：<a href="https://github.com/DIYgod/RSSHub" target="_blank" style="color:var(--md-sys-color-primary);">RSSHub</a> 可生成支持跨域的订阅地址，无需额外代理
+    </div>
 
   </div>
 </div>
@@ -2226,10 +2229,11 @@ body {
 'use strict';
 
 const CORS_PROXIES = [
-  'https://api.allorigins.win/raw?url=',
-  'https://api.codetabs.com/v1/proxy?quest=',
-  'https://corsproxy.io/?',
-  'https://thingproxy.freeboard.io/fetch/',
+  // 公共代理大多已失效，建议使用自定义代理或 RSSHub
+  // 'https://api.allorigins.win/raw?url=',
+  // 'https://api.codetabs.com/v1/proxy?quest=',
+  // 'https://corsproxy.io/?',
+  // 'https://thingproxy.freeboard.io/fetch/',
 ];
 const AUTO_DISCOVER_PATHS = ['/feed','/feed/','/rss','/rss.xml','/feed.xml','/atom.xml','/rss/feed.xml','/index.xml','/blog/feed','/posts/feed','/feed/atom'];
 const RECOMMENDED_FEEDS = [
@@ -2364,6 +2368,11 @@ function setTheme(theme) { state.theme = theme; applyTheme(); saveState(); close
 async function fetchFeed(feedUrl, silent) {
   const proxies = getProxyList();
   let lastErr;
+  // 检查是否有可用代理（DIRECT 或自定义）
+  const hasProxy = proxies.some(p => p === 'DIRECT' || (p && p.length > 0));
+  if (!hasProxy || proxies.length === 0) {
+    throw new Error('未配置代理。请在设置中添加自定义 CORS 代理，或使用 RSSHub 等服务');
+  }
   for (const base of proxies) {
     try {
       const proxyUrl = buildProxyUrl(base, feedUrl);
@@ -2372,7 +2381,7 @@ async function fetchFeed(feedUrl, silent) {
       return parseFeed(await r.text(), feedUrl);
     } catch (e) { lastErr = e; }
   }
-  throw new Error('所有代理均失败，请在设置中填写自定义代理');
+  throw new Error('无法访问此订阅源。建议：1) 在设置中配置自定义代理；2) 使用 RSSHub 生成订阅地址');
 }
 function parseFeed(xmlText, feedUrl) {
   if (xmlText.charCodeAt(0) === 0xFEFF) xmlText = xmlText.slice(1);
